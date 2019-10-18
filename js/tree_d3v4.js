@@ -19,7 +19,7 @@ d3.json("data/treedata.json", function(err, srcjson) {
 	tmptxt=JSON.stringify(srcjson);
 	//console.log(tmptxt)
 	sessionStorage.setItem("loadedjsonstr", tmptxt);
-	console.log(sessionStorage.getItem("loadedjsonstr"))
+	// console.log(sessionStorage.getItem("loadedjsonstr"))
 	if (sessionStorage.getItem("loadedjsonstr") === null ){
 		document.location.reload();
 	}
@@ -28,7 +28,7 @@ d3.json("data/treedata.json", function(err, srcjson) {
 var loadedjsonstr = sessionStorage.getItem("loadedjsonstr");
 sessionStorage.removeItem("loadedjsonstr")
 var treeData = JSON.parse(loadedjsonstr);
-console.log(treeData)
+// console.log(treeData)
 	
 // ************** Generate the tree diagram	 *****************
 
