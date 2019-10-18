@@ -9,6 +9,12 @@ d3.select('body')
 .text('D3 try ' + window.location.href)
 ;
 
+d3.select('body')
+.append('p')
+.text('commit 3 to 6 to https://github.com/junkthem/simple_d3tree_v3tov4.io ')
+
+
+
 /* This part is to load json str and save to a sessionStorage item. That way to avoid the async issue
 	the trick is to get json object with d3.json(), and save into a sessionStorage item
 	This is the only way I know that works in getting the stringified json out of d3.json()
@@ -37,8 +43,6 @@ var
 	margin = {top: 20, right: 120, bottom: 20, left: 120},
 	width = 960 - margin.right - margin.left,
 	height = 500 - margin.top - margin.bottom;
-
-
 
 
 //******migration to D3V4 part 1, move the svg up
