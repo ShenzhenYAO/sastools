@@ -9,7 +9,6 @@ d3.select('body')
 .text('D3 try ' + window.location.href)
 ;
 
-
 /* This part is to load json str and save to a sessionStorage item. That way to avoid the async issue
 	the trick is to get json object with d3.json(), and save into a sessionStorage item
 	This is the only way I know that works in getting the stringified json out of d3.json()
@@ -20,7 +19,7 @@ d3.json("data/treedata.json", function(err, srcjson) {
 	tmptxt=JSON.stringify(srcjson);
 	//console.log(tmptxt)
 	sessionStorage.setItem("loadedjsonstr", tmptxt);
-	// console.log(sessionStorage.getItem("loadedjsonstr"))
+	console.log(sessionStorage.getItem("loadedjsonstr"))
 	if (sessionStorage.getItem("loadedjsonstr") === null ){
 		document.location.reload();
 	}
@@ -29,7 +28,7 @@ d3.json("data/treedata.json", function(err, srcjson) {
 var loadedjsonstr = sessionStorage.getItem("loadedjsonstr");
 sessionStorage.removeItem("loadedjsonstr")
 var treeData = JSON.parse(loadedjsonstr);
-// console.log(treeData)
+console.log(treeData)
 	
 // ************** Generate the tree diagram	 *****************
 
