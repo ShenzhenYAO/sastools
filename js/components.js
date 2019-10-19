@@ -8,7 +8,7 @@ function addtitledesc (){
 
 	d3.select('body')
 	.append('p')
-	.text('commit 7- to https://github.com/junkthem/simple_d3tree_v3tov4.io ')
+	.text('commit 8- to https://github.com/junkthem/simple_d3tree_v3tov4.io ')
 }
 
 /* This part is to load json str and save to a sessionStorage item. That way to avoid the async issue
@@ -72,8 +72,6 @@ function addnewEle (width, height, id, clss, theparent, parentEleType, EleType, 
 	return newEle;	
 }
 
-
-
 /*make and update tree */
 function update(parentData) {
 
@@ -96,7 +94,10 @@ function update(parentData) {
 		.attr("class", "nodeGroup")
 		.attr("transform", function(d) {
 			return "translate(" + parentData.y0 + "," + parentData.x0 + ")"; }) //each g are added at the position x0,y0 of the source data
-		.on("click", click);
+		.on("click", click)
+		.on('contextmenu', click2) // right click to zoom in/out
+		;
+		
 	
 	//add circle within g.nodeGroup
 	nodeEnter.append("circle")
@@ -232,5 +233,89 @@ function click(d) {
   update(d);
 }	
 
+
+
+/**This is from the zooming part F:\Personal\Virtual_Server\PHPWeb\D3 Pan drop drag\DeniseMauldin Box*/
+function zoomed() {
+    svg.attr("transform", d3.event.transform);
+
+	//this part is useless
+    // this is intended to start the zoom at center where the current node is 
+    // var transform = d3.event.transform,
+    //     point = transform.invert(center_tree);
+    //     console.log("point",point, "focus", focus)
+    // transform = transform.translate(point[0] - focus[0], point[1] - focus[1]);
+    // svg.attr("transform", transform);
+
+}
+
+
+/**add part 8, the click function */
+  //click2 to zoomin
+  function click2(d){
+    //disable the default right click menu
+    d3.event.preventDefault();
+
+    //5.1.1 initialzie the vars for x, y coordinates, and the zoom levels
+    var x; //x coordinate (horizontal) of the center of the selected path/shape to the left wall of the map g
+    var y; // y coordinate (vertical)
+    var xy_pathcenter; // an object containing data about the selected path/shape, including its x and y
+    var translateStr; // a string to specify the travelling (i.e. translating) settings
+    var zoomLevel; // the level of zoomming (scale, i.e., the times to enlarge/shrink)
+
+    //5.1.2 determine the toggling settings (i.e., zoom in, select a new county, or zoom out)
+    if (d && centeredNode !== d) {
+        //a. if a different county is selected
+
+        //5.1.2.a.1 get the center of the selected shape/path
+		// var xy_pathcenter = path.centroid(d);
+		console.log(d)
+        y = d.x; //xy_pathcenter[0];
+        x = d.y; //xy_pathcenter[1];
+
+        //5.1.2.a.2 determine the string for zooming (scale)
+        // the syntax is like 'scale(10)'
+        zoomLevel = zoomSettings.zoomLevel;
+
+        //5.1.2.a.3 update the centeredNode, i.e., let it be the currentl selected county
+        centeredNode = d
+
+    } else {
+        //b. if the selection (click) is not on a new county (i.e., the same county, or a none-county area is clicked )
+        // 5.1.2.b.1 set the x, y value as the center of the window
+        ///**modified part 9, the following is different, */
+        x = width_body / 2 - margin.left; //width1 / 2 ;
+        y = height_body / 2 - margin.top ; // height2 /2;
+
+        // 5.1.2.b.2 set the zoom level =1 (zoom out)
+        zoomLevel = 1;
+
+        // 5.1.2.b.3 nulify the var centeredNode 
+        centeredNode = null;
+
+    }
+
+    //5.1.3 determine the string for travel (translate)
+    // the syntax is like 'translate (221, 176)'
+    var translate_mapUpperLeft='translate (' + width_body/2 + ',' + height_body/2 + ')'
+
+    //5.1.4 determine the string for enlarge/shrink (scale)
+    scaleStr = 'scale (' + zoomLevel + ')'
+
+    //5.1.5 determine the offset 
+    var translate_offsetSelectedPath='translate (' + -x  + ',' + -y + ')'
+
+    //5.1.6 putting travelling and zooming together (translate and scale together)
+    // the syntax is like translate (221, 176)scale(10)
+    translateStr = translate_mapUpperLeft + scaleStr + translate_offsetSelectedPath
+
+    //5.1.7 travel + zooming (i.e, translate + scale)
+    g.transition()
+        .duration(zoomSettings.duration)
+        .ease(zoomSettings.ease) 
+        .attr('transform', translateStr)
+    ;
+
+  }
 
 

@@ -49,10 +49,31 @@ var treejsonURL = 'data/treeData.json',     // the url of the external json file
 /*define the svg box and padding*/
 var 
 	margin = {top: 20, right: 120, bottom: 20, left: 120},
-	treewidth = 960 - margin.right - margin.left,
-    treeheight = 500 - margin.top - margin.bottom,
-    between_nodes_horizontal = 180
-;
+	width_tree = 960 - margin.right - margin.left,
+    height_tree = 500 - margin.top - margin.bottom,
+    between_nodes_horizontal = 180,
+    center_tree = [width_tree / 2, height_tree /2] //for zooming from F:\Personal\Virtual_Server\PHPWeb\D3 Pan drop drag\DeniseMauldin Box
+    focus=center_tree
+    ;
+
+/** for zooming and pan
+ * from F:\Personal\Virtual_Server\PHPWeb\D3 Pan drop drag\DeniseMauldin Box * 
+*/
+var w = window;
+var doc = document;
+var el = doc.documentElement;
+var body = doc.getElementsByTagName('body')[0];
+var width_body = w.innerWidth || el.clientWidth || body.clientWidth;
+var height_body = w.innerHeight|| el.clientHeight|| body.clientHeight;
+var centeredNode;
+var zoomSettings = {
+    duration: 1000,
+    ease: d3.easeCubicOut, 
+    zoomLevel: 2
+  };
+
+
+
 
 
 

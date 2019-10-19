@@ -36,3 +36,8 @@
 			stroke: steelblue;
 			stroke-width: 3px;
 			}
+
+			.background {
+				fill: none;
+				pointer-events: all;
+			  }
