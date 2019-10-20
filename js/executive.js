@@ -57,7 +57,7 @@ flatterneddatapoints_sortedrowscols=getSortedRowsCols(flatterneddatapoints);
 
 /**B.1.2.3 get the maxrows and cols */
 var maxrowscols= getmaxrowscols(flatterneddatapoints_sortedrowscols)
-console.log(maxrowscols)
+// console.log(maxrowscols)
 
 /**B.1.3 estimate the size of the tree
  * so, vertically the rows should be between_nodes_vertical apart from each other
@@ -70,8 +70,6 @@ console.log(maxrowscols)
 // one can never get the right paddings with the stupid design of d3.tree
 height_tree = maxrowscols[0] * between_nodes_vertical; // this will put rows with paddings of half the between_nodes_vertical top and bottom
 width_tree = maxrowscols[1] * between_nodes_horizontal;
-console.log('treesize ===========')
-console.log(width_tree, height_tree);
 
 
 /**B.1.4 
@@ -98,9 +96,6 @@ var svgwidth = width_tree + margin.left + margin.right,
 svgwidth = Math.max(svgwidth, width_body);
 svgheight = Math.max(svgheight, height_body);
 
-console.log('svg size')
-console.log(svgwidth, svgheight)
-
 
 var svg = addnewEle(svgwidth, svgheight, null, 'thebigsvg', null, 'body', 'svg', null );
 
@@ -122,14 +117,27 @@ svg.append('rect')
     // 'fill': 'lightyellow'
     })
     // .classed ('background', true)
-    .on('contextmenu', click2); 
+    .on('contextmenu', ZoomInOutSelectedNode); 
 
 /**B.3 Add a g in svg */
 var transfm= "translate(" + margin.left + "," + margin.top + ")";
 var g = addnewEle(null, null, null, 'thetreeg', svg, null, 'g', transfm );
 
 /**B.4 make a new tree */
+//https://stackoverflow.com/questions/17558649/d3-tree-layout-separation-between-nodes-using-nodesize
+// tree().nodeSize() makes flexible size trees, tree().size() makes fixed-size trees. The two cannot be used at the same time
 var treeinstance; // important: treeinstance has to be defined outside the function
-var offsetshiftup = newtree_offsetNodeSizeMethodShiftError().offsetshiftup;
+
+var newtreeMethod='bysize' //bynodesize or bysize
+if (newtreeMethod === 'bynodesize') {
+    // use the newtree_offsetNodeSizeMethodShiftError to make new tree, make adjustment and get the offset distance for zooming ()
+    var offsetshiftup = newtree_offsetNodeSizeMethodShiftError().offsetshiftup;
+} else {
+    treeinstance = d3.tree().size([height_tree, width_tree]);
+    // do not use the newtree_offsetNodeSizeMethodShiftError(), create the tree directly, not to adjust (no need) offset errors as nodeSize() method is not used
+    MakeChangeTree(rootdatapoint_sortedrowscols);
+    var offsetshiftup= margin.top;
+}
+
 
 

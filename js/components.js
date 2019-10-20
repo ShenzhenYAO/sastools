@@ -10,7 +10,7 @@ function addtitledesc (){
 	d3.select('body')
 	.append('p')
 	.attr('class', 'headdesc')
-	.text('commit 9- to https://github.com/junkthem/simple_d3tree_v3tov4.io ')
+	.text('commit 10- to https://github.com/junkthem/simple_d3tree_v3tov4.io ')
 }
 
 /* This part is to load json str and save to a sessionStorage item. That way to avoid the async issue
@@ -75,7 +75,7 @@ function addnewEle (width, height, id, clss, theparent, parentEleType, EleType, 
 }
 
 /*make and update tree */
-function update(parentdatapoint) {
+function MakeChangeTree(parentdatapoint) {
 
 	//instanciate a treeinstance by flatterneddatapoints_sortedrowscols.
 	// console.log(rootdatapoint)
@@ -101,7 +101,7 @@ function update(parentdatapoint) {
 		.attr("transform", function(d) {
 			return "translate(" + parentdatapoint.y0 + "," + parentdatapoint.x0 + ")"; }) //each g are added at the position x0,y0 of the source data
 		.on("click", click)
-		.on('contextmenu', click2) // right click to zoom in/out
+		.on('contextmenu', ZoomInOutSelectedNode) // right click to zoom in/out
 		;
 		
 	
@@ -247,7 +247,7 @@ function click(d) {
 	d.children = d._children;
 	d._children = null;
   }
-  update(d);
+  MakeChangeTree(d);
 }	
 
 
@@ -268,8 +268,8 @@ function zoomed() {
 
 
 /**add part 8, the click function */
-  //click2 to zoomin
-  function click2(d){
+  //ZoomInOutSelectedNode: zoom in out the selected note
+  function ZoomInOutSelectedNode(d){
     //disable the default right click menu
     d3.event.preventDefault();
 
@@ -362,7 +362,7 @@ function getTransformValues (theEle) {
 
 
 
-/**Another stupid thing of d3 tree
+/**Another bug of d3 tree
  * When using tree().nodeSize, the tree group element is moved upwards and it goes out of the svg!
  * This problem is not solved in v4 and v5 (see example of 100a2)
  * 
@@ -395,20 +395,20 @@ function getTransformValues (theEle) {
     function newtree_offsetNodeSizeMethodShiftError(){
 
         treeinstance = d3.tree().size([height_tree, width_tree]);
-        var results=update(rootdatapoint_sortedrowscols);
+        var results=MakeChangeTree(rootdatapoint_sortedrowscols);
         noshift = d3.min(results.vcoords)
     
         // 2) use tree nodeSize() method to make a tree of automatically defined size
         treeinstance = d3.tree().nodeSize([between_nodes_vertical, between_nodes_horizontal]);//d3v4
-        var results=update(rootdatapoint_sortedrowscols);
+        var results=MakeChangeTree(rootdatapoint_sortedrowscols);
         var shiftup = d3.min(results.vcoords)
-        console.log(noshift, shiftup)
+        // console.log(noshift, shiftup)
         var offsetshiftup = noshift-shiftup + margin.top
         var offsetNodeSizeMethodShiftTranslateStr = 'translate('+ margin.left + ', '+ offsetshiftup +')';
     
         g.transition().duration(3500).attr('transform', offsetNodeSizeMethodShiftTranslateStr );
     
-        return {'offsetshiftup': offsetshiftup} // for use in the translation adjustment in zooming (see components.click2)
+        return {'offsetshiftup': offsetshiftup} // for use in the translation adjustment in zooming (see components.ZoomInOutSelectedNode)
     
     }
 
