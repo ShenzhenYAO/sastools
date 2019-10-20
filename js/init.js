@@ -36,25 +36,18 @@
  *  3) write lines to run functions in executive.js
  * /
 
-
 /**global vars */
-var treejsonURL = 'data/treeData.json',     // the url of the external json file with tree data
-    treeData,   // to hold the tree data (as a json obj)
+var treejsonURL = 'data/doctype.json',     // the url of the external json file with tree data
+    treeData,   // to hold the tree data 
+    treeJSON,   // to hold the tree JSON from treeData
     i = 0,  // no need
-    duration = 5750,     //duration of transition (1000 = 1 second)
-    root
-
+    duration = 1750,     //duration of transition (1000 = 1 second)
+    rootdatapoint, //the root data point and its descendants in hierarchical structure
+    flatterneddatapoints, // an array of flattered datapoints from rootdatapoint
+    flatterneddatapoints_sortedrowscols, // adding sorted rows and cols (to be put in a tree) of points in flatterneddatapoints
+    treemaxrowscols // the maxrows and cols in an array
 ;
 
-/*define the svg box and padding*/
-var 
-	margin = {top: 20, right: 120, bottom: 20, left: 120},
-	width_tree = 960 - margin.right - margin.left,
-    height_tree = 500 - margin.top - margin.bottom,
-    between_nodes_horizontal = 180,
-    center_tree = [width_tree / 2, height_tree /2] //for zooming from F:\Personal\Virtual_Server\PHPWeb\D3 Pan drop drag\DeniseMauldin Box
-    focus=center_tree
-    ;
 
 /** for zooming and pan
  * from F:\Personal\Virtual_Server\PHPWeb\D3 Pan drop drag\DeniseMauldin Box * 
@@ -72,6 +65,20 @@ var zoomSettings = {
     zoomLevel: 2
   };
 
+/*define the svg box and padding, and properties of the tree*/
+var 
+	margin = {top: 20, right: 120, bottom: 20, left: 120},
+	// width_tree = width_body - margin.right - margin.left,
+    // height_tree = height_body - margin.top - margin.bottom,
+    width_tree,
+    height_tree,
+    between_nodes_horizontal = 180,
+    between_nodes_vertical = 65,
+    center_tree, //it is never used
+    focus=center_tree //never used
+    // center_tree = [width_tree / 2, height_tree /2] //for zooming from F:\Personal\Virtual_Server\PHPWeb\D3 Pan drop drag\DeniseMauldin Box
+    // focus=center_tree
+    ;
 
 
 

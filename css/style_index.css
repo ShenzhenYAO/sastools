@@ -22,7 +22,7 @@
 				fill: yellow;
 			}
 			.nodetext{
-				text-anchor:middle;
+				/*text-anchor:middle;*/
 				font: 12px sans-serif;
 				color:blue;
 			}
