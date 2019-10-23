@@ -37,17 +37,19 @@
  * /
 
 /**global vars */
-var treejsonURL = 'data/treedata.json',     // the url of the external json file with tree data
+var 
+    gitcommitversion = '12',
+
+    treejsonURL = 'data/doctype.json',     // the url of the external json file with tree data
     treeData,   // to hold the tree data 
     treeJSON,   // to hold the tree JSON from treeData
     i = 0,  // no need
-    duration = 1750,     //duration of transition (1000 = 1 second)
+    showhidedescendants_duration = 1750,     //duration of transition (1000 = 1 second)
     rootdatapoint, //the root data point and its descendants in hierarchical structure
     flatterneddatapoints, // an array of flattered datapoints from rootdatapoint
     flatterneddatapoints_sortedrowscols, // adding sorted rows and cols (to be put in a tree) of points in flatterneddatapoints
-    treemaxrowscols, // the maxrows and cols in an array
-
-    gitcommitversion = '11'
+    treemaxrowscols // the maxrows and cols in an array
+   
 ;
 
 
@@ -67,11 +69,17 @@ var zoomSettings = {
     zoomLevel: 2
   };
 
+/**tree making method: size() or nodeSize() */
+//https://stackoverflow.com/questions/17558649/d3-tree-layout-separation-between-nodes-using-nodesize
+// tree().nodeSize() makes flexible size trees, tree().size() makes fixed-size trees. The two cannot be used at the same time
+var newtreeMethod='bysize' //bynodesize or bysize
+
+
 /*define the svg box and padding, and properties of the tree*/
 var 
-	margin = {top: 20, right: 120, bottom: 20, left: 120},
-	// width_tree = width_body - margin.right - margin.left,
-    // height_tree = height_body - margin.top - margin.bottom,
+	TreeMarginToSvg = {top: 20, right: 120, bottom: 20, left: 120},
+	// width_tree = width_body - TreeMarginToSvg.right - TreeMarginToSvg.left,
+    // height_tree = height_body - TreeMarginToSvg.top - TreeMarginToSvg.bottom,
     width_tree,
     height_tree,
     between_nodes_horizontal = 180,
@@ -80,12 +88,22 @@ var
     focus=center_tree //never used
     // center_tree = [width_tree / 2, height_tree /2] //for zooming from F:\Personal\Virtual_Server\PHPWeb\D3 Pan drop drag\DeniseMauldin Box
     // focus=center_tree
-    ;
+;
 
-/**tree making method: size() or nodeSize() */
-//https://stackoverflow.com/questions/17558649/d3-tree-layout-separation-between-nodes-using-nodesize
-// tree().nodeSize() makes flexible size trees, tree().size() makes fixed-size trees. The two cannot be used at the same time
-var newtreeMethod='bysize' //bynodesize or bysize
+/**about tree elements*/
+var 
+    nodecircle_border_width = 3,
+    nodecircle_border_color='slateblue',
+    nodecircle_fill_hidedescendants_color = 'lightsteelblue',
+    nodecircle_fill_showdescendants_color = 'lightyellow',
+    nodecircle_fill_dragover_color = 'green',
+    nodecircle_radius=10,
+
+    nodetext_font_size = '1em' // xhtml div has to use 1em (=12 px) instead of units in pixels
+
+;
+
+
 
 
 

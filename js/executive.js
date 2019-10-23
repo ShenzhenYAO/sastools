@@ -10,6 +10,7 @@
  *          Use Chrome!
  ***********************************************************************************/
 
+
 // 0. Add title and description
 addtitledesc();
 
@@ -91,8 +92,8 @@ rootdatapoint.y0=0;
 /**B.2.1 Add a svg in body **********************************/
 
 /**B.2.1.1 determine the svg */
-var svgwidth = width_tree + margin.left + margin.right,
-    svgheight = height_tree + margin.top + margin.bottom
+var svgwidth = width_tree + TreeMarginToSvg.left + TreeMarginToSvg.right,
+    svgheight = height_tree + TreeMarginToSvg.top + TreeMarginToSvg.bottom
     ;
 svgwidth = Math.max(svgwidth, width_body);
 svgheight = Math.max(svgheight, height_body);
@@ -135,7 +136,7 @@ var thetreerect=svg.append('rect')
 
 
 /**B.3 Add a g in svg */
-var transfm= "translate(" + margin.left + "," + margin.top + ")";
+var transfm= "translate(" + TreeMarginToSvg.left + "," + TreeMarginToSvg.top + ")";
 var g = addnewEle(null, null, null, 'thetreeg', svg, null, 'g', transfm );
 
 /**B.4 make a new tree */
@@ -148,7 +149,7 @@ if (newtreeMethod === 'bynodesize') {
     treeinstance = d3.tree().size([height_tree, width_tree]); // don't put it inside MakeChangeTree, as the bynodessize () method requires a different line (.nodeSize() instead of .size())
     // do not use the newtree_offsetNodeSizeMethodShiftError(), create the tree directly, not to adjust (no need) offset errors as nodeSize() method is not used
     MakeChangeTree(rootdatapoint_sortedrowscols);
-    var offsetshiftup= margin.top;
+    var offsetshiftup= TreeMarginToSvg.top;
 }
 
 

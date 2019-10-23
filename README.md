@@ -1,5 +1,12 @@
 simple d3 v4 tree diagram. 
 *********************************************************************************************
+
+commit 11:105a
+put all parameter settings in init.js
+instead of <text>, use foreignObject, and div which is more flexible for multiple lines and text formating
+ (an test page is created: test2_foreignobj.html)
+
+
 commit 11:100c04
 add a test1_mousedownmove.html to show how to trigger events when mouse is down, move, and up; show coordinates when  
  mouse is moved. 

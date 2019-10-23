@@ -111,7 +111,7 @@ function MakeChangeTree(parentdatapoint) {
         .attr("class", "nodeGs")
 		.attr("transform", function(d) {
 			return "translate(" + parentdatapoint.y0 + "," + parentdatapoint.x0 + ")"; }) //each g are added at the position x0,y0 of the source data
-		.on("click", click)
+		.on("click", showhidedescendants)
         .on('contextmenu', ZoomInOutSelectedNode) // right click to zoom in/out
         .on("mousedown", dragdrop)  //check the newest version of dragdrop in components.js
     ;
@@ -122,66 +122,71 @@ function MakeChangeTree(parentdatapoint) {
 	nodeEnter.append("circle")
 		.attr('class', 'nodecircles')
         .attr("r", 1e-6) // initial size is nearly 0
-        .attr("stroke-width", '3px')
-        .attr('stroke', 'slateblue')
+        .attr("stroke-width", nodecircle_border_width)
+        .attr('stroke', nodecircle_border_color)
 		.style("fill", function(d) {
-			return d._children ? "lightsteelblue" : "lightyellow"; });
+			return d._children ? nodecircle_fill_hidedescendants_color : nodecircle_fill_showdescendants_color; });
 	
-	// add text with g.nodeGs
-    nodeEnter.append("text")
+	// add text into g.nodeGs> instead of <text>, use foreignObject, and div which is more flexible for multiple lines and text formating
+    nodeEnter.append('g') // has to wrap the div inside a g element so as to transform (adjust the text label's position relative to the node)
+        // .transition().duration(2)
+        .attr('class', 'nodetextGs')
+        .attr('transform', 'translate (-80, 10)') // to move the text g box back (under nodes and centered)
+        .append('foreignObject').attr('width', 160).attr('height', '50')
+        .append('xhtml:div')
         .attr('class', 'nodetext')
-		.attr("x", function(d) { return d.children || d._children ? -13 : 13; }) // horizontal offset
-		.attr("dy", ".85em") //vertical offset
-		.attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
-		.text(function(d) { return d.data.name; }) //v4
-		.style("fill-opacity", 1e-6)
-		.style("font-size", "0.01px")
-		;
+        .text(function(d) { return d.data.name; }) //v4
+        .style('font-family', 'sans-serif')
+        .style('font-size', '0em')
+        .style('line-height', '110%')
+        .style("opacity", 1e-6)
+        .style('text-align', 'center') //both should be specified
+
 	
 	// update (change properties of the g.nodeGs elements, including x/y coordinate, size, color, etc)
  	var nodeUpdate = nodeEnter.merge(node); // v4
 	nodeUpdate.transition() //v4
-		.duration(duration)
+		.duration(showhidedescendants_duration)
 		.attr("transform", function(d) { 
 			return "translate(" + d.y + "," + d.x + ")"; 
 		});
 
 	// update (change properties of the ciricle elements, including x/y coordinate, size, color, etc)
-	nodeUpdate.select("circle")
-		.transition().duration(duration)
-		.attr("r", 10)
+	nodeUpdate.select("circle.nodecircles")
+		.transition().duration(showhidedescendants_duration)
+		.attr("r", nodecircle_radius)
 			.style(
 			"fill", 
 			function(d) { 
-				return d._children ? "lightsteelblue" : "lightyellow"; 
+				return d._children ? nodecircle_fill_hidedescendants_color : nodecircle_fill_showdescendants_color; 
 			}
 		);
 	
 	//update (change properties of the text elements, including x/y coordinate, size, color, etc)
-	nodeUpdate.select("text")
-		.transition().duration(duration)
-		.style("fill-opacity", 1)
-		.style("font-size", "20px")
+	nodeUpdate.select("div.nodetext")
+		.transition().duration(showhidedescendants_duration)
+		.style("opacity", 1)
+		.style("font-size", nodetext_font_size)
 		;
 		
 	/** exit g groups (For the elements that are not joined in node, make them travel back to the coordinate x y of 
 	 * the parentdatapoint, then remove these unbinded elements)*/
 	var nodeExit = node.exit()
 		.transition()
-		.duration(duration)
+		.duration(showhidedescendants_duration)
 		.attr("transform", function(d) { 
 			return "translate(" + parentdatapoint.y + "," + parentdatapoint.x + ")"; 
 		})
 		.remove();
 
 	//exit text groups, shrine the radius of the circle to nearly 0
-	nodeExit.select("circle")
+	nodeExit.select("circle.nodecircles")
 		.attr("r", 1e-6);
 		
 	//exit text groups, changetext opacity to nearly 0, also reduce the font-size to nearly 0
-	nodeExit.select("text")
-		.style("fill-opacity", 1e-6)
-		.style("font-size", "0.01px")
+	nodeExit.select("div.nodetext")
+		.style("fill", 1e-6)
+		.style("font-size", "0em")
 		;
 
 
@@ -209,14 +214,14 @@ function MakeChangeTree(parentdatapoint) {
 		i.e., recalculating the path waypoints at any time during the transition) */
 	var linkUpdate = linkEnter.merge(link); //d3v4
 	linkUpdate.transition()
-		.duration(duration)
+		.duration(showhidedescendants_duration)
 		.attr("stroke-opacity", 1)
 		.attr('d', function(d){ return diagonal(d.parent, d)}); 
 		// attr('d', ..) is the final path after transition, it is from x,y coordinate of the parentnode to x,y of the current node
 
 	// exit, make transition by changing the path waypoints towards the parent node, and eventually remove the path lines
 	link.exit().transition()
-		.duration(duration)
+		.duration(showhidedescendants_duration)
 		.attr("stroke-opacity", 1e-6)
 		.attr("d", function(d) {
 			var o = {x: parentdatapoint.x, y: parentdatapoint.y};
@@ -239,7 +244,7 @@ function MakeChangeTree(parentdatapoint) {
 		d.y0 = d.y;
     });
     
-    //save all d.x
+    //save all d.x, to be used for adjust horizontal shift error caused by tree().nodeSize() method
     var vcoords=[];
     nodes.forEach(d=>{vcoords.push(d.x)});
 
@@ -265,7 +270,7 @@ function diagonal(s, d) {
 /***end ***migration to D3V4 part 15*/
 
 // Toggle children on click.
-function click(d) {
+function showhidedescendants(d) {
 	//console.log("a node is clicked");
     //console.log(d);
   if (d.children) {
@@ -322,14 +327,14 @@ function zoomed() {
         // the syntax is like 'scale(10)'
         zoomLevel = zoomSettings.zoomLevel;
 
-        //5.1.2.a.3 update the centeredNode, i.e., let it be the currentl selected county
+        //5.1.2.a.3 update the centeredNode, i.e., let it be the currentl selected node
         centeredNode = d
 
     } else {
-        //b. if the selection (click) is not on a new county (i.e., the same county, or a none-county area is clicked )
+        //b. if the selection (click) is not on a new node (i.e., the same node, or a none-node area is clicked )
         // 5.1.2.b.1 set the x, y value as the center of the window
         ///**modified part 9, the following is different, */
-        x = width_body / 2 - margin.left; //width1 / 2 ;
+        x = width_body / 2 - TreeMarginToSvg.left; //width1 / 2 ;
         y = height_body / 2 - offsetshiftup  ; // height2 /2;
 
         // 5.1.2.b.2 set the zoom level =1 (zoom out)
@@ -411,7 +416,7 @@ function getTransformValues (theEle) {
  *          (i.e., d.x) of the node 'Granson1' is 45;
  *      2) when using non-fixed tree size method [i,e., d3.tree().nodeSize()], the result vertical coordinate
  *          of the node 'Grandson1' is -195.
- *      As such, the distance to offset = 45 - (-195) + 20 (note, 20 is the margin.top)  = 260
+ *      As such, the distance to offset = 45 - (-195) + 20 (note, 20 is the TreeMarginToSvg.top)  = 260
  *      
  *      This is a clumsy method which draw the tree map for two times! but it works. Afterall, d3.nodeSize()
  *          sucks, and should be avoided. 
@@ -431,8 +436,8 @@ function getTransformValues (theEle) {
         var results=MakeChangeTree(rootdatapoint_sortedrowscols);
         var shiftup = d3.min(results.vcoords)
         // console.log(noshift, shiftup)
-        var offsetshiftup = noshift-shiftup + margin.top
-        var offsetNodeSizeMethodShiftTranslateStr = 'translate('+ margin.left + ', '+ offsetshiftup +')';
+        var offsetshiftup = noshift-shiftup + TreeMarginToSvg.top
+        var offsetNodeSizeMethodShiftTranslateStr = 'translate('+ TreeMarginToSvg.left + ', '+ offsetshiftup +')';
     
         g.transition().duration(3500).attr('transform', offsetNodeSizeMethodShiftTranslateStr );
     
@@ -524,9 +529,18 @@ function dragdrop () {
     d3.selectAll('g.pseudonodeGs').remove() // remove the previously created psuedonodeGs, otherwise there'll be more and more such psuedonodeGs
   
     // create a pseudo g group, containing a circle, and a text box
-    var pseudoNodeG = svg.append('g').attr('class', 'pseudonodeGs');
+    var pseudoNodeG = svg.append('g').attr('class', 'pseudonodeGs').attr('transform', 'translate (80,0) '); // transform to make the text label visible
     var pseudoNodeCircle = pseudoNodeG.append('circle').attr('class', 'pseudonodecircles');
-    var pseudoNodeText = pseudoNodeG.append('text').attr('class', 'pseudonodetext').attr('dy', '20').text(showtext);
+    // var pseudoNodeText = pseudoNodeG.append('text').attr('class', 'pseudonodetext').attr('dy', '20').text(showtext);
+    var pseudoNodeText = pseudoNodeG
+        .append('g')
+        .attr('class', 'nodetextGs')
+        .attr('transform', 'translate (-80, 10)') // to move the text g box back (under nodes and centered)
+        .append('foreignObject').attr('width', 160).attr('height', '50')
+        .append('xhtml:div')
+        .attr('class', 'pseudonodetext')
+        .text(showtext) 
+
 
     var mouseoverObj;     // will be used for both mouse over and out
 
@@ -555,15 +569,25 @@ function dragdrop () {
             .style("fill-opacity", 0.5)
         ;
 
-        var theSelectedTextObj = theSelectedObj.select('text.nodetext');
+        var theSelectedTextObj = theSelectedObj.select('div.nodetext');
+        // ** originally set text elements
+        // pseudoNodeText
+        //     .text(theSelectedTextObj.text())
+        //     .style("fill-opacity", 0.5)
+        //     .style('font-size', theSelectedTextObj.style('font-size'))
+        //     .attr("x", theSelectedTextObj.attr("x"))
+        //     .attr("dy", theSelectedTextObj.attr("dy"))
+        //     .attr("text-anchor", theSelectedTextObj.attr("text-anchor"))
+        //     .style('font', theSelectedTextObj.style("font") )
+        // ;
+        // ** now set text format in a div 
         pseudoNodeText
             .text(theSelectedTextObj.text())
-            .style("fill-opacity", 0.5)
-            .style('font-size', '20px')
-            .attr("x", theSelectedTextObj.attr("x"))
-            .attr("dy", theSelectedTextObj.attr("dy"))
-            .attr("text-anchor", theSelectedTextObj.attr("text-anchor"))
-            .style('font', theSelectedTextObj.style("font") )
+            .style("opacity", 0.5)
+            .style('font-size', theSelectedTextObj.style('font-size'))
+            .style('font-family', theSelectedTextObj.style("font-family"))
+            .style('line-height', theSelectedTextObj.style("line-height"))
+            .style('text-align', theSelectedTextObj.style("text-align"))
         ;
 
         // when mouse move, let the pseudo g move with the mouse, get the coordinates relative to the tree rect
@@ -572,7 +596,7 @@ function dragdrop () {
         //calculate the coordinates and convert to strings for display and for transform.translate setting (i.e., for the text group to fly to)
         var
         mousecurrentxy = {"toLeft": parseInt(tmpxyarray[0]), "toTop": parseInt(tmpxyarray[1])},
-        mousexystr="(" + (mousecurrentxy.toLeft +10) + ',' + (mousecurrentxy.toTop +10)  + ')',
+        mousexystr="(" + (mousecurrentxy.toLeft + 20) + ',' + (mousecurrentxy.toTop + 20)  + ')', // that 20 makes the pseudo circle and text 20 px down and right to the mouse cursor, so that the mouseover won't be interferered
         translatestr='translate ' + mousexystr;
     
         // let the pseudo node group fly to the point where the mouse is pressed down, show the pseudo group 
@@ -591,10 +615,10 @@ function dragdrop () {
             .on("mouseover", function(d){
                 // console.log('3. mousedown move = ' + mousedown + ',' + mousemove + ' over the node: ' + d.data.name)
                 mouseoverObj = d3.select(this)
-                mouseoverObj.select('circle.nodecircles').style('fill', 'green');
+                mouseoverObj.select('circle.nodecircles').style('fill', nodecircle_fill_dragover_color);
             })
             .on("mouseout", function(d){
-                d3.select(this).select('circle.nodecircles').style('fill', 'lightyellow');
+                d3.select(this).select('circle.nodecircles').style('fill', nodecircle_fill_showdescendants_color);
                 d3.selectAll('g.nodeGs').on("mouseover", null)
                 mouseoverObj = null;
             })
@@ -701,7 +725,7 @@ function dragdrop () {
 
                     if (stopchangingparent != 1){
 
-                        console.log ('make changes ====')
+                        // console.log ('make changes ====')
 
                         //!!! must have. change theParentToChangeData._children to children
                         if (theParentToChangeData._children) {
@@ -791,20 +815,6 @@ function dragdrop () {
                         MakeChangeTree(theParentToChangeData)
                         // MakeChangeTree(rootdatapoint_sortedrowscols) 
                     }
-
-
-                    
-                    
-
-
-                    
-
-
-
-                                              
-
-
-
                 })
 
             })
@@ -821,12 +831,12 @@ function dragdrop () {
         // cancel listening to mousemove/mouseup (in fact, it is to DO NOTHING as mouse moves or released)
         d3.select(window).on("mousemove", null).on("mouseup", null);
         // let the text group return to the up left corner.
-        pseudoNodeG.transition().duration(20)
+        pseudoNodeG.transition().duration(10)
         .attr('transform', 'translate(0,0)');
         // hide the pseudo circle
         pseudoNodeCircle.attr('r', 1e-6)
         // hide the text box 
-        pseudoNodeText.text('').style("fill-opacity", 1e-6)
+        pseudoNodeText.text('').style("opacity", 1e-6)
     }
 
 } // end drag drop
