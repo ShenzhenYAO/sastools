@@ -87,6 +87,7 @@ rootdatapoint.y0=0;
 // console.log(rootdatapoint)
 // console.log(rootdatapoint_sortedrowscols)
 
+
 /**B.2.1 Add a svg in body **********************************/
 
 /**B.2.1.1 determine the svg */
@@ -96,8 +97,17 @@ var svgwidth = width_tree + margin.left + margin.right,
 svgwidth = Math.max(svgwidth, width_body);
 svgheight = Math.max(svgheight, height_body);
 
-
 var svg = addnewEle(svgwidth, svgheight, null, 'thebigsvg', null, 'body', 'svg', null );
+
+/**B.2.1.2 add a mouse position tip */
+// This trick is learned from https://github.com/Matt-Dionis/d3-map
+var themousepositiontip = svg.append('g')
+    .attr('class', 'mousepositiontip')
+var mousetiptext=themousepositiontip.append('text')
+    .attr('class', 'mousepositiontiptext')
+    .style('opacity', '0')
+;
+
 
 /**B.2.2 enable zooming and pan, from F:\Personal\Virtual_Server\PHPWeb\D3 Pan drop drag\DeniseMauldin Box*/
 // svg.call(
@@ -107,33 +117,35 @@ var svg = addnewEle(svgwidth, svgheight, null, 'thebigsvg', null, 'body', 'svg',
 // )
 /**B.2.3, append a rect to allow click on blank. From F:\Personal\Virtual_Server\PHPWeb\D3 Pan drop drag\DeniseMauldin Box */
 //insert a rect, so that we can click on the blank area, to zoom out
-svg.append('rect')
+var thetreerect=svg.append('rect')
     .attrs({
-    'class': 'background',
+    'class': 'treerect',
     'width': svgwidth,
     'height': svgheight,
     'id': 'I created',
     'stroke': 'black'
     // 'fill': 'lightyellow'
     })
+    .style('pointer-events', 'all')
     // .classed ('background', true)
-    .on('contextmenu', ZoomInOutSelectedNode); 
+    .on('contextmenu', ZoomInOutSelectedNode)
+    // on mouse over, show mouse position
+    // .on('mouseover', showmouseposition)
+; 
+
 
 /**B.3 Add a g in svg */
 var transfm= "translate(" + margin.left + "," + margin.top + ")";
 var g = addnewEle(null, null, null, 'thetreeg', svg, null, 'g', transfm );
 
 /**B.4 make a new tree */
-//https://stackoverflow.com/questions/17558649/d3-tree-layout-separation-between-nodes-using-nodesize
-// tree().nodeSize() makes flexible size trees, tree().size() makes fixed-size trees. The two cannot be used at the same time
 var treeinstance; // important: treeinstance has to be defined outside the function
-
-var newtreeMethod='bysize' //bynodesize or bysize
+// according to the selected method, make a new tree
 if (newtreeMethod === 'bynodesize') {
     // use the newtree_offsetNodeSizeMethodShiftError to make new tree, make adjustment and get the offset distance for zooming ()
     var offsetshiftup = newtree_offsetNodeSizeMethodShiftError().offsetshiftup;
 } else {
-    treeinstance = d3.tree().size([height_tree, width_tree]);
+    treeinstance = d3.tree().size([height_tree, width_tree]); // don't put it inside MakeChangeTree, as the bynodessize () method requires a different line (.nodeSize() instead of .size())
     // do not use the newtree_offsetNodeSizeMethodShiftError(), create the tree directly, not to adjust (no need) offset errors as nodeSize() method is not used
     MakeChangeTree(rootdatapoint_sortedrowscols);
     var offsetshiftup= margin.top;

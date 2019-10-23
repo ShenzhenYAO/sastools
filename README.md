@@ -1,5 +1,11 @@
 simple d3 v4 tree diagram. 
 *********************************************************************************************
+commit 11:100c04
+add a test1_mousedownmove.html to show how to trigger events when mouse is down, move, and up; show coordinates when  
+ mouse is moved. 
+add function getmousekey() to listen to and display the keys and mouse buttons
+add function dragdrop() to drap and drop a node to change its parent. This is cool! Add '.on("mousedown", dragdrop)' when entering nodes [see MakeChangeTree() in components.js] to call back.  
+
 
 commit 10:100c03
 change names: ZoomInOutSelectedNode() instead of click2(), MakeChangeTree() instead of update()

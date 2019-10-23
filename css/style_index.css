@@ -1,43 +1,26 @@
-			.svgs{
-				background-color: lightgreen; 
+			
+/* https://www.w3schools.com/colors/colors_names.asp */
+			.thebigsvg{
+				background-color: ivory; 
 				}
-			.groups{
-				background-color: lightgrey;
-				}
-			.treelinks{
-				stroke: grey;
+			.treerect{
 				fill: none;
-				stroke-width:0.5;
+				pointer-events: all;
 			}
-			.mylinks{
+			.primarylinks{
+				stroke: lightgrey;
+				fill: none;
+				stroke-width: 2px;
+			}
+			.customizedlinks{
 				stroke: blue;
 				fill: none;
-				stroke-width:0.5;
-			}
-			.nodegs{
-				background-color: pink;
-			}
-			.nodecircles{
-				stroke: black;
-				fill: yellow;
+				stroke-width:2px;
 			}
 			.nodetext{
 				/*text-anchor:middle;*/
 				font: 12px sans-serif;
 				color:blue;
 			}
-			.link {
-				fill: none;
-				stroke: #ccc;
-				stroke-width: 2px;
-			  }
-			.nodeGroup circle {
-			fill: #fff;
-			stroke: steelblue;
-			stroke-width: 3px;
-			}
 
-			.background {
-				fill: none;
-				pointer-events: all;
-			  }
+

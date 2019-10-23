@@ -10,7 +10,7 @@ function addtitledesc (){
 	d3.select('body')
 	.append('p')
 	.attr('class', 'headdesc')
-	.text('commit 10- to https://github.com/junkthem/simple_d3tree_v3tov4.io ')
+	.text('commit ' + gitcommitversion + ' to https://github.com/junkthem/simple_d3tree_v3tov4.io ')
 }
 
 /* This part is to load json str and save to a sessionStorage item. That way to avoid the async issue
@@ -78,7 +78,11 @@ function addnewEle (width, height, id, clss, theparent, parentEleType, EleType, 
 function MakeChangeTree(parentdatapoint) {
 
 	//instanciate a treeinstance by flatterneddatapoints_sortedrowscols.
-	// console.log(rootdatapoint)
+    // console.log(rootdatapoint)
+    
+    // treeinstance = d3.tree().size([height_tree, width_tree]);// don't put it inside MakeChangeTree, as the bynodessize () method requires a different line (.nodeSize() instead of .size())
+
+    // console.log('rootdatapoint_sortedrowscols ======')
 	// console.log(rootdatapoint_sortedrowscols)
 
 	// var treeinstance_rootdatapoint = treeinstance(rootdatapoint);	//v4
@@ -87,32 +91,43 @@ function MakeChangeTree(parentdatapoint) {
 	// Compute the new tree layout.
 	var nodes = treeinstance_rootdatapoint.descendants(), links = treeinstance_rootdatapoint.descendants().slice(1); //v4
 	//links is almost the same as nodes, just removing the first element by slice(1) (the first element of nodes does not have a parent to link to)
+    // console.log('nodes ======')
+    // console.log(nodes)
+    // console.log('links ===')
+    // console.log(links)
+
 
 	// redefine nodes.y, make it 180 apart from each other
 	nodes.forEach(function(d) { d.y = d.depth * between_nodes_horizontal; });
 
 	//join (link data to empty g elements)
-	var node = g.selectAll("g.nodeGroup") // note that it is to select all elements within g with the classname = nodeGroup
-		.data(nodes, function(d) { return d.id || (d.id = ++i); }); // each data point was assigned an id (d.id)
+	var node = g.selectAll("g.nodeGs") // note that it is to select all elements within g with the classname = nodeGs
+        .data(nodes, function(d) { return d.id || (d.id = ++i); }); // each data point was assigned an id (d.id)
+    // console.log('node ======')
+    // console.log(node)
 
 	//enter (add g elements according to joined node)
 	var nodeEnter = node.enter().append("g")
-		.attr("class", "nodeGroup")
+        .attr("class", "nodeGs")
 		.attr("transform", function(d) {
 			return "translate(" + parentdatapoint.y0 + "," + parentdatapoint.x0 + ")"; }) //each g are added at the position x0,y0 of the source data
 		.on("click", click)
-		.on('contextmenu', ZoomInOutSelectedNode) // right click to zoom in/out
-		;
-		
+        .on('contextmenu', ZoomInOutSelectedNode) // right click to zoom in/out
+        .on("mousedown", dragdrop)  //check the newest version of dragdrop in components.js
+    ;
+    // console.log('nodeEnter ======')
+	// console.log(nodeEnter)	
 	
-	//add circle within g.nodeGroup
+	//add circle within g.nodeGs
 	nodeEnter.append("circle")
-		.attr('class', 'nodecircle')
-		.attr("r", 1e-6) // initial size is nearly 0
+		.attr('class', 'nodecircles')
+        .attr("r", 1e-6) // initial size is nearly 0
+        .attr("stroke-width", '3px')
+        .attr('stroke', 'slateblue')
 		.style("fill", function(d) {
-			return d._children ? "lightsteelblue" : "#fff"; });
+			return d._children ? "lightsteelblue" : "lightyellow"; });
 	
-	// add text with g.nodegroup
+	// add text with g.nodeGs
     nodeEnter.append("text")
         .attr('class', 'nodetext')
 		.attr("x", function(d) { return d.children || d._children ? -13 : 13; }) // horizontal offset
@@ -123,7 +138,7 @@ function MakeChangeTree(parentdatapoint) {
 		.style("font-size", "0.01px")
 		;
 	
-	// update (change properties of the g.nodegroup elements, including x/y coordinate, size, color, etc)
+	// update (change properties of the g.nodeGs elements, including x/y coordinate, size, color, etc)
  	var nodeUpdate = nodeEnter.merge(node); // v4
 	nodeUpdate.transition() //v4
 		.duration(duration)
@@ -138,7 +153,7 @@ function MakeChangeTree(parentdatapoint) {
 			.style(
 			"fill", 
 			function(d) { 
-				return d._children ? "lightsteelblue" : "#fff"; 
+				return d._children ? "lightsteelblue" : "lightyellow"; 
 			}
 		);
 	
@@ -172,19 +187,24 @@ function MakeChangeTree(parentdatapoint) {
 
 	/*******************************make links *********************** */	
 
-	// join (link data to empty path elements) 
-	var link = g.selectAll("path.link")
+    // join (link data to empty path elements) 
+    // think about putting all class names in the init.class. That way, the class name change can be done in one place
+	var link = g.selectAll("path.primarylinks")
 		.data(links, function(d) { return d.id; }); //v4  d.id can befound in _enter => 0:q => __data .id, which is corresponding to the d.id in node object
-    
+    // console.log('link ===')
+    // console.log(link)
+
 	// enter (add path elements according to joined link)
 	var linkEnter = link.enter().insert('path', "g") //v4
-		.attr("class", "link")
+		.attr("class", "primarylinks")
 		.attr("stroke-opacity", 1e-6)
 		.attr("d", function(d) {
 			var o = {x: parentdatapoint.x0, y: parentdatapoint.y0};
 			return diagonal(o,o); //v4 // initially, let the s (source) and d(destination) coordinates of the path be the same: x0, y0 of the parentdatapoint
 		});
-
+    // console.log('linkEnter ===')
+    // console.log(linkEnter)
+    
 	/* update (change waypoints of the path, 
 		i.e., recalculating the path waypoints at any time during the transition) */
 	var linkUpdate = linkEnter.merge(link); //d3v4
@@ -202,7 +222,15 @@ function MakeChangeTree(parentdatapoint) {
 			var o = {x: parentdatapoint.x, y: parentdatapoint.y};
 			return diagonal(o, o); // v4 it is the final path after transition: all waypionts are at the x,y of the parentdatapoint	
 		})
-		.remove();
+        .remove();
+        
+        /**update customized links
+         * create an array of custlinks, for each one, add a collection of customized parent nodes in a new field 'custparents'
+         * do join, enter, merge, update, and exit again.
+         * Very importantly, make a different class name than the path elements of the default links (that way, the
+         *  program knows to pick up default path elements (classname = 'primarylink') for default paths, 
+         * while the customized path elements (classname = 'customizedlink') for customized paths)
+        */
 	
 	/**update x0, y0 ********************************************************************************/
 	// for each data element, update the x0 and y0 as the current d.x, and d.y, so as to toggle between expansion/collaspe
@@ -239,7 +267,7 @@ function diagonal(s, d) {
 // Toggle children on click.
 function click(d) {
 	//console.log("a node is clicked");
-	//console.log(d);
+    //console.log(d);
   if (d.children) {
 	d._children = d.children;
 	d.children = null;
@@ -267,7 +295,7 @@ function zoomed() {
 }
 
 
-/**add part 8, the click function */
+/**the function to select a node, zoom in/out it, and put it in the center */
   //ZoomInOutSelectedNode: zoom in out the selected note
   function ZoomInOutSelectedNode(d){
     //disable the default right click menu
@@ -414,6 +442,394 @@ function getTransformValues (theEle) {
 
 
 
+// return the mouse key as str (right/left button, with shiftKey, altKey, ctrlKey, or any combination)
+    //https://stackoverflow.com/questions/12518741/determine-if-shift-key-is-pressed-during-mousedown-event
+function getmousekey(){
+
+    /** the following part is of the first attemp. It is replaced with a better alternative method below */
+    // if (d3.event.shiftKey && d3.event.ctrlKey) {
+    //     showtext='ctrl-shift-mousedown'
+    // } else if (d3.event.shiftKey){
+    //     showtext='shift mousedown'
+    // } else if (d3.event.ctrlKey) {
+    //     showtext='ctrl-mousedown'
+    // } else if (d3.event.altKey) {
+    //     showtext='alt-mousedown'
+    // } else {
+    //     showtext='mousedown'
+    // }
+    // // right or left mouse down
+    // // https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/buttons
+    // // console.log(d3.event)
+    // if (d3.event.buttons === 1 ){
+    //     // note that a value of 0 is indeed the primary key (usually set as the left mouse click but for people using their left hand, it might be set as right mouse click )
+    //     mousebutton = ' primary-click (left-click)'
+    // } else if (d3.event.buttons === 2 ) {
+    //     mousebutton = ' secondary-click (right-click)'
+    // }
+    // showtext=showtext + mousebutton;
+
+    // the alternative and better method:
+    var mousebutton='-unknown', shift='', alt='', ctrl='';
+    if (d3.event.buttons === 1 ){
+        // note that a value of 0 is indeed the primary key (usually set as the left mouse click but for people using their left hand, it might be set as right mouse click )
+        mousebutton = '-primary(left)'
+    } else if (d3.event.buttons === 2 ) {
+        mousebutton = '-secondary(right)'
+    }
+    if (d3.event.ctrlKey) {
+        shift = '-ctrl'
+    }
+    if (d3.event.shiftKey) {
+        ctrl = '-shift'
+    }
+    if (d3.event.altKey) {
+        alt = '-alt'
+    }
+    mousekey = ctrl + shift + alt + mousebutton;
+    // remove the heading ('-')
+    result=mousekey.slice(1) // substr from position 1 to end
+    return result;
+}
+
+
+
+// when the mouse is pressed down, the following actions will be triggled
+// drag and drop function works when a mousedown is detected for a g.nodeGs element, which is set in components.MakeChangeTree()    
+function dragdrop () {
+
+    var mousedown=1; // to indicate that mousedown status = 1 (this is for debug purpose)
+    // console.log('1. mousedown= ' + mousedown)
+
+    /**to improve
+     * 1. when the same parent node is selected, move it to the back (such to allow sorting)
+     * 2. radar circle is not a smart idea, as it is glichy.
+     * 3. suppress the right mouse down ..
+     * 3. if it is ctrl shift down, copy the node and its descendants
+     */
+    //
+
+    //Note, 'd', 'this', 'd3.select(this)' are different
+    // console.log(d) // note: 'd' is the data point
+    // console.log(this) // 'this' the DOM Element (e.g. <g>...</g>)
+    // console.log(d3.select(this)) //'d3.select(this)' the d3 object, from which one can select the objects of its descendants
+    //get the selected object, get the data point of the selected, this is the SELECTED.
+    var theSelectedObj=d3.select(this);
+
+    // determine the mouse event (right/left click, with shiftKey, altKey, ctrlKey, or any combination)
+    // https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/buttons
+    
+    // for fun!
+    showtext= getmousekey() // this is to get a string which indicates what mouse button and shift/ctrl/alter keys are pressed
+    d3.selectAll('g.pseudonodeGs').remove() // remove the previously created psuedonodeGs, otherwise there'll be more and more such psuedonodeGs
+  
+    // create a pseudo g group, containing a circle, and a text box
+    var pseudoNodeG = svg.append('g').attr('class', 'pseudonodeGs');
+    var pseudoNodeCircle = pseudoNodeG.append('circle').attr('class', 'pseudonodecircles');
+    var pseudoNodeText = pseudoNodeG.append('text').attr('class', 'pseudonodetext').attr('dy', '20').text(showtext);
+
+    var mouseoverObj;     // will be used for both mouse over and out
+
+    // detect mouse move
+    d3.select(window)
+    .on("mousemove", mousemove)
+    .on("mouseup", mouseup);
+
+    function mousemove () {
+        var mousemove= 1;
+        // console.log( '2. mousedown & move = ' + mousedown + ',' + mousemove)
+        d3.event.preventDefault();// prevent the default text dragging
+
+        // make the selected g and its components dimmed
+        // ideally once the mouse move is detected, it is better to make the selected node and its descendants invisible. 
+        // But, it is not a must to do!
+
+        // show circle and text in the pseudonodeG with the same property as of the selected g group obj (same node, same text label, sam colors, etc)
+        var theSelectedCircleObj = theSelectedObj.select('circle.nodecircles');
+        pseudoNodeCircle
+            .attr("r", theSelectedCircleObj.attr("r"))
+            .attr('stroke-width',theSelectedCircleObj.attr("stroke-width"))
+            .attr('stroke',theSelectedCircleObj.attr("stroke"))
+            .style('fill',theSelectedCircleObj.style("fill"))
+            .attr('stroke', 'lightgrey')
+            .style("fill-opacity", 0.5)
+        ;
+
+        var theSelectedTextObj = theSelectedObj.select('text.nodetext');
+        pseudoNodeText
+            .text(theSelectedTextObj.text())
+            .style("fill-opacity", 0.5)
+            .style('font-size', '20px')
+            .attr("x", theSelectedTextObj.attr("x"))
+            .attr("dy", theSelectedTextObj.attr("dy"))
+            .attr("text-anchor", theSelectedTextObj.attr("text-anchor"))
+            .style('font', theSelectedTextObj.style("font") )
+        ;
+
+        // when mouse move, let the pseudo g move with the mouse, get the coordinates relative to the tree rect
+        var tmpxyarray=d3.mouse(thetreerect.node());
+
+        //calculate the coordinates and convert to strings for display and for transform.translate setting (i.e., for the text group to fly to)
+        var
+        mousecurrentxy = {"toLeft": parseInt(tmpxyarray[0]), "toTop": parseInt(tmpxyarray[1])},
+        mousexystr="(" + (mousecurrentxy.toLeft +10) + ',' + (mousecurrentxy.toTop +10)  + ')',
+        translatestr='translate ' + mousexystr;
+    
+        // let the pseudo node group fly to the point where the mouse is pressed down, show the pseudo group 
+        pseudoNodeG.transition().duration(10)
+        .attr('transform', translatestr);
+        
+
+        /**check if mouse is over a g group, and only over ONE g group
+             * If the tree size is too small, there could be two nodes overlapping. 
+             * In that case, mouse the mouse up and down until mouse is only above one group
+             * I do not like the 'radar' shadow idea. it is ugly
+             * */
+
+        d3.selectAll('g.nodeGs')    
+            .attr('pointer-events', 'mouseover')
+            .on("mouseover", function(d){
+                // console.log('3. mousedown move = ' + mousedown + ',' + mousemove + ' over the node: ' + d.data.name)
+                mouseoverObj = d3.select(this)
+                mouseoverObj.select('circle.nodecircles').style('fill', 'green');
+            })
+            .on("mouseout", function(d){
+                d3.select(this).select('circle.nodecircles').style('fill', 'lightyellow');
+                d3.selectAll('g.nodeGs').on("mouseover", null)
+                mouseoverObj = null;
+            })
+        ;
+
+        // on the other hand, upfront, prepare a bigger 'radar' circle (e.g., radius = 60) for each nodeGs, make it invisible
+        //Well, I would say that this is not necessary. 
+
+        // the following is not necessary
+        // when mouse move over a g circle, calculate the distance between the mouse point, and the center of the radar circle
+        // there might be multi radar circles that the mouse is over, in that case, determine the radar circle which has
+            // the closest distance to the mouse point
+        // assum that radar circle is the target, draw a line between the it and the mouse point
+        // End of the unnecessary part
+
+    }
+
+    // on mouse up, do the following
+    function mouseup () {          
+        var mousemove=0, mousedown=0; // these are for debug purpose
+
+        // remember theParentToChangeObj
+        theParentToChangeObj = mouseoverObj;
+        // console.log('mouseoverObj==========')
+        // console.log(mouseoverObj)
+        // console.log('theParentToChangeObj==========')
+        // console.log(theParentToChangeObj)
+
+
+        // console.log('theSelectedObj==========')
+        // console.log(theSelectedObj)
+        // console.log(theNewParent)
+
+        // if theParentToChangeObj is null, do nothing
+        /**else:
+         * 1) add theSelectedObj as the last child to theParentToChangeObj
+         * 2) find parent original parent of theSelectedObj, and delete theSelectedObj from the original parent
+         * 3) run MakeChangeTree()
+         */
+        if (theParentToChangeObj !== null && theParentToChangeObj != undefined){
+            
+            //1) add theSelectedObj as the last child to theParentToChangeObj
+            // console.log('theParentToChangeObj===========')
+            // console.log(theParentToChangeObj)
+            theParentToChangeObj.attr('new_attr', '');
+            theParentToChangeObj.attr("new_attr", function(d){
+                /** this is the way to get data binded to theParentToChangeObj, the purpose here has nothing to do with
+                 * the class attribute. The class attr is used to call back the binded data (d) 
+                */
+                
+                // console.log('theroot data ===')
+                // console.log(rootdatapoint)
+                // console.log('theparenttochange obj data ====')
+                // console.log(d)
+                //  console.log(d.children.length)
+                /**
+                 * be careful, only d.data.children are original data
+                 * d.children is created by d3.tree
+                 * add the data binded to the selected obj as the last child of d.data.children
+                 * 
+                 * Note: the adding process is quite twisting
+                 */
+                //0. get theSelectedObjData
+
+                //1. define d.children
+                var theParentToChangeData = d;
+
+
+
+                // 2. use the same trick to find data binded to the selected obj
+                // console.log('theSelectedObj==========')
+                // console.log(theSelectedObj)
+                theSelectedObj.attr('new_attr', '');
+                theSelectedObj.attr("new_attr", function(d){
+                    // console.log('the selected obj data ===')
+                    // console.log(d)
+
+                    var theSelectedObjData=d;
+
+                    // !!! must have. recursively find theSelectedObjData 's ascendants do not make changes
+                    // if theParentToChangeData is in the ascendants stop make changes
+                    var ascendants=[];
+                    function getAscendants(d){
+                        // console.log("d.parent===")
+                        // console.log(d.parent)
+                        if (d.parent !== undefined && d.parent !== null){
+                            ascendants.push(d.parent)
+                            getAscendants(d.parent)
+                        }
+                    }
+                    // console.log('ascendants ====')
+                    // console.log(ascendants)
+                    getAscendants(theParentToChangeData);
+                    var stopchangingparent =0;
+                    //if dragging to the node itself, do not make changes
+                    if (theParentToChangeData === theSelectedObjData) {
+                        stopchangingparent =1
+                    }
+                    if (ascendants.includes(theSelectedObjData)) {
+                        stopchangingparent=1;
+                    }
+                    // console.log('stopchaningparent ====')
+                    // console.log(stopchangingparent)
+
+                    if (stopchangingparent != 1){
+
+                        console.log ('make changes ====')
+
+                        //!!! must have. change theParentToChangeData._children to children
+                        if (theParentToChangeData._children) {
+                            theParentToChangeData.children = theParentToChangeData._children;
+                            theParentToChangeData._children = null;
+                        }
+
+                        // add the selected obj data as the last child of theParentToChangeData
+                        //!!! must have
+                        if (theParentToChangeData.children===undefined || theParentToChangeData.children === null ){
+                            theParentToChangeData.children=[]
+                        }
+                        theParentToChangeData.children.push(d) //simply push it to the end of the children array
+                        // console.log('theParentToChangeData===')
+                        // console.log(theParentToChangeData)
+
+                        //!!! must have
+                        if (theParentToChangeData.data.children === undefined || theParentToChangeData.data.children === null){
+                            theParentToChangeData.data.children=[]
+                        }
+                        // add the selected obj data.data (this is the original data) to theParentToChangeData.data.chilren
+                        theParentToChangeData.data.children.push(d.data)
+
+                        // find the original parent of the selected obj data
+                        originalParentData = d.parent
+                        // console.log('originalParentData=================')
+                        // console.log(originalParentData)
+
+                        // change the .parent property of theSelectedObjdata, change to theParentToChangeData.data
+                        d.parent =theParentToChangeData; 
+
+                        // !!! must change change depth = theParentToChangeData.depth +1
+                        d.depth = theParentToChangeData.depth +1
+
+                        //!!! must have! for all descendants of the selected obj data, update the depth
+                        function getdescendants(a) {
+                            if (a.children !== null && a.children !== undefined ){
+                                a.children.forEach(function (v){
+                                    // children's depth = parent.depth +1
+                                    v.depth = a.depth + 1;
+                                    getdescendants(v)
+                                })
+                            }
+                        }
+                        getdescendants(d);
+
+                        // within originalParentData's children find the one which equals to the selected obj data, and remove it from the children array
+                        for (i=0; i < originalParentData.children.length;i++ ){
+                            if (originalParentData.children[i] === theSelectedObjData){
+                                originalParentData.children.splice(i, 1);
+                                break;
+                            }
+                        }
+                        for (i=0;i<originalParentData.data.children.length;i++ ){
+                            if (originalParentData.data.children[i] === theSelectedObjData.data){
+                                originalParentData.data.children.splice(i, 1);
+                                break;
+                            }
+                        }
+                        // must have!!! if originalParentData.children =[] make it null. (d3 tree goes wrong if .children =[])
+                        if (originalParentData.children.length === 0){
+                            originalParentData.children=null;
+                        }
+                        // console.log('originalParentData.children=====')
+                        // console.log(originalParentData.children)
+                        
+                        // !!! must have! let  x0 y0 of the selected data = that of the parent data
+                        // Well, doesn't matter
+
+                        // theSelectedObjData.x = theParentToChangeData.x;
+                        // theSelectedObjData.y = theParentToChangeData.y;
+
+                        // console.log('after all changes ========')
+
+                        // console.log('theParentToChangeObj==')
+                        // console.log(theParentToChangeObj)
+                        // console.log(theParentToChangeObj.node())
+                        // // console.log('treeJSON============')
+                        // // console.log(treeJSON)
+                        // console.log('rootdatapoint_sortedrowscols=========')
+                        // console.log(rootdatapoint_sortedrowscols)
+
+                        theParentToChangeObj.node().remove() // it is nothing wrong to delete the parent-to-change node. In fact there is a benefit: the text will be realigned
+                        //theSelectedObj.node().remove()
+                        // MakeChangeTree(theSelectedObjData)
+                        // MakeChangeTree(originalParentData)
+                        MakeChangeTree(theParentToChangeData)
+                        // MakeChangeTree(rootdatapoint_sortedrowscols) 
+                    }
+
+
+                    
+                    
+
+
+                    
+
+
+
+                                              
+
+
+
+                })
+
+            })
+        }
+
+
+        // stop mouseover actions
+        d3.selectAll('g.nodeGs').on("mouseover", null)
+
+        //1) add (append) the SELECTED as the last children of the data point corresponding to the g group containing that radar circle
+        //2) get the parent data point of the SELECTED
+        //3) delete the SELECTED children/_children        
+        
+        // cancel listening to mousemove/mouseup (in fact, it is to DO NOTHING as mouse moves or released)
+        d3.select(window).on("mousemove", null).on("mouseup", null);
+        // let the text group return to the up left corner.
+        pseudoNodeG.transition().duration(20)
+        .attr('transform', 'translate(0,0)');
+        // hide the pseudo circle
+        pseudoNodeCircle.attr('r', 1e-6)
+        // hide the text box 
+        pseudoNodeText.text('').style("fill-opacity", 1e-6)
+    }
+
+} // end drag drop
 
 
 

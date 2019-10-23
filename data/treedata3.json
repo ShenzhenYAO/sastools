@@ -1,0 +1,32 @@
+{ "idx": "A",
+    "name": "Dad",
+    "pushdu": 0,
+    "url": "https://view.officeapps.live.com/op/view.aspx?src=http%3A%2F%2Fepicanada.x10host.com%2Ffiles%2Fccdssdemo_A2.pptx",
+    "children":[							
+        { "idx": "A1",
+            "name": "Son",
+            "pushdu": 0,
+            "children":[
+                {"idx": "A1A",
+                    "name": "Grandson1",
+                    "pushdu": 0,
+                    "hide":0,
+                    "children":[]
+                }
+            ]
+        },
+        { "idx": "A2",
+            "name": "Daughter",
+            "pushdu": 0,
+            "children":[
+                {"idx": "A2A",
+                    "name": "Granddaugter1",
+                    "pushdu": 0,
+                    "hide":0,
+                    "children":[
+                    ]
+                }
+            ]
+        } 
+    ]
+}

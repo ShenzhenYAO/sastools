@@ -37,7 +37,7 @@
  * /
 
 /**global vars */
-var treejsonURL = 'data/doctype.json',     // the url of the external json file with tree data
+var treejsonURL = 'data/treedata.json',     // the url of the external json file with tree data
     treeData,   // to hold the tree data 
     treeJSON,   // to hold the tree JSON from treeData
     i = 0,  // no need
@@ -45,7 +45,9 @@ var treejsonURL = 'data/doctype.json',     // the url of the external json file 
     rootdatapoint, //the root data point and its descendants in hierarchical structure
     flatterneddatapoints, // an array of flattered datapoints from rootdatapoint
     flatterneddatapoints_sortedrowscols, // adding sorted rows and cols (to be put in a tree) of points in flatterneddatapoints
-    treemaxrowscols // the maxrows and cols in an array
+    treemaxrowscols, // the maxrows and cols in an array
+
+    gitcommitversion = '11'
 ;
 
 
@@ -80,7 +82,10 @@ var
     // focus=center_tree
     ;
 
-
+/**tree making method: size() or nodeSize() */
+//https://stackoverflow.com/questions/17558649/d3-tree-layout-separation-between-nodes-using-nodesize
+// tree().nodeSize() makes flexible size trees, tree().size() makes fixed-size trees. The two cannot be used at the same time
+var newtreeMethod='bysize' //bynodesize or bysize
 
 
 
