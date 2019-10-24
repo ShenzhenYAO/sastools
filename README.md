@@ -1,7 +1,14 @@
 simple d3 v4 tree diagram. 
 *********************************************************************************************
+commit 13:106a
 
-commit 11:105a
+Debug, in components.js:
+1. change pseudonodeG property setting using parameters set in init.js
+2. put mouseover, null setting after running makechangetree()
+3. when mouse out, set circle fill color according to whether show/hide descendants
+4. make change tree use rootdatapoint_sortdrowscols
+
+commit 12:105a
 put all parameter settings in init.js
 instead of <text>, use foreignObject, and div which is more flexible for multiple lines and text formating
  (an test page is created: test2_foreignobj.html)

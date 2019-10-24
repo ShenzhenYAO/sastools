@@ -38,9 +38,9 @@
 
 /**global vars */
 var 
-    gitcommitversion = '12',
+    gitcommitversion = '13',
 
-    treejsonURL = 'data/doctype.json',     // the url of the external json file with tree data
+    treejsonURL = 'data/treedata.json',     // the url of the external json file with tree data
     treeData,   // to hold the tree data 
     treeJSON,   // to hold the tree JSON from treeData
     i = 0,  // no need
@@ -99,8 +99,8 @@ var
     nodecircle_fill_dragover_color = 'green',
     nodecircle_radius=10,
 
-    nodetext_font_size = '1em' // xhtml div has to use 1em (=12 px) instead of units in pixels
-
+    nodetext_font_size = '1em', // xhtml div has to use 1em (=12 px) instead of units in pixels
+    pseudonodetext_offsetdown=10
 ;
 
 

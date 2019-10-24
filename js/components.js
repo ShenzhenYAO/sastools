@@ -185,7 +185,7 @@ function MakeChangeTree(parentdatapoint) {
 		
 	//exit text groups, changetext opacity to nearly 0, also reduce the font-size to nearly 0
 	nodeExit.select("div.nodetext")
-		.style("fill", 1e-6)
+		.style("opacity", 1e-6)
 		.style("font-size", "0em")
 		;
 
@@ -529,14 +529,14 @@ function dragdrop () {
     d3.selectAll('g.pseudonodeGs').remove() // remove the previously created psuedonodeGs, otherwise there'll be more and more such psuedonodeGs
   
     // create a pseudo g group, containing a circle, and a text box
-    var pseudoNodeG = svg.append('g').attr('class', 'pseudonodeGs').attr('transform', 'translate (80,0) '); // transform to make the text label visible
+    var pseudoNodeG = svg.append('g').attr('class', 'pseudonodeGs').attr('transform', 'translate (' + ((between_nodes_horizontal-20)/2 ) + ',0) '); // transform to make the text label visible
     var pseudoNodeCircle = pseudoNodeG.append('circle').attr('class', 'pseudonodecircles');
     // var pseudoNodeText = pseudoNodeG.append('text').attr('class', 'pseudonodetext').attr('dy', '20').text(showtext);
     var pseudoNodeText = pseudoNodeG
         .append('g')
         .attr('class', 'nodetextGs')
-        .attr('transform', 'translate (-80, 10)') // to move the text g box back (under nodes and centered)
-        .append('foreignObject').attr('width', 160).attr('height', '50')
+        .attr('transform', 'translate (' + (-(between_nodes_horizontal-20)/2 ) + ', '+ pseudonodetext_offsetdown + ')') // to move the text g box back (under nodes and centered)
+        .append('foreignObject').attr('width', between_nodes_horizontal-20).attr('height', between_nodes_vertical-25)
         .append('xhtml:div')
         .attr('class', 'pseudonodetext')
         .text(showtext) 
@@ -611,15 +611,19 @@ function dragdrop () {
              * */
 
         d3.selectAll('g.nodeGs')    
-            .attr('pointer-events', 'mouseover')
+            .attr('pointer-events', 'mouseover') //? is this line a must???
             .on("mouseover", function(d){
                 // console.log('3. mousedown move = ' + mousedown + ',' + mousemove + ' over the node: ' + d.data.name)
                 mouseoverObj = d3.select(this)
                 mouseoverObj.select('circle.nodecircles').style('fill', nodecircle_fill_dragover_color);
             })
             .on("mouseout", function(d){
-                d3.select(this).select('circle.nodecircles').style('fill', nodecircle_fill_showdescendants_color);
-                d3.selectAll('g.nodeGs').on("mouseover", null)
+                // d3.select(this).select('circle.nodecircles').style('fill',nodecircle_fill_showdescendants_color) // not correct, fill color could be different depending on whether there are descendants hidden
+                d3.select(this).select('circle.nodecircles').style('fill',function(d) { 
+                    return d._children ? nodecircle_fill_hidedescendants_color : nodecircle_fill_showdescendants_color; 
+                }); // !!! must check whether the descendants are hidden so as to determine the fill color
+                // d3.selectAll('g.nodeGs').on("mouseover", null) // !!! will interfere with node overlap color change
+                // mouseoverObj.node().removeAttribute('mouseover') // does not work
                 mouseoverObj = null;
             })
         ;
@@ -738,7 +742,7 @@ function dragdrop () {
                         if (theParentToChangeData.children===undefined || theParentToChangeData.children === null ){
                             theParentToChangeData.children=[]
                         }
-                        theParentToChangeData.children.push(d) //simply push it to the end of the children array
+                        theParentToChangeData.children.push(theSelectedObjData) //simply push it to the end of the children array
                         // console.log('theParentToChangeData===')
                         // console.log(theParentToChangeData)
 
@@ -747,18 +751,18 @@ function dragdrop () {
                             theParentToChangeData.data.children=[]
                         }
                         // add the selected obj data.data (this is the original data) to theParentToChangeData.data.chilren
-                        theParentToChangeData.data.children.push(d.data)
+                        theParentToChangeData.data.children.push(theSelectedObjData.data)
 
                         // find the original parent of the selected obj data
-                        originalParentData = d.parent
+                        originalParentData = theSelectedObjData.parent
                         // console.log('originalParentData=================')
                         // console.log(originalParentData)
 
                         // change the .parent property of theSelectedObjdata, change to theParentToChangeData.data
-                        d.parent =theParentToChangeData; 
+                        theSelectedObjData.parent =theParentToChangeData; 
 
                         // !!! must change change depth = theParentToChangeData.depth +1
-                        d.depth = theParentToChangeData.depth +1
+                        theSelectedObjData.depth = theParentToChangeData.depth +1
 
                         //!!! must have! for all descendants of the selected obj data, update the depth
                         function getdescendants(a) {
@@ -808,12 +812,12 @@ function dragdrop () {
                         // console.log('rootdatapoint_sortedrowscols=========')
                         // console.log(rootdatapoint_sortedrowscols)
 
-                        theParentToChangeObj.node().remove() // it is nothing wrong to delete the parent-to-change node. In fact there is a benefit: the text will be realigned
+                        // theParentToChangeObj.node().remove() // no need
                         //theSelectedObj.node().remove()
                         // MakeChangeTree(theSelectedObjData)
                         // MakeChangeTree(originalParentData)
-                        MakeChangeTree(theParentToChangeData)
-                        // MakeChangeTree(rootdatapoint_sortedrowscols) 
+                        //MakeChangeTree(theParentToChangeData)
+                         MakeChangeTree(rootdatapoint_sortedrowscols) 
                     }
                 })
 
