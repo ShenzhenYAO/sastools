@@ -101,7 +101,7 @@ function MakeChangeTree(parentdatapoint) {
 	nodes.forEach(function(d) { d.y = d.depth * between_nodes_horizontal; });
 
 	//join (link data to empty g elements)
-	var node = g.selectAll("g.nodeGs") // note that it is to select all elements within g with the classname = nodeGs
+	var node = thetreeG.selectAll("g.nodeGs") // note that it is to select all elements within g with the classname = nodeGs
         .data(nodes, function(d) { return d.id || (d.id = ++i); }); // each data point was assigned an id (d.id)
     // console.log('node ======')
     // console.log(node)
@@ -194,7 +194,7 @@ function MakeChangeTree(parentdatapoint) {
 
     // join (link data to empty path elements) 
     // think about putting all class names in the init.class. That way, the class name change can be done in one place
-	var link = g.selectAll("path.primarylinks")
+	var link = thetreeG.selectAll("path.primarylinks")
 		.data(links, function(d) { return d.id; }); //v4  d.id can befound in _enter => 0:q => __data .id, which is corresponding to the d.id in node object
     // console.log('link ===')
     // console.log(link)
@@ -304,19 +304,22 @@ function zoomed() {
   //ZoomInOutSelectedNode: zoom in out the selected note
   function ZoomInOutSelectedNode(d){
     //disable the default right click menu
-    d3.event.preventDefault();
+    d3.event.preventDefault(); 
+
+    // need to stop listening to mousemove (which is trigger by pantree )
+    d3.select(window).on('mousemove', null) //!!! must have, otherwise the dragtree will hava error
+    //event.stopPropagation(); does not work
 
     //5.1.1 initialzie the vars for x, y coordinates, and the zoom levels
     var x; //x coordinate (horizontal) of the center of the selected path/shape to the left wall of the map g
     var y; // y coordinate (vertical)
     var xy_pathcenter; // an object containing data about the selected path/shape, including its x and y
     var translateStr; // a string to specify the travelling (i.e. translating) settings
-    var zoomLevel; // the level of zoomming (scale, i.e., the times to enlarge/shrink)
 
     //5.1.2 determine the toggling settings (i.e., zoom in, select a new county, or zoom out)
     if (d && centeredNode !== d) {
         //a. if a different county is selected
-
+        
         //5.1.2.a.1 get the center of the selected shape/path
 		// var xy_pathcenter = path.centroid(d);
 		// console.log(d)
@@ -334,8 +337,9 @@ function zoomed() {
         //b. if the selection (click) is not on a new node (i.e., the same node, or a none-node area is clicked )
         // 5.1.2.b.1 set the x, y value as the center of the window
         ///**modified part 9, the following is different, */
-        x = width_body / 2 - TreeMarginToSvg.left; //width1 / 2 ;
-        y = height_body / 2 - offsetshiftup  ; // height2 /2;
+        // console.log(width_treeviewbox)
+        x = width_treeviewbox / 2 - TreeMarginToSvg.left; //width1 / 2 ;
+        y = height_treeviewbox / 2 - offsetshiftup  ; // height2 /2;
 
         // 5.1.2.b.2 set the zoom level =1 (zoom out)
         zoomLevel = 1;
@@ -347,10 +351,10 @@ function zoomed() {
 
     //5.1.3 determine the string for travel (translate)
     // the syntax is like 'translate (221, 176)'
-    var translate_mapUpperLeft='translate (' + width_body/2 + ',' + height_body/2 + ')'
+    var translate_mapUpperLeft='translate (' + width_treeviewbox/2 + ',' + height_treeviewbox/2 + ')'
 
     //5.1.4 determine the string for enlarge/shrink (scale)
-    scaleStr = 'scale (' + zoomLevel + ')'
+    var scaleStr = 'scale (' + zoomLevel + ')'
 
     //5.1.5 determine the offset 
     var translate_offsetSelectedPath='translate (' + -x  + ',' + -y + ')'
@@ -360,11 +364,13 @@ function zoomed() {
     translateStr = translate_mapUpperLeft + scaleStr + translate_offsetSelectedPath
 
     //5.1.7 travel + zooming (i.e, translate + scale)
-    g.transition()
+    thetreeG.transition()
         .duration(zoomSettings.duration)
         .ease(zoomSettings.ease) 
         .attr('transform', translateStr)
     ;
+
+    
   }
 
 
@@ -439,7 +445,7 @@ function getTransformValues (theEle) {
         var offsetshiftup = noshift-shiftup + TreeMarginToSvg.top
         var offsetNodeSizeMethodShiftTranslateStr = 'translate('+ TreeMarginToSvg.left + ', '+ offsetshiftup +')';
     
-        g.transition().duration(3500).attr('transform', offsetNodeSizeMethodShiftTranslateStr );
+        thetreeG.transition().duration(3500).attr('transform', offsetNodeSizeMethodShiftTranslateStr );
     
         return {'offsetshiftup': offsetshiftup} // for use in the translation adjustment in zooming (see components.ZoomInOutSelectedNode)
     
@@ -503,6 +509,8 @@ function getmousekey(){
 // drag and drop function works when a mousedown is detected for a g.nodeGs element, which is set in components.MakeChangeTree()    
 function dragdrop () {
 
+    event.stopPropagation(); // the mousedown is also listened by the treeG (for dragging the map) This line prevents
+
     var mousedown=1; // to indicate that mousedown status = 1 (this is for debug purpose)
     // console.log('1. mousedown= ' + mousedown)
 
@@ -529,14 +537,14 @@ function dragdrop () {
     d3.selectAll('g.pseudonodeGs').remove() // remove the previously created psuedonodeGs, otherwise there'll be more and more such psuedonodeGs
   
     // create a pseudo g group, containing a circle, and a text box
-    var pseudoNodeG = svg.append('g').attr('class', 'pseudonodeGs').attr('transform', 'translate (' + ((between_nodes_horizontal-20)/2 ) + ',0) '); // transform to make the text label visible
-    var pseudoNodeCircle = pseudoNodeG.append('circle').attr('class', 'pseudonodecircles');
+    pseudoNodeG = svg.append('g').attr('class', 'pseudonodeGs').attr('transform', 'translate (' + ((between_nodes_horizontal-20)/2 ) + ',0) '); // transform to make the text label visible
+    pseudoNodeCircle = pseudoNodeG.append('circle').attr('class', 'pseudonodecircles');
     // var pseudoNodeText = pseudoNodeG.append('text').attr('class', 'pseudonodetext').attr('dy', '20').text(showtext);
-    var pseudoNodeText = pseudoNodeG
+    pseudoNodeText = pseudoNodeG
         .append('g')
         .attr('class', 'nodetextGs')
         .attr('transform', 'translate (' + (-(between_nodes_horizontal-20)/2 ) + ', '+ pseudonodetext_offsetdown + ')') // to move the text g box back (under nodes and centered)
-        .append('foreignObject').attr('width', between_nodes_horizontal-20).attr('height', between_nodes_vertical-25)
+        .append('foreignObject').attr('width', between_nodes_horizontal-20).attr('height', between_nodes_vertical-5)
         .append('xhtml:div')
         .attr('class', 'pseudonodetext')
         .text(showtext) 
@@ -546,10 +554,10 @@ function dragdrop () {
 
     // detect mouse move
     d3.select(window)
-    .on("mousemove", mousemove)
-    .on("mouseup", mouseup);
+    .on("mousemove", mousemove_dragdrop)
+    .on("mouseup", mouseup_dragdrop);
 
-    function mousemove () {
+    function mousemove_dragdrop () {
         var mousemove= 1;
         // console.log( '2. mousedown & move = ' + mousedown + ',' + mousemove)
         d3.event.preventDefault();// prevent the default text dragging
@@ -641,7 +649,7 @@ function dragdrop () {
     }
 
     // on mouse up, do the following
-    function mouseup () {          
+    function mouseup_dragdrop () {          
         var mousemove=0, mousedown=0; // these are for debug purpose
 
         // remember theParentToChangeObj
@@ -764,17 +772,30 @@ function dragdrop () {
                         // !!! must change change depth = theParentToChangeData.depth +1
                         theSelectedObjData.depth = theParentToChangeData.depth +1
 
-                        //!!! must have! for all descendants of the selected obj data, update the depth
-                        function getdescendants(a) {
+                        //!!! must have! for all shown descendants of the selected obj data, update the depth
+                        function getdescendants_shownchildren(a) {
                             if (a.children !== null && a.children !== undefined ){
                                 a.children.forEach(function (v){
                                     // children's depth = parent.depth +1
                                     v.depth = a.depth + 1;
-                                    getdescendants(v)
+                                    getdescendants_shownchildren(v)
                                 })
                             }
                         }
-                        getdescendants(d);
+                        getdescendants_shownchildren(d);
+
+                        //!!! must have! for all hidden descendants of the selected obj data, update the depth
+                        function getdescendants_hiddenchildren(a) {
+                            if (a._children !== null && a._children !== undefined ){
+                                a._children.forEach(function (v){
+                                    // children's depth = parent.depth +1
+                                    v.depth = a.depth + 1;
+                                    getdescendants_hiddenchildren(v)
+                                })
+                            }
+                        }
+                        getdescendants_hiddenchildren(d);
+
 
                         // within originalParentData's children find the one which equals to the selected obj data, and remove it from the children array
                         for (i=0; i < originalParentData.children.length;i++ ){
@@ -844,6 +865,108 @@ function dragdrop () {
     }
 
 } // end drag drop
+
+
+
+// to pan the tree (press mouse button down, hold and move the tree diagram within the svg box)
+function pan () {
+
+    // listen to mousedown and mouseup actions
+    d3.select(window)
+        .on('mousedown', mousedown_pan)
+        .on('mouseup', mouseup_pan)
+
+    function mousedown_pan() {
+
+        d3.event.preventDefault(); //!!! must have! to avoid text dragging 
+        
+        //1. determine whether the mousedown is within the treerect area
+        /**    the clicked is the window DOM, but how to know if the click is within the treeview box?   */
+
+        /**One way to get the size and coordinates of treeviewbox to its parent (body), then compare the mouse position to the body... */
+        // treeviewbox_leftup = treeviewbox.node().getBoundingClientRect(); 
+
+        /**However, an easier way is to compare the mouse position relative to the treerect. 
+         * If the mouse point is in the treeviewbox, the coordinates should be between 0 and width/height of the treerect
+         */
+
+        // svg.attr('width',width_treeviewbox-5).attr('height',height_treeviewbox-50)
+        var width_selectedtreerect=Number(thetreerect.attr('width'))
+        var height_selectedtreerect=Number(thetreerect.attr('height'))
+        var mouseHV_treerect= d3.mouse(thetreerect.node());
+
+        
+        if ( 0 <= mouseHV_treerect[0] && mouseHV_treerect[0] <= width_selectedtreerect
+            && 0 <= mouseHV_treerect[1] && mouseHV_treerect[1] <= height_selectedtreerect  ) {
+
+            //2. show current mouse position relative to the tree rect
+
+            //2.1 calculate the coordinates and convert to strings for display and for transform.translate setting (i.e., for the text group to fly to)
+            var mouseToTreeRect = {"toLeft": parseInt(mouseHV_treerect[0]), "toTop": parseInt(mouseHV_treerect[1])},
+                mousexystr="(" + mouseToTreeRect.toLeft + ',' + mouseToTreeRect.toTop  + ')'; 
+            
+            //2.2 show mouse to rect coordinates on the upleft corner of the svg
+            //must have!!!
+            d3.selectAll('g.pseudonodeGs').remove() // remove the previously created psuedonodeGs, otherwise there'll be more and more such psuedonodeGs
+            
+            //2.3 create a pseudo g group, containing a text box
+            pseudoNodeG = svg.append('g').attr('class', 'pseudonodeGs') 
+            pseudoNodeText = pseudoNodeG.append('text').text(mousexystr).attr('dy', '1em')
+
+            //2.4 get the mouse coordinates to treeG
+            mouse_theTreeG = d3.mouse(thetreeG.node()) // Note: must get it before mouse moving
+            // console.log('mouse to g box')
+            // console.log(mouse_theTreeG)
+            
+            // 3. when  mouse is down and moving
+            d3.select(window)
+                .on('mousemove', function(){                    
+
+                    // 3.1 get the mouse coordinates to the treerect (as mouse is moving)
+                    var tmpxyarray=d3.mouse(thetreerect.node());
+                    var mouseToTreeRect = {"toLeft": parseInt(tmpxyarray[0]), "toTop": parseInt(tmpxyarray[1])},
+                        mousexystr="(" + mouseToTreeRect.toLeft + ',' + mouseToTreeRect.toTop  + ')'; 
+
+                    //get the mouse coordinates about the treeG element
+                    // Wrong! as mouse and treeG are both moving, it causes error here when trying to get mouse to treeG coordinate
+                    // mouse_theTreeG = d3.mouse(thetreeG.node())
+                    // console.log('mouse to g box')
+                    // console.log(mouse_theTreeG)
+                    
+                    //3.2 prepare translation string (for moving the treeG)
+                    var thetreeGtranslateHV="(" + (mouseToTreeRect.toLeft - mouse_theTreeG[0]) + ',' 
+                        + (mouseToTreeRect.toTop -mouse_theTreeG[1])  + ')';
+                    var translatestr='translate ' + thetreeGtranslateHV;
+                    //3.3 show mouse position in pseudoNodeText
+                    pseudoNodeText.text(mousexystr).style("opacity", 1)
+                    
+                    //3.4 Must have!!! so as to enable pan when zoom in
+                    var scaleStr = 'scale (' + zoomLevel + ')'
+                    
+                    //3.5 let the treeG moves with the mouse move
+                    thetreeG.transition().duration(0)
+                        .attr('transform', translatestr+scaleStr);
+                    
+                    //3.6 must have!!! when mouse up, callback 'mouseup_pan
+                    d3.select(window).on('mouseup', mouseup_pan)
+
+                })
+
+        } else {
+            // console.log('mouse point is NOT in the tree rect!')
+        }
+    }
+
+    function mouseup_pan(){
+        d3.select(window).on('mousemove', null)
+        d3.selectAll('g.pseudonodeGs').remove()
+        // console.log('mouse is up')
+    }
+
+} // end function pan ()
+
+
+
 
 
 

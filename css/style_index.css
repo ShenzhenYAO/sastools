@@ -1,22 +1,22 @@
 			
 /* https://www.w3schools.com/colors/colors_names.asp */
-			.thebigsvg{
-				background-color: ivory; 
-				}
-			.treerect{
-				fill: none;
-				pointer-events: all;
-			}
-			.primarylinks{
-				stroke: lightgrey;
-				fill: none;
-				stroke-width: 2px;
-			}
-			.customizedlinks{
-				stroke: blue;
-				fill: none;
-				stroke-width:2px;
-			}
+	.thebigsvg{
+		background-color: ivory; 
+		}
+	.treerect{
+		fill: none;
+		pointer-events: all;
+	}
+	.primarylinks{
+		stroke: lightgrey;
+		fill: none;
+		stroke-width: 2px;
+	}
+	.customizedlinks{
+		stroke: blue;
+		fill: none;
+		stroke-width:2px;
+	}
 
 
 

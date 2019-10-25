@@ -11,8 +11,42 @@
  ***********************************************************************************/
 
 
-// 0. Add title and description
+
+// 0.1 Add title and description
 addtitledesc();
+
+//0.2 add two boxes
+var bodyd3=d3.select('body');
+var bigdiv= bodyd3.append('div')
+.attr('class', 'bigdiv')
+.styles({
+    'width':(width_body) + 'px',
+    'height':height_body + 'px',
+    'float':'left',
+    'border-width': '1px'
+    // 'white-space':'nowrap' // to prevent wrap, but seems unecessary
+})
+var textviewbox=bigdiv.append('div')
+    .attr('class', 'textviewbox')
+    .styles({
+        'width':(width_textviewbox) + 'px',
+        'height':height_body + 'px',
+        'float':'left',
+        'border-style':'solid',
+        'border-width': '1px'
+    })
+    // .text('div1')
+var treeviewbox = bigdiv.append('div')
+    .attr('class', 'treeviewbox')
+    .styles({
+        'width':(width_treeviewbox) + 'px',
+        'height':height_body + 'px',
+        'float':'left',
+        'border-style':'solid',
+        'border-width': '1px'
+    })
+    // .text('div2')
+
 
 /**A. load tree Data as a json obj from an external json file 
  * Note: getJsonFromSessionStorage is results from a IFFE function getting results from sessionStorage items.
@@ -94,20 +128,20 @@ rootdatapoint.y0=0;
 /**B.2.1.1 determine the svg */
 var svgwidth = width_tree + TreeMarginToSvg.left + TreeMarginToSvg.right,
     svgheight = height_tree + TreeMarginToSvg.top + TreeMarginToSvg.bottom
-    ;
-svgwidth = Math.max(svgwidth, width_body);
-svgheight = Math.max(svgheight, height_body);
+    ; // by tree size
+svgwidth = Math.max(svgwidth, width_treeviewbox); // the tree size or the viewbox size, which ever is larger
+svgheight = Math.max(svgheight, height_treeviewbox);
 
-var svg = addnewEle(svgwidth, svgheight, null, 'thebigsvg', null, 'body', 'svg', null );
+var svg = addnewEle(svgwidth, svgheight, null, 'thebigsvg', treeviewbox, null, 'svg', null );
 
 /**B.2.1.2 add a mouse position tip */
 // This trick is learned from https://github.com/Matt-Dionis/d3-map
-var themousepositiontip = svg.append('g')
-    .attr('class', 'mousepositiontip')
-var mousetiptext=themousepositiontip.append('text')
-    .attr('class', 'mousepositiontiptext')
-    .style('opacity', '0')
-;
+// var themousepositiontip = svg.append('g')
+//     .attr('class', 'mousepositiontip')
+// var mousetiptext=themousepositiontip.append('text')
+//     .attr('class', 'mousepositiontiptext')
+//     .style('opacity', '0')
+// ;
 
 
 /**B.2.2 enable zooming and pan, from F:\Personal\Virtual_Server\PHPWeb\D3 Pan drop drag\DeniseMauldin Box*/
@@ -123,11 +157,10 @@ var thetreerect=svg.append('rect')
     'class': 'treerect',
     'width': svgwidth,
     'height': svgheight,
-    'id': 'I created',
-    'stroke': 'black'
-    // 'fill': 'lightyellow'
+    'id': 'I created'
+    // 'stroke': 'black'
     })
-    .style('pointer-events', 'all')
+    // .style('pointer-events', 'all')
     // .classed ('background', true)
     .on('contextmenu', ZoomInOutSelectedNode)
     // on mouse over, show mouse position
@@ -137,7 +170,10 @@ var thetreerect=svg.append('rect')
 
 /**B.3 Add a g in svg */
 var transfm= "translate(" + TreeMarginToSvg.left + "," + TreeMarginToSvg.top + ")";
-var g = addnewEle(null, null, null, 'thetreeg', svg, null, 'g', transfm );
+var thetreeG = addnewEle(null, null, null, 'thetreeg', svg, null, 'g', transfm );
+//!!!! here thetreeG.on('mousedown') does not work
+// thetreeG.on('mousedown', pan)
+
 
 /**B.4 make a new tree */
 var treeinstance; // important: treeinstance has to be defined outside the function
@@ -152,5 +188,6 @@ if (newtreeMethod === 'bynodesize') {
     var offsetshiftup= TreeMarginToSvg.top;
 }
 
-
+/**C. Enable panning (press and hold mouse to move the tree within the svg/treerect)  */
+pan();
 

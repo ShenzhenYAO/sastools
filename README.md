@@ -1,5 +1,12 @@
 simple d3 v4 tree diagram. 
 *********************************************************************************************
+commit 14:107a
+
+1. two boxes, left for text, right for tree diagram. The tree diagram zoom in/out function is adapted
+2. fix the bug: update depth for hidden children (in _children of the selected node object in drag and drop)
+3. add pan [function pan()]
+4. add stopPropagation() in function dragdrop (in component.js)
+
 commit 13:106a
 
 Debug, in components.js:

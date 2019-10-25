@@ -38,7 +38,7 @@
 
 /**global vars */
 var 
-    gitcommitversion = '13',
+    gitcommitversion = '14',
 
     treejsonURL = 'data/treedata.json',     // the url of the external json file with tree data
     treeData,   // to hold the tree data 
@@ -48,10 +48,10 @@ var
     rootdatapoint, //the root data point and its descendants in hierarchical structure
     flatterneddatapoints, // an array of flattered datapoints from rootdatapoint
     flatterneddatapoints_sortedrowscols, // adding sorted rows and cols (to be put in a tree) of points in flatterneddatapoints
-    treemaxrowscols // the maxrows and cols in an array
-   
+    treemaxrowscols, // the maxrows and cols in an array 
+    
+    pseudoNodeG, pseudoNodeCircle, pseudoNodeText
 ;
-
 
 /** for zooming and pan
  * from F:\Personal\Virtual_Server\PHPWeb\D3 Pan drop drag\DeniseMauldin Box * 
@@ -59,9 +59,9 @@ var
 var w = window;
 var doc = document;
 var el = doc.documentElement;
-var body = doc.getElementsByTagName('body')[0];
-var width_body = w.innerWidth || el.clientWidth || body.clientWidth;
-var height_body = w.innerHeight|| el.clientHeight|| body.clientHeight;
+var bodyEle = doc.getElementsByTagName('body')[0];
+var width_body = w.innerWidth || el.clientWidth || bodyEle.clientWidth;
+var height_body = w.innerHeight|| el.clientHeight|| bodyEle.clientHeight;
 var centeredNode;
 var zoomSettings = {
     duration: 1000,
@@ -69,10 +69,17 @@ var zoomSettings = {
     zoomLevel: 2
   };
 
+  var zoomLevel=1; // the level of zoomming (scale, i.e., the times to enlarge/shrink), by default=1; 
+
+/** viewbox width (two boxes side by side, left for text, right for diagram) */
+var width_textviewbox = width_body * .20,
+    height_textviewbox = height_body,
+    width_treeviewbox = width_body- width_textviewbox-width_body*.05, // leave 5% for padding
+    height_treeviewbox = height_body;
 /**tree making method: size() or nodeSize() */
 //https://stackoverflow.com/questions/17558649/d3-tree-layout-separation-between-nodes-using-nodesize
 // tree().nodeSize() makes flexible size trees, tree().size() makes fixed-size trees. The two cannot be used at the same time
-var newtreeMethod='bysize' //bynodesize or bysize
+var newtreeMethod='bysize'; //bynodesize or bysize
 
 
 /*define the svg box and padding, and properties of the tree*/

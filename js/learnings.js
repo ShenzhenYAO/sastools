@@ -8,7 +8,7 @@ function notrun(){
         nodegroup_objs.forEach(d => { // same as function(d) {}
             // console.log(d.transform.baseVal.consolidate().matrix)
             console.log(d3.select(d).attr('transform'))
-            console.log('fuck =================')
+            console.log('xxx =================')
             console.log(d)
             console.log(d.attributes.transform.value)
             var thetransformMatrix = d.transform.baseVal.consolidate().matrix;
@@ -134,7 +134,7 @@ https://bl.ocks.org/mbostock/4198499
 
 }
 
-
-
 }
     
+
+
