@@ -13,8 +13,8 @@ function addtitledesc (){
 	.text('commit ' + gitcommitversion + ' to https://github.com/junkthem/simple_d3tree_v3tov4.io ')
 }
 
-/* This part is to load json str and save to a sessionStorage item. That way to avoid the async issue
-	the trick is to get json object by d3.json(), and save into a sessionStorage item
+/* This part is to load json str and save to a localStorage item. That way to avoid the async issue
+	the trick is to get json object by d3.json(), and save into a localStorage item
 	This is the only way I know that works in getting the stringified json out of d3.json()
 */
 function loadjson (url) {
@@ -23,18 +23,21 @@ function loadjson (url) {
 		// var jsonstr = JSON.stringify(srcjson)
 		tmptxt=JSON.stringify(srcjson);
 		//console.log(tmptxt)
-		sessionStorage.setItem("loadedjsonstr", tmptxt);
-		/*Note: the trick is to show the sessionStorage item in console.log
-			if not show it in console.log, the reload will not be fired (started)*/
-		console.log(sessionStorage.getItem("loadedjsonstr"))
-		if (sessionStorage.getItem("loadedjsonstr") === null ){
-			document.location.reload();
+		localStorage.setItem("loadedjsonstr", tmptxt);
+		/*Note: the trick is to show the localStorage item in console.log
+            if not show it in console.log, the reload will not be fired (started)
+        This problem because using sessionStorage. When using localStorage, such problem disappears
+            */
+		// console.log(localStorage.getItem("loadedjsonstr")) ////
+		if (localStorage.getItem("loadedjsonstr") === null ){
+            // document.location.reload();
+            document_reload();
 		}
 	});
 }
 
 
-/** get the loaded jsonstr from a sessionStorage item, parse the jsonstr to a JSON obj, and save it to treeJSON
+/** get the loaded jsonstr from a localStorage item, parse the jsonstr to a JSON obj, and save it to treeJSON
  * Note:
  * 1. the following code lines are in a function, can be put into the separate file (components.js), such to keep 
     the modules.js neat.  
@@ -42,20 +45,36 @@ function loadjson (url) {
 	IFFE style can return values without asynchronous issues.
  */
 
-const getJsonFromSessionStorage  = (function () {
-	// 1. load json inot a sessionStorage item (loadedjsonstr)
-	loadjson (treejsonURL); //Note: the loadjson() has to run within getJsonFromSessionStorage Otherwise the sessionStorage Item cannot properly work.
-    /* again the trick is to show the sessionStorage item in console.log. If not, the sessionStorage item will be null
-		and the page is not reloaded*/
-    console.log(sessionStorage.getItem("loadedjsonstr"))
-    if (sessionStorage.getItem("loadedjsonstr") === null ){
-        document.location.reload();
+const getJsonFromlocalStorage  = (function () {
+	// 1. load json inot a localStorage item (loadedjsonstr)
+	loadjson (treejsonURL); //Note: the loadjson() has to run within getJsonFromlocalStorage Otherwise the localStorage Item cannot properly work.
+    /* again the trick is to show the localStorage item in console.log. If not, the localStorage item will be null
+        and the page is not reloaded
+        This problem because using sessionStorage. When using localStorage, such problem disappears
+        */
+    // console.log(localStorage.getItem("loadedjsonstr")) ////
+    if (localStorage.getItem("loadedjsonstr") === null ){
+        // document.location.reload();
+        document_reload();
     }
-    var loadedjsonstr = sessionStorage.getItem("loadedjsonstr");
+    var loadedjsonstr = localStorage.getItem("loadedjsonstr");
     // console.log(loadedjsonstr)
-    sessionStorage.removeItem("loadedjsonstr")
+    localStorage.removeItem("loadedjsonstr") // this line does not work
     return JSON.parse(loadedjsonstr);
 })()
+
+/** reload the page for one time (this is to fix the bug of firefox that'document.location.reload()' causes
+ *  firefox to constantly reload the doc )
+ */
+function document_reload(){
+    console.log('to reload page')
+    localStorage.setItem('pagereloaded', 'false')
+    if (localStorage.setItem === 'false'){
+        document.location.reload();
+        localStorage.setItem('pagereloaded', 'true')
+    }
+}
+
 
 /**add a new element */
 function addnewEle (width, height, id, clss, theparent, parentEleType, EleType, transfm ) {
@@ -1012,12 +1031,16 @@ function dragdrop () {
 // to pan the tree (press mouse button down, hold and move the tree diagram within the svg box)
 function pan () {
 
+
     // listen to mousedown and mouseup actions
     d3.select(window)
         .on('mousedown', mousedown_pan)
         .on('mouseup', mouseup_pan)
 
     function mousedown_pan() {
+        
+        console.log('treesize inside pan')
+        console.log(thetreeG.node().getBoundingClientRect())
 
         d3.event.preventDefault(); //!!! must have! to avoid text dragging 
         

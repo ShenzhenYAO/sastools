@@ -21,7 +21,7 @@ var bigdiv= bodyd3.append('div')
     'width':(width_body) + 'px',
     'height':height_body + 'px',
     'float':'left',
-    'border-width': '1px'
+    'border-width': borderweight_viewbox + 'px'
     // 'white-space':'nowrap' // to prevent wrap, but seems unecessary
 })
 var textviewbox=bigdiv.append('div')
@@ -31,7 +31,7 @@ var textviewbox=bigdiv.append('div')
         'height':height_body + 'px',
         'float':'left',
         'border-style':'solid',
-        'border-width': '1px'
+        'border-width': borderweight_viewbox + 'px'
     })
     // .text('div1')
 var treeviewbox = bigdiv.append('div')
@@ -47,10 +47,10 @@ var treeviewbox = bigdiv.append('div')
 
 
 /**A. load tree Data as a json obj from an external json file 
- * Note: getJsonFromSessionStorage is results from a IFFE function getting results from sessionStorage items.
+ * Note: getJsonFromlocalStorage is results from a IFFE function getting results from localStorage items.
  * Such arrangement solves asynchronous issues (i.e., treeJSON does not waiting for d3.json(), and carries on with null). 
 */
-treeData = getJsonFromSessionStorage;
+treeData = getJsonFromlocalStorage;
 // console.log('show treeJSON =======')
 /**check if treeJSON is an Array ([..]). If so, change it to a JSON like obj ({...}) */
 if (Array.isArray(treeData)){
@@ -104,6 +104,8 @@ var maxrowscols= getmaxrowscols(flatterneddatapoints_sortedrowscols)
 height_tree = maxrowscols[0] * between_nodes_vertical; // this will put rows with paddings of half the between_nodes_vertical top and bottom
 width_tree = maxrowscols[1] * between_nodes_horizontal;
 
+console.log('the estimated tree size ()')
+console.log(width_tree, height_tree)
 
 /**B.1.4 
  * Now how to make the flatterned back to hierarchical structure?
@@ -124,11 +126,15 @@ rootdatapoint.y0=0;
 /**B.2.1 Add a svg in body **********************************/
 
 /**B.2.1.1 determine the svg */
-var svgwidth = width_tree + TreeMarginToSvg.left + TreeMarginToSvg.right,
-    svgheight = height_tree + TreeMarginToSvg.top + TreeMarginToSvg.bottom
-    ; // by tree size
-svgwidth = Math.max(svgwidth, width_treeviewbox); // the tree size or the viewbox size, which ever is larger
-svgheight = Math.max(svgheight, height_treeviewbox);
+// var svgwidth = width_tree + TreeMarginToSvg.left + TreeMarginToSvg.right,
+//     svgheight = height_tree + TreeMarginToSvg.top + TreeMarginToSvg.bottom
+//     ; // by tree size
+// svgwidth = Math.max(svgwidth, width_treeviewbox); // the tree size or the viewbox size, which ever is larger
+// svgheight = Math.max(svgheight, height_treeviewbox);
+
+// modified! do not change the svg and the rect's size
+svgwidth = width_treeviewbox - borderweight_viewbox *2; 
+svgheight = height_treeviewbox - borderweight_viewbox*2;
 
 var svg = addnewEle(svgwidth, svgheight, null, 'thebigsvg', treeviewbox, null, 'svg', null );
 
@@ -180,8 +186,39 @@ if (newtreeMethod === 'bynodesize') {
     // use the newtree_offsetNodeSizeMethodShiftError to make new tree, make adjustment and get the offset distance for zooming ()
     var offsetshiftup = newtree_offsetNodeSizeMethodShiftError().offsetshiftup;
 } else {
+
+    /**the following part is to test the default tree size,  */
+
+    // treeinstance = d3.tree()
+    /** the above is to use size() method without specifying the tree size
+     * initially the treeG size is width: 160, height 254; 
+     * after waiting for 3 seconds until the treeG is updated, the width is 520, height 70 
+     * without specifying the size(), d3v4 uses the size() method (not the nodesize() method)
+     * Both width and height are adjusted from the inital setting, but the adjustment for height is pretty wierd
+     */    
+
+    // treeinstance = d3.tree().separation(function(a, b) { return (a.parent == b.parent ? 1 : 2); })
+    /** the above is to use size() method without specifying the tree size, but adding the separation settings (for adjusting distance between cousin nodes)
+     * initially the treeG size is width: 160, height 254; 
+     * after waiting for 3 seconds until the treeG is updated, the width is 520, height 70 
+     * it seems that separation() does not work when using size() 
+     */
+
     treeinstance = d3.tree().size([height_tree, width_tree]); // don't put it inside MakeChangeTree, as the bynodessize () method requires a different line (.nodeSize() instead of .size())
     // do not use the newtree_offsetNodeSizeMethodShiftError(), create the tree directly, not to adjust (no need) offset errors as nodeSize() method is not used
+    // initially the treeG size is width: 160, height 60; 
+    /** the above is to use size() method WITH specified tree size
+     * initially the treeG size is width: 160, height 60; (note that it is different from the height of 255 without size specification)
+     *  The height of 60 comes out from: 1) the column with the highest number of nodes, i.e., column 3, has 6 nodes
+     *      so the default height = 360 (the specified height) / 6 = 60 (what the freak is that logic! 
+     *      Anyways, that is how d3 works out)
+     * after waiting for 3 seconds until the treeG is updated, the width is 520, height 362
+     * 
+     * It seems that usng the size() method with specified size, 
+     * 1) the width is determined by d3v4. d3v4 ignores the width specified by users
+     * 2) the height is LARGELY determined by users' specification. Yet, d3v4 makes further adjustment 
+     */
+    
     var updateTree = MakeChangeTree(rootdatapoint_sortedrowscols);
     // console.log('updateTree ==================')
     // console.log(updateTree)
@@ -193,3 +230,23 @@ pan();
 
 /**add customized links */
 custlink(rootdatapoint_sortedrowscols, updateTree.nodeupdate ); // add cross link, it should be separate from
+
+// the following shows the realy tree size after waiting for all jobs are done
+setTimeout (function (){
+    console.log('treesize after wait')
+    console.log(thetreeG.node().getBoundingClientRect())
+    // console.log(rootdatapoint_sortedrowscols)
+    }, 3000
+);
+
+// the following shows the initial tree size before all jobs are done
+// console.log('treesize without wait')
+// console.log(thetreeG.node().getBoundingClientRect())
+// the x, y , however, are always the values after all jobs are done. 
+// console.log(rootdatapoint_sortedrowscols)
+
+
+//need to delete it somewhere
+// console.log(localStorage.getItem("loadedjsonstr"))
+//localStorage.removeItem("loadedjsonstr");
+console.log(localStorage.getItem("loadedjsonstr"))

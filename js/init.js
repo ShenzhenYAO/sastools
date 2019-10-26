@@ -38,9 +38,9 @@
 
 /**global vars */
 var 
-    gitcommitversion = '15',
+    gitcommitversion = '16',
 
-    treejsonURL = 'data/treedata.json',     // the url of the external json file with tree data
+    treejsonURL = 'data/doctype.json',     // the url of the external json file with tree data
     treeData,   // to hold the tree data 
     treeJSON,   // to hold the tree JSON from treeData
     i = 0,  // no need
@@ -75,7 +75,10 @@ var zoomSettings = {
 var width_textviewbox = width_body * .20,
     height_textviewbox = height_body,
     width_treeviewbox = width_body- width_textviewbox-width_body*.05, // leave 5% for padding
-    height_treeviewbox = height_body;
+    height_treeviewbox = height_body,
+
+    borderweight_viewbox = 1
+    ;
 /**tree making method: size() or nodeSize() */
 //https://stackoverflow.com/questions/17558649/d3-tree-layout-separation-between-nodes-using-nodesize
 // tree().nodeSize() makes flexible size trees, tree().size() makes fixed-size trees. The two cannot be used at the same time
@@ -109,6 +112,9 @@ var
     nodetext_font_size = '1em', // xhtml div has to use 1em (=12 px) instead of units in pixels
     pseudonodetext_offsetdown=10
 ;
+
+var makechangetreeresult={}; // this is to save features produced by makechangetree
+
 
 
 

@@ -1,5 +1,12 @@
 simple d3 v4 tree diagram. 
 *********************************************************************************************
+commit 16:109a
+1. add setTimeout to wait for 3 seconds, and get the final treeG size after waiting for all jobs are done
+2. add tests of different tree() method settings (with/without specifying tree width and height) in executive.js
+3. fixed the size of the svg and the treerect. Let the size be the same as the treeview box - borderweight
+4. using localStorage items instead of sessionStorage items to save loaded json. That way, the constant refreshing issue    disappears. 
+
+
 commit 15:108a
 1. make customized link (custlink() in component.js) 
 2. make changes in MakeChangeTree(), return nodeUpdate (an d3 obj of nodes shown in the tree not including those hidden)
