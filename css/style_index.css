@@ -12,10 +12,11 @@
 		fill: none;
 		stroke-width: 2px;
 	}
-	.customizedlinks{
-		stroke: blue;
+	.custlinks{
+		stroke: lightgrey;
 		fill: none;
-		stroke-width:2px;
+		stroke-width:4px;
+		stroke-dasharray: 3,3;
 	}
 
 

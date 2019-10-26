@@ -116,7 +116,7 @@ function MakeChangeTree(parentdatapoint) {
         .on("mousedown", dragdrop)  //check the newest version of dragdrop in components.js
     ;
     // console.log('nodeEnter ======')
-	// console.log(nodeEnter)	
+    // console.log(nodeEnter)	
 	
 	//add circle within g.nodeGs
 	nodeEnter.append("circle")
@@ -144,7 +144,10 @@ function MakeChangeTree(parentdatapoint) {
 
 	
 	// update (change properties of the g.nodeGs elements, including x/y coordinate, size, color, etc)
- 	var nodeUpdate = nodeEnter.merge(node); // v4
+     var nodeUpdate = nodeEnter.merge(node); // v4
+    //  console.log('nodeUpdate ======')
+    //  console.log(nodeUpdate)
+
 	nodeUpdate.transition() //v4
 		.duration(showhidedescendants_duration)
 		.attr("transform", function(d) { 
@@ -227,15 +230,7 @@ function MakeChangeTree(parentdatapoint) {
 			var o = {x: parentdatapoint.x, y: parentdatapoint.y};
 			return diagonal(o, o); // v4 it is the final path after transition: all waypionts are at the x,y of the parentdatapoint	
 		})
-        .remove();
-        
-        /**update customized links
-         * create an array of custlinks, for each one, add a collection of customized parent nodes in a new field 'custparents'
-         * do join, enter, merge, update, and exit again.
-         * Very importantly, make a different class name than the path elements of the default links (that way, the
-         *  program knows to pick up default path elements (classname = 'primarylink') for default paths, 
-         * while the customized path elements (classname = 'customizedlink') for customized paths)
-        */
+        .remove();        
 	
 	/**update x0, y0 ********************************************************************************/
 	// for each data element, update the x0 and y0 as the current d.x, and d.y, so as to toggle between expansion/collaspe
@@ -249,10 +244,11 @@ function MakeChangeTree(parentdatapoint) {
     nodes.forEach(d=>{vcoords.push(d.x)});
 
     var results={
-        'vcoords': vcoords
+        'vcoords': vcoords,
+        'nodeupdate': nodeUpdate
     }
     return results;
-} // end of update
+} // end of MakeChangeTree
 
 
 // the diagonal path
@@ -280,9 +276,151 @@ function showhidedescendants(d) {
 	d.children = d._children;
 	d._children = null;
   }
-  MakeChangeTree(d);
+  var updateTree = MakeChangeTree(d);
+  custlink(rootdatapoint_sortedrowscols, updateTree.nodeupdate ); // add cross link, it should be separate from
 }	
 
+
+/****make custlinks *********************** */
+function custlink(parentdatapoint, shownnodes){
+
+    // get customized parents 
+    //loop for each node in tmpnodes
+    var custlinks_crude =[]; /**have all custlinks from the available nodes. It is called '_crude' as some may not have the source/targe node of the link showing in the tree map */
+    var shownnodesData =[] //prepare an array of data binding to the shown nodes
+    // console.log('shownnodes=======')
+    // console.log(shownnodes)
+
+    shownnodes.attr('fakeattr', d=>{ // a trick to get binded data from d3 obj
+
+        //get a collection of data binding to the shown nodes
+        shownnodesData.push(d)
+
+        if (d.data.custparents){ // if the current data has custparents 
+            var thecustparents = d.data.custparents;
+            thecustparents.forEach(c=>{ //(note, there could be multiple!)
+                var thecustlink ={}, tmp={}, tmpdata={};
+                //get data.idx of the parent from d.data.custparents. Note: .custparents only contains idx of the custparents
+                tmp.data=tmpdata;
+                tmp.data.idx=c.idx;
+                thecustlink.parent=tmp; // the above three lines are to create layers like thecustlink.parent.data.idx, which is to simulate the structure of the tree data
+                //get the idx of the custlink
+                thecustlink.data = d.data;
+                thecustlink.x = d.x;
+                thecustlink.y = d.y;
+                custlinks_crude.push(thecustlink)
+            })
+        }
+    }) 
+
+    // console.log('custlinks_crude ====')
+    // console.log(custlinks_crude)
+    // console.log('shownnodesData ====')
+    // console.log(shownnodesData)
+
+
+    // check and only keep custlinks if itself and its parent exists in nodes. (The match has to be done by idx)
+    var validcustlinks=[];
+
+    // for each custlinks:
+    custlinks_crude.forEach(d =>{ // d is a crude custlink
+        // console.log('crude custlink ===')
+        // console.log(d)
+        shownnodesData.forEach(n=>{  // n is a node shown in the tree
+            // console.log('entered node ===')
+            // console.log(n)
+
+            //1 check if the source node's parent is a child of target node
+            if (d.parent.data.idx === n.data.idx){ // if n and d.parent have the same idx
+                // console.log('in custlink.parent =========')
+                // console.log(d.parent.data.idx )
+                // console.log('in node =========')
+                // console.log(n.data.idx, n.data.name)
+
+            var d_ChildOf_n = 0;
+
+                // if the source note is custlink.parent do not make custlink (if the source/target of a custlink are indeed parent-child, a default link has been added by MakeChangeTree, no need to add custlink again)
+                if (n.children) {
+                    n.children.forEach(b =>{
+                        // console.log('the crude custlink ===')
+                        // console.log(d)
+                        // console.log('n.child ====')
+                        // console.log(b)
+                       if (b.data.idx === d.data.idx ){
+                            d_ChildOf_n = 1;
+                            // console.log(b.data.idx)
+                            // console.log(d.data.idx)
+                       }  
+                    })
+                }
+                //also, if the custlink is the parent of the current node (n), do not do not make custlink (if the source/target of a custlink are indeed parent-child, a default link has been added by MakeChangeTree, no need to add custlink again)
+                if (n.parent && d.data.idx === n.parent.data.idx){
+                    d_ChildOf_n = 1;
+                }
+            }
+            
+
+            
+
+            if (d_ChildOf_n===0) {
+                // get the x y property
+                d.parent.x = n.x, d.parent.y = n.y;
+                // add the crude custlink to validcustlinks
+                validcustlinks.push(d);
+            }
+
+        })
+    })
+
+
+    // console.log('validcustlins ======')
+    // console.log(validcustlinks)
+
+    // join (custlink data to empty path elements) 
+    // think about putting all class names in the init.class. That way, the class name change can be done in one place
+    var custlink = thetreeG.selectAll("path.custlinks")
+        .data(validcustlinks, function(d) { return d.whatever; }); //v4 the return value is not used, so return whatever
+
+    // console.log('custlink ===')
+    // console.log(custlink)
+
+
+    // enter (add path elements according to joined custlink)
+    var custlinkEnter = custlink.enter().insert('path', "g") //v4
+        .attr("class", "custlinks")
+        .attr("stroke-opacity", 1e-6)
+        .attr("d", function(d) {
+            // console.log(d)// d contains elements of the data binding to the path
+            var o = {x: parentdatapoint.x0, y: parentdatapoint.y0}; // this is different here from building links
+            // var o = {x: d.parent.x, y: d.parent.y}; // for each path, let the link start from the parent's x, y
+            return diagonal(o,o); //v4 // initially, let the s (source) and d(destination) coordinates of the path be the same: x0, y0 of the parentdatapoint
+        });
+    // console.log('custlinkEnter ===')
+    // console.log(custlinkEnter)
+
+    /* update (change waypoints of the path, 
+        i.e., recalculating the path waypoints at any time during the transition) */
+    var custlinkUpdate = custlinkEnter.merge(custlink); //d3v4
+    // console.log(custlinkUpdate)
+
+    custlinkUpdate.transition()
+        .duration(showhidedescendants_duration)
+        .attr("stroke-opacity", 1)
+        .attr('d', function(d){ return diagonal(d.parent, d)}); 
+        // attr('d', ..) is the final path after transition, it is from x,y coordinate of the parentnode to x,y of the current node
+
+
+    // exit, make transition by changing the path waypoints towards the parent node, and eventually remove the path lines
+    custlink.exit().transition()
+        .duration(showhidedescendants_duration)
+        .attr("stroke-opacity", 1e-6)
+        .attr("d", function(d) {
+            var o = {x: parentdatapoint.x, y: parentdatapoint.y};
+            return diagonal(o, o); // v4 it is the final path after transition: all waypionts are at the x,y of the parentdatapoint	
+        })
+        .remove();
+
+} // end custlink()
 
 
 /**This is from the zooming part F:\Personal\Virtual_Server\PHPWeb\D3 Pan drop drag\DeniseMauldin Box*/
@@ -435,11 +573,13 @@ function getTransformValues (theEle) {
 
         treeinstance = d3.tree().size([height_tree, width_tree]);
         var results=MakeChangeTree(rootdatapoint_sortedrowscols);
+        //? need to run the custlink? maybe not
         noshift = d3.min(results.vcoords)
     
         // 2) use tree nodeSize() method to make a tree of automatically defined size
         treeinstance = d3.tree().nodeSize([between_nodes_vertical, between_nodes_horizontal]);//d3v4
         var results=MakeChangeTree(rootdatapoint_sortedrowscols);
+        //? need to run the custlink? maybe not
         var shiftup = d3.min(results.vcoords)
         // console.log(noshift, shiftup)
         var offsetshiftup = noshift-shiftup + TreeMarginToSvg.top
@@ -838,7 +978,8 @@ function dragdrop () {
                         // MakeChangeTree(theSelectedObjData)
                         // MakeChangeTree(originalParentData)
                         //MakeChangeTree(theParentToChangeData)
-                         MakeChangeTree(rootdatapoint_sortedrowscols) 
+                         var updateTree= MakeChangeTree(rootdatapoint_sortedrowscols) 
+                         custlink(rootdatapoint_sortedrowscols, updateTree.nodeupdate )
                     }
                 })
 

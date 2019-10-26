@@ -1,5 +1,9 @@
 simple d3 v4 tree diagram. 
 *********************************************************************************************
+commit 15:108a
+1. make customized link (custlink() in component.js) 
+2. make changes in MakeChangeTree(), return nodeUpdate (an d3 obj of nodes shown in the tree not including those hidden)
+
 commit 14:107a
 
 1. two boxes, left for text, right for tree diagram. The tree diagram zoom in/out function is adapted

@@ -10,8 +10,6 @@
  *          Use Chrome!
  ***********************************************************************************/
 
-
-
 // 0.1 Add title and description
 addtitledesc();
 
@@ -184,10 +182,14 @@ if (newtreeMethod === 'bynodesize') {
 } else {
     treeinstance = d3.tree().size([height_tree, width_tree]); // don't put it inside MakeChangeTree, as the bynodessize () method requires a different line (.nodeSize() instead of .size())
     // do not use the newtree_offsetNodeSizeMethodShiftError(), create the tree directly, not to adjust (no need) offset errors as nodeSize() method is not used
-    MakeChangeTree(rootdatapoint_sortedrowscols);
+    var updateTree = MakeChangeTree(rootdatapoint_sortedrowscols);
+    // console.log('updateTree ==================')
+    // console.log(updateTree)
     var offsetshiftup= TreeMarginToSvg.top;
 }
 
 /**C. Enable panning (press and hold mouse to move the tree within the svg/treerect)  */
 pan();
 
+/**add customized links */
+custlink(rootdatapoint_sortedrowscols, updateTree.nodeupdate ); // add cross link, it should be separate from
