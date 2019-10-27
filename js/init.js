@@ -38,14 +38,14 @@
 
 /**global vars */
 var 
-    gitcommitversion = '18',
+    gitcommitversion = '19',
 
     treejsonURL = 'data/doctype.json',     // the url of the external json file with tree data
     treeData,   // to hold the tree data 
     treeJSON,   // to hold the tree JSON from treeData
     i = 0,  // no need
     showhidedescendants_duration = 1750,     //duration of transition (1000 = 1 second)
-    rootdatapoint, //the root data point and its descendants in hierarchical structure
+    // rootdatapoint, //the root data point and its descendants in hierarchical structure
     flatterneddatapoints, // an array of flattered datapoints from rootdatapoint
     flatterneddatapoints_sortedrowscols, // adding sorted rows and cols (to be put in a tree) of points in flatterneddatapoints
     treemaxrowscols, // the maxrows and cols in an array 
@@ -99,6 +99,14 @@ var
     // center_tree = [width_tree / 2, height_tree /2] //for zooming from F:\Personal\Virtual_Server\PHPWeb\D3 Pan drop drag\DeniseMauldin Box
     // focus=center_tree
 ;
+var offsetshiftup= TreeMarginToSvg.top;
+
+var treeData;
+var flatterneddatapoints_sortedrowscols;
+var rootdatapoint_sortedrowscols;
+var treeinstance; // important: treeinstance has to be defined outside the function
+var updateTree;
+
 
 /**about tree elements*/
 var 

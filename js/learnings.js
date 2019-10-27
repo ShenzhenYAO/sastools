@@ -137,6 +137,25 @@ https://bl.ocks.org/mbostock/4198499
 }
 
 
+// the following is to show how to wait for a period of time 
+function notrun(){
+
+// the following shows the realy tree size after waiting for all jobs are done
+setTimeout (function (){
+    // console.log('treesize after wait')
+    // console.log(thetreeG.node().getBoundingClientRect())
+    // console.log(rootdatapoint_sortedrowscols)
+    }, 3000
+);
+
+// the following shows the initial tree size before all jobs are done
+// console.log('treesize without wait')
+// console.log(thetreeG.node().getBoundingClientRect())
+// the x, y , however, are always the values after all jobs are done. 
+// console.log(rootdatapoint_sortedrowscols)
+
+
+}
 
 
 

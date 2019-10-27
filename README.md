@@ -1,4 +1,9 @@
 simple d3 v4 tree diagram. 
+commit 19: 112a
+
+1. simplify the executive.js, put the tree creating steps into NewTree() and move it to component.js
+2. move estTreesize() into component.js. It is indepedent of NewTree()
+
 
 commit 18: 111a
 
