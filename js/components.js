@@ -13,8 +13,8 @@ function addtitledesc (){
 	.text('commit ' + gitcommitversion + ' to https://github.com/junkthem/simple_d3tree_v3tov4.io ')
 }
 
-/* This part is to load json str and save to a localStorage item. That way to avoid the async issue
-	the trick is to get json object by d3.json(), and save into a localStorage item
+/* This part is to load json str and save to a sessionStorage item. That way to avoid the async issue
+	the trick is to get json object by d3.json(), and save into a sessionStorage item
 	This is the only way I know that works in getting the stringified json out of d3.json()
 */
 function loadjson (url) {
@@ -23,13 +23,13 @@ function loadjson (url) {
 		// var jsonstr = JSON.stringify(srcjson)
 		tmptxt=JSON.stringify(srcjson);
 		//console.log(tmptxt)
-		localStorage.setItem("loadedjsonstr", tmptxt);
-		/*Note: the trick is to show the localStorage item in console.log
+		sessionStorage.setItem("loadedjsonstr", tmptxt);
+		/*Note: the trick is to show the sessionStorage item in console.log
             if not show it in console.log, the reload will not be fired (started)
-        This problem because using sessionStorage. When using localStorage, such problem disappears
+        This problem because using sessionStorage. When using sessionStorage, such problem disappears
             */
-		// console.log(localStorage.getItem("loadedjsonstr")) ////
-		if (localStorage.getItem("loadedjsonstr") === null ){
+		// console.log(sessionStorage.getItem("loadedjsonstr")) ////
+		if (sessionStorage.getItem("loadedjsonstr") === null ){
             // document.location.reload();
             document_reload();
 		}
@@ -37,7 +37,7 @@ function loadjson (url) {
 }
 
 
-/** get the loaded jsonstr from a localStorage item, parse the jsonstr to a JSON obj, and save it to treeJSON
+/** get the loaded jsonstr from a sessionStorage item, parse the jsonstr to a JSON obj, and save it to treeJSON
  * Note:
  * 1. the following code lines are in a function, can be put into the separate file (components.js), such to keep 
     the modules.js neat.  
@@ -45,21 +45,21 @@ function loadjson (url) {
 	IFFE style can return values without asynchronous issues.
  */
 
-const getJsonFromlocalStorage  = (function () {
-	// 1. load json inot a localStorage item (loadedjsonstr)
-	loadjson (treejsonURL); //Note: the loadjson() has to run within getJsonFromlocalStorage Otherwise the localStorage Item cannot properly work.
-    /* again the trick is to show the localStorage item in console.log. If not, the localStorage item will be null
+const getJsonFromsessionStorage  = (function () {
+	// 1. load json inot a sessionStorage item (loadedjsonstr)
+	loadjson (treejsonURL); //Note: the loadjson() has to run within getJsonFromsessionStorage Otherwise the sessionStorage Item cannot properly work.
+    /* again the trick is to show the sessionStorage item in console.log. If not, the sessionStorage item will be null
         and the page is not reloaded
-        This problem because using sessionStorage. When using localStorage, such problem disappears
+        This problem because using sessionStorage. When using sessionStorage, such problem disappears
         */
-    // console.log(localStorage.getItem("loadedjsonstr")) ////
-    if (localStorage.getItem("loadedjsonstr") === null ){
+    // console.log(sessionStorage.getItem("loadedjsonstr")) ////
+    if (sessionStorage.getItem("loadedjsonstr") === null ){
         // document.location.reload();
         document_reload();
     }
-    var loadedjsonstr = localStorage.getItem("loadedjsonstr");
+    var loadedjsonstr = sessionStorage.getItem("loadedjsonstr");
     // console.log(loadedjsonstr)
-    localStorage.removeItem("loadedjsonstr") // this line does not work
+    sessionStorage.removeItem("loadedjsonstr") // this line does not work
     return JSON.parse(loadedjsonstr);
 })()
 
@@ -68,10 +68,10 @@ const getJsonFromlocalStorage  = (function () {
  */
 function document_reload(){
     console.log('to reload page')
-    localStorage.setItem('pagereloaded', 'false')
-    if (localStorage.setItem === 'false'){
+    sessionStorage.setItem('pagereloaded', 'false')
+    if (sessionStorage.setItem === 'false'){
         document.location.reload();
-        localStorage.setItem('pagereloaded', 'true')
+        sessionStorage.setItem('pagereloaded', 'true')
     }
 }
 
@@ -288,15 +288,21 @@ function diagonal(s, d) {
 function showhidedescendants(d) {
 	//console.log("a node is clicked");
     //console.log(d);
-  if (d.children) {
-	d._children = d.children;
-	d.children = null;
-  } else {
-	d.children = d._children;
-	d._children = null;
-  }
-  var updateTree = MakeChangeTree(d);
-  custlink(rootdatapoint_sortedrowscols, updateTree.nodeupdate ); // add cross link, it should be separate from
+    if (d.children) {
+        d._children = d.children;
+        d.children = null;
+    } else {
+        d.children = d._children;
+        d._children = null;
+    }
+
+    var proposedTreesize=estTreesize(rootdatapoint_sortedrowscols)
+    //   console.log(proposedTreesize.width, proposedTreesize.height)
+    rootdatapoint_sortedrowscols.x0 = proposedTreesize.height /2; // redefine the vertical middle point for position the root node
+    // create the tree instance using proposed tree size (according for the changes made for show/hiding nodes)
+    treeinstance = d3.tree().size([proposedTreesize.height, proposedTreesize.width]);
+    var updateTree = MakeChangeTree(d);
+    custlink(rootdatapoint_sortedrowscols, updateTree.nodeupdate ); // add cross link, it should be separate from
 }	
 
 
@@ -442,6 +448,14 @@ function custlink(parentdatapoint, shownnodes){
 } // end custlink()
 
 
+
+
+
+
+/** **************************************about zooming ***************************** */
+
+
+
 /**This is from the zooming part F:\Personal\Virtual_Server\PHPWeb\D3 Pan drop drag\DeniseMauldin Box*/
 function zoomed() {
     svg.attr("transform", d3.event.transform);
@@ -540,8 +554,8 @@ function getmaxrowscols (flatterneddatapoints_sortedrowscols) {
         maxCols=Math.max(maxCols, d.sortedcol);
     });
     // console.log(maxRows)
-    result.push(maxRows);
-    result.push(maxCols);
+    result.push(maxRows+1); // the rows and cols start from 0, so if maxrows = 6, there are indeed 7 rows. Same for maxcols
+    result.push(maxCols+1);
     return result;
 }
 
@@ -997,6 +1011,11 @@ function dragdrop () {
                         // MakeChangeTree(theSelectedObjData)
                         // MakeChangeTree(originalParentData)
                         //MakeChangeTree(theParentToChangeData)
+                        var proposedTreesize=estTreesize(rootdatapoint_sortedrowscols)
+                        //   console.log(proposedTreesize.width, proposedTreesize.height)
+                        rootdatapoint_sortedrowscols.x0 = proposedTreesize.height /2; // redefine the vertical middle point for position the root node
+                        // create the tree instance using proposed tree size (according for the changes made for show/hiding nodes)
+                        treeinstance = d3.tree().size([proposedTreesize.height, proposedTreesize.width]);
                          var updateTree= MakeChangeTree(rootdatapoint_sortedrowscols) 
                          custlink(rootdatapoint_sortedrowscols, updateTree.nodeupdate )
                     }
@@ -1038,9 +1057,6 @@ function pan () {
         .on('mouseup', mouseup_pan)
 
     function mousedown_pan() {
-        
-        console.log('treesize inside pan')
-        console.log(thetreeG.node().getBoundingClientRect())
 
         d3.event.preventDefault(); //!!! must have! to avoid text dragging 
         

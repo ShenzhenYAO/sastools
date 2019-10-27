@@ -46,11 +46,74 @@ var treeviewbox = bigdiv.append('div')
     // .text('div2')
 
 
+
+/**0.3 Add a svg, tree rect, and treeg in body **********************************/
+
+/**0.3.1.1 determine the svg */
+// var svgwidth = width_tree + TreeMarginToSvg.left + TreeMarginToSvg.right,
+//     svgheight = height_tree + TreeMarginToSvg.top + TreeMarginToSvg.bottom
+//     ; // by tree size
+// svgwidth = Math.max(svgwidth, width_treeviewbox); // the tree size or the viewbox size, which ever is larger
+// svgheight = Math.max(svgheight, height_treeviewbox);
+
+// modified! do not change the svg and the rect's size
+svgwidth = width_treeviewbox - borderweight_viewbox *2; 
+svgheight = height_treeviewbox - borderweight_viewbox*2;
+
+var svg = addnewEle(svgwidth, svgheight, null, 'thebigsvg', treeviewbox, null, 'svg', null );
+
+/**0.3.1.2 add a mouse position tip. Note: not used as it isjsut for illustration */
+// This trick is learned from https://github.com/Matt-Dionis/d3-map
+// var themousepositiontip = svg.append('g')
+//     .attr('class', 'mousepositiontip')
+// var mousetiptext=themousepositiontip.append('text')
+//     .attr('class', 'mousepositiontiptext')
+//     .style('opacity', '0')
+// ;
+
+
+
+/**0.3.1.3 enable zooming and pan, from F:\Personal\Virtual_Server\PHPWeb\D3 Pan drop drag\DeniseMauldin Box
+ * Note: not used because of its poor performance
+*/
+// svg.call(
+//     d3.zoom()
+//         .scaleExtent([1 / 2, 12])
+//         .on("zoom", zoomed) 
+// )
+
+
+/**0.3.2, append a rect to allow click on blank. From F:\Personal\Virtual_Server\PHPWeb\D3 Pan drop drag\DeniseMauldin Box */
+//insert a rect, so that we can click on the blank area, to zoom out
+var thetreerect=svg.append('rect')
+    .attrs({
+    'class': 'treerect',
+    'width': svgwidth,
+    'height': svgheight,
+    'id': 'I created'
+    // 'stroke': 'black'
+    })
+    // .style('pointer-events', 'all')
+    // .classed ('background', true)
+    .on('contextmenu', ZoomInOutSelectedNode)
+    // on mouse over, show mouse position
+    // .on('mouseover', showmouseposition)
+; 
+
+
+/**0.3.3 Add a g in svg */
+var transfm= "translate(" + TreeMarginToSvg.left + "," + TreeMarginToSvg.top + ")";
+var thetreeG = addnewEle(null, null, null, 'thetreeg', svg, null, 'g', transfm );
+//!!!! here thetreeG.on('mousedown') does not work
+// thetreeG.on('mousedown', pan)
+
+
+
 /**A. load tree Data as a json obj from an external json file 
- * Note: getJsonFromlocalStorage is results from a IFFE function getting results from localStorage items.
+ * Note: getJsonFromsessionStorage is results from a IFFE function getting results from sessionStorage items.
  * Such arrangement solves asynchronous issues (i.e., treeJSON does not waiting for d3.json(), and carries on with null). 
 */
-treeData = getJsonFromlocalStorage;
+treeData = getJsonFromsessionStorage;
 // console.log('show treeJSON =======')
 /**check if treeJSON is an Array ([..]). If so, change it to a JSON like obj ({...}) */
 if (Array.isArray(treeData)){
@@ -81,105 +144,62 @@ rootdatapoint= d3.hierarchy(treeJSON, function(d) { return d.children; }); //v4
 /**B.1.2 calculate the number of columns and rows based on the datapoints in rootdatapoint
  * https://github.com/d3/d3-hierarchy/blob/master/README.md#tree
 */
-/*B.1.2.1, flatten the data points, putting them in an array */
-tmptreeinstance=d3.tree();
-flatterneddatapoints =tmptreeinstance(rootdatapoint).descendants();
+var flatterneddatapoints_sortedrowscols;
+var proposedTreesize = estTreesize(rootdatapoint)
+// console.log('the estimated tree size ()')
+// console.log(width_tree, height_tree)
 
-/**B.1.2.2 for each datapoint, get the sorted row and col number  */
-flatterneddatapoints_sortedrowscols=getSortedRowsCols(flatterneddatapoints);
+//Note!!! the function estTreesize() must stay in executive.js, as it will be used in executive.js. It should not be moved to components.js, as components.js has not be loaded when executive.js is running
+function estTreesize(therootdatapoint){
+    /*B.1.2.0, have a tree instance with default size setting */
+    var tmptreeinstance=d3.tree();    
+    /*B.1.2.1, flatten the data points, putting them in an array */
+    var flatterneddatapoints =tmptreeinstance(therootdatapoint).descendants(); // despite of the default tree()size setting, nodes in different rows yet have different d.x (e.g., 0.875, 0.75, etc. The diff is small but can be identified)
+    // console.log('flatterneddatapoints ===')
+    // console.log(flatterneddatapoints)
 
-/**B.1.2.3 get the maxrows and cols */
-var maxrowscols= getmaxrowscols(flatterneddatapoints_sortedrowscols)
-// console.log(maxrowscols)
+    /**B.1.2.2 for each datapoint, get the sorted row and col number  */
+    flatterneddatapoints_sortedrowscols=getSortedRowsCols(flatterneddatapoints);
 
-/**B.1.3 estimate the size of the tree
- * so, vertically the rows should be between_nodes_vertical apart from each other
- * horizontally, between_nodes_horizontal apart from each other
- * These parameters (between_nodes_vertical, ...) are defined in init.js
- * the width_tree should be (maxrows -1) * between_nodes_vertical plus padding (margin to top and bottom)
- * the height_tree should be (maxcols -1) * between_nodes_horizontal plus padding (margin to left and right)
- */
+    /**B.1.2.3 get the maxrows and cols */
+    var maxrowscols= getmaxrowscols(flatterneddatapoints_sortedrowscols)
+    // console.log('maxrowscols ===')
+    // console.log(maxrowscols)
 
-// one can never get the right paddings with the stupid design of d3.tree
-height_tree = maxrowscols[0] * between_nodes_vertical; // this will put rows with paddings of half the between_nodes_vertical top and bottom
-width_tree = maxrowscols[1] * between_nodes_horizontal;
+    /**B.1.3 estimate the size of the tree
+     * so, vertically the rows should be between_nodes_vertical apart from each other
+     * horizontally, between_nodes_horizontal apart from each other
+     * These parameters (between_nodes_vertical, ...) are defined in init.js
+     * the width_tree should be (maxrows -1) * between_nodes_vertical plus padding (margin to top and bottom)
+     * the height_tree should be (maxcols -1) * between_nodes_horizontal plus padding (margin to left and right)
+     */
 
-console.log('the estimated tree size ()')
-console.log(width_tree, height_tree)
+    // one can never get the right paddings with the stupid design of d3.tree
+    var height_tree = maxrowscols[0] * between_nodes_vertical; // this will put rows with paddings of half the between_nodes_vertical top and bottom
+    var width_tree = maxrowscols[1] * between_nodes_horizontal;
 
-/**B.1.4 
- * Now how to make the flatterned back to hierarchical structure?
- * d3.stratify()..., or, 
- * Do not have to, as the first element is with its descendants, i.e., in hierarchical structure!
-*/
+    return {'width': width_tree, 'height': height_tree}
+
+} // end estTreesize()
+
+
+// /**B.1.3 
+//  * Now how to make the flatterned back to hierarchical structure?
+//  * d3.stratify()..., or, 
+//  * Do not have to, as the first element is with its descendants, i.e., in hierarchical structure!
+// */
 rootdatapoint_sortedrowscols = flatterneddatapoints_sortedrowscols[0];
 
-/**B.1.5 add new properties (coordinates of the starting position) */
-rootdatapoint_sortedrowscols.x0 = height_tree /2;
-rootdatapoint_sortedrowscols.y0 = 0;
-rootdatapoint.x0= height_tree /2;;
-rootdatapoint.y0=0;
+/**B.1.4 add new properties (coordinates of the starting position) */
+rootdatapoint_sortedrowscols.x0 = proposedTreesize.height /2;
+rootdatapoint_sortedrowscols.y0 = 0; // this is only to do for once here when creating the tree for the first time. This line is not seen when updating the tree
+// rootdatapoint.x0= height_tree /2;;
+// rootdatapoint.y0=0;
 // console.log(rootdatapoint)
 // console.log(rootdatapoint_sortedrowscols)
 
 
-/**B.2.1 Add a svg in body **********************************/
-
-/**B.2.1.1 determine the svg */
-// var svgwidth = width_tree + TreeMarginToSvg.left + TreeMarginToSvg.right,
-//     svgheight = height_tree + TreeMarginToSvg.top + TreeMarginToSvg.bottom
-//     ; // by tree size
-// svgwidth = Math.max(svgwidth, width_treeviewbox); // the tree size or the viewbox size, which ever is larger
-// svgheight = Math.max(svgheight, height_treeviewbox);
-
-// modified! do not change the svg and the rect's size
-svgwidth = width_treeviewbox - borderweight_viewbox *2; 
-svgheight = height_treeviewbox - borderweight_viewbox*2;
-
-var svg = addnewEle(svgwidth, svgheight, null, 'thebigsvg', treeviewbox, null, 'svg', null );
-
-/**B.2.1.2 add a mouse position tip */
-// This trick is learned from https://github.com/Matt-Dionis/d3-map
-// var themousepositiontip = svg.append('g')
-//     .attr('class', 'mousepositiontip')
-// var mousetiptext=themousepositiontip.append('text')
-//     .attr('class', 'mousepositiontiptext')
-//     .style('opacity', '0')
-// ;
-
-
-/**B.2.2 enable zooming and pan, from F:\Personal\Virtual_Server\PHPWeb\D3 Pan drop drag\DeniseMauldin Box*/
-// svg.call(
-//     d3.zoom()
-//         .scaleExtent([1 / 2, 12])
-//         .on("zoom", zoomed) 
-// )
-/**B.2.3, append a rect to allow click on blank. From F:\Personal\Virtual_Server\PHPWeb\D3 Pan drop drag\DeniseMauldin Box */
-//insert a rect, so that we can click on the blank area, to zoom out
-var thetreerect=svg.append('rect')
-    .attrs({
-    'class': 'treerect',
-    'width': svgwidth,
-    'height': svgheight,
-    'id': 'I created'
-    // 'stroke': 'black'
-    })
-    // .style('pointer-events', 'all')
-    // .classed ('background', true)
-    .on('contextmenu', ZoomInOutSelectedNode)
-    // on mouse over, show mouse position
-    // .on('mouseover', showmouseposition)
-; 
-
-
-/**B.3 Add a g in svg */
-var transfm= "translate(" + TreeMarginToSvg.left + "," + TreeMarginToSvg.top + ")";
-var thetreeG = addnewEle(null, null, null, 'thetreeg', svg, null, 'g', transfm );
-//!!!! here thetreeG.on('mousedown') does not work
-// thetreeG.on('mousedown', pan)
-
-
-/**B.4 make a new tree */
+/**B.2 make a new tree */
 var treeinstance; // important: treeinstance has to be defined outside the function
 // according to the selected method, make a new tree
 if (newtreeMethod === 'bynodesize') {
@@ -204,7 +224,7 @@ if (newtreeMethod === 'bynodesize') {
      * it seems that separation() does not work when using size() 
      */
 
-    treeinstance = d3.tree().size([height_tree, width_tree]); // don't put it inside MakeChangeTree, as the bynodessize () method requires a different line (.nodeSize() instead of .size())
+    treeinstance = d3.tree().size([proposedTreesize.height, proposedTreesize.width]); // don't put it inside MakeChangeTree, as the bynodessize () method requires a different line (.nodeSize() instead of .size())
     // do not use the newtree_offsetNodeSizeMethodShiftError(), create the tree directly, not to adjust (no need) offset errors as nodeSize() method is not used
     // initially the treeG size is width: 160, height 60; 
     /** the above is to use size() method WITH specified tree size
@@ -233,8 +253,8 @@ custlink(rootdatapoint_sortedrowscols, updateTree.nodeupdate ); // add cross lin
 
 // the following shows the realy tree size after waiting for all jobs are done
 setTimeout (function (){
-    console.log('treesize after wait')
-    console.log(thetreeG.node().getBoundingClientRect())
+    // console.log('treesize after wait')
+    // console.log(thetreeG.node().getBoundingClientRect())
     // console.log(rootdatapoint_sortedrowscols)
     }, 3000
 );
@@ -246,7 +266,4 @@ setTimeout (function (){
 // console.log(rootdatapoint_sortedrowscols)
 
 
-//need to delete it somewhere
-// console.log(localStorage.getItem("loadedjsonstr"))
-//localStorage.removeItem("loadedjsonstr");
-console.log(localStorage.getItem("loadedjsonstr"))
+

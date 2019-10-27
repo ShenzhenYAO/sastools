@@ -135,17 +135,6 @@ https://bl.ocks.org/mbostock/4198499
 }
 
 }
-    
-
-// the correct way to reload a page, the key is to use localStorage, not sessionStorage (which will be rerased after reload)
-function document_reload(){
-    console.log('to reload page')
-    localStorage.setItem('pagereloaded', 'false')
-    if (localStorage.setItem === 'false'){
-        document.location.reload();
-        localStorage.setItem('pagereloaded', 'true')
-    }
-}
 
 
 

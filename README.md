@@ -1,5 +1,21 @@
 simple d3 v4 tree diagram. 
 *********************************************************************************************
+commit 17:110a
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$  Important milestone: The tree is now enabled for:
+$    - zoom in and out
+$    - pan
+$    - drag and drop to change node relationships
+$    - draw customized links
+$    - tree size updated as show/hide nodes or relationship of notes changed
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+1. Change localStorage back to sessionStorage, still works properly. The keeping refreshing issue is rather caused by document.location.reload(), which should be stopped after reloading. (see the function document_reload() in components.js)
+2. Automatically change the tree size as changes are made (e.g., show/hide nodes, drag and drop to change parents). Specifically, the automation is achieved by new lines before MakeChangeTree() to recalculate the treesize, redefine the vertical middle point of the first node, and update the tree instance with newly proposed tree size. 
+
+
+
+
 commit 16:109a
 1. add setTimeout to wait for 3 seconds, and get the final treeG size after waiting for all jobs are done
 2. add tests of different tree() method settings (with/without specifying tree width and height) in executive.js
