@@ -952,6 +952,8 @@ function dragdrop () {
                                     // children's depth = parent.depth +1
                                     v.depth = a.depth + 1;
                                     getdescendants_shownchildren(v)
+                                    getdescendants_hiddenchildren(v)// must have !!! for .children._children, also need  to update the depth
+
                                 })
                             }
                         }
@@ -964,6 +966,7 @@ function dragdrop () {
                                     // children's depth = parent.depth +1
                                     v.depth = a.depth + 1;
                                     getdescendants_hiddenchildren(v)
+                                    getdescendants_shownchildren(v) // must have !!! for ._children.children, also need to update the depth
                                 })
                             }
                         }

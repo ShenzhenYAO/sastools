@@ -1,4 +1,11 @@
 simple d3 v4 tree diagram. 
+
+commit 18: 111a
+
+1. Fix bug: cross update .children._children for their depth (recursively), as well as ._children.children in the dragdrop function in component.js
+
+
+
 *********************************************************************************************
 commit 17:110a
 
