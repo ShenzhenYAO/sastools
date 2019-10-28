@@ -2,16 +2,24 @@
 //https://github.com/d3/d3/blob/master/CHANGES.md		
 //http://bl.ocks.org/d3noob/8375092
 
-
-/*********************************************************************************** 
- * Note: the following only works in Google Chrome.
- * In firefox, the index page is constantly refreshing
- * The solution is: 
- *          Use Chrome!
- ***********************************************************************************/
+var d3body=d3.select('body');
 
 // 0.1 Add title and description
 addtitledesc();
+
+//event listeners and buttons, and slides, and other gadgets https://www.d3-graph-gallery.com/graph/interactivity_button.html
+// 0.2 add buttons
+// 0.2.1 new diagram (use jquery)
+var menudiv = d3body.append('div').attrs({'class': 'menudiv'})
+menudiv.append('button').attrs({'onclick': 'refreshAndCreateNewGrandTree()'}).text('New diagram')
+menudiv.append('button').attrs({'onclick': 'refreshAndImportFromEGPAfterReloading()'}).text('Import EGP')
+menudiv.append('input').attrs({'type': 'file', 'id':'file_input'})
+menudiv.append('button').attrs({'onclick': 'exportData_local()'}).text('ExportJSON').styles({'margin-right':'20px'})
+menudiv.append('button').attrs({'onclick': 'showSentences()'}).text('showTextBox')
+menudiv.append('button').attrs({'onclick': 'hideSentences()'}).text('hideTextBox')
+menudiv.append('button').attrs({'onclick': 'showSearch()', 'id':'showSearchBtn'}).text('Search')
+
+
 
 //0.2 add two boxes
 var bodyd3=d3.select('body');
@@ -112,10 +120,29 @@ var thetreeG = addnewEle(null, null, null, 'thetreeg', svg, null, 'g', transfm )
  * Note: getJsonFromsessionStorage is results from a IFFE function getting results from sessionStorage items.
  * Such arrangement solves asynchronous issues (i.e., treeJSON does not waiting for d3.json(), and carries on with null). 
 */
-treeData = getJsonFromsessionStorage;
+// the original method before this version are repalced with the following newTreebyJsonfromURL(). The new one does not require sessionStorge
+// treeData = getJsonFromsessionStorage;
+// NewTree (treeData)
 
-/**B make a new tree */
-NewTree(treeData)
+newTreebyJsonfromURL(treejsonURL)
+
+// // the following illustrates the timing of loading json, making tree, and the value of treeData, and root data point 
+// // initially it cannot be seen because of the asynchoronous settings.
+// console.log('before the tree is made')
+// console.log(treeData)
+
+// // after 5 seconds, they are all saved
+// setTimeout (function (){
+//     console.log('five seconds after the tree is made')
+//     console.log(treeData)
+//     console.log(rootdatapoint_sortedrowscols)
+//     thetreeG.select('g.nodeGs').attr('fakeattr', function(d){
+//             console.log(d)
+//         })
+//     }, 5000
+// );
+
+
 
 
 

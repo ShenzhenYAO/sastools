@@ -1,16 +1,19 @@
 // add title and descriptions
 function addtitledesc (){
+    var titlediv=d3body.append('div').attr('class', 'titlediv')
 	// add the h2 title
-	d3.select('body')
-	.append('h2')
-	.attr('class', 'pagehead')
-	.text('D3 try ' + window.location.href)
-	;
-
-	d3.select('body')
+	titlediv
 	.append('p')
-	.attr('class', 'headdesc')
-	.text('commit ' + gitcommitversion + ' to https://github.com/junkthem/simple_d3tree_v3tov4.io ')
+    .attr('class', 'pagehead')
+    .styles({'font-size': '30px', 'font-weight': 'bold'})
+    .text('D3 try ' + window.location.href )
+    .append('span')
+    .styles({'font-size': '12px', 'font-weight': 'normal'})
+    .text('------ commit ' + gitcommitversion + ': ')
+    .append('a')
+    .attrs({'href': 'https://github.com/junkthem/simple_d3tree_v3tov4.io', 'target':'_blank' })
+    .text('https://github.com/junkthem/simple_d3tree_v3tov4.io')
+	;
 }
 
 /* This part is to load json str and save to a sessionStorage item. That way to avoid the async issue
@@ -36,6 +39,16 @@ function loadjson (url) {
 	});
 }
 
+// load JOSN from URL, no need to use sessionStorage
+function newTreebyJsonfromURL(url){
+    d3.json(url, function(err, srcjson) {
+        if (err) throw error;
+        // create the tree data
+        treeData=srcjson
+        NewTree(treeData)
+    })
+}
+
 
 /** get the loaded jsonstr from a sessionStorage item, parse the jsonstr to a JSON obj, and save it to treeJSON
  * Note:
@@ -45,35 +58,90 @@ function loadjson (url) {
 	IFFE style can return values without asynchronous issues.
  */
 
-const getJsonFromsessionStorage  = (function () {
-	// 1. load json inot a sessionStorage item (loadedjsonstr)
-	loadjson (treejsonURL); //Note: the loadjson() has to run within getJsonFromsessionStorage Otherwise the sessionStorage Item cannot properly work.
-    /* again the trick is to show the sessionStorage item in console.log. If not, the sessionStorage item will be null
-        and the page is not reloaded
-        This problem because using sessionStorage. When using sessionStorage, such problem disappears
-        */
-    // console.log(sessionStorage.getItem("loadedjsonstr")) ////
-    if (sessionStorage.getItem("loadedjsonstr") === null ){
-        // document.location.reload();
-        document_reload();
-    }
-    var loadedjsonstr = sessionStorage.getItem("loadedjsonstr");
-    // console.log(loadedjsonstr)
-    sessionStorage.removeItem("loadedjsonstr") // this line does not work
-    return JSON.parse(loadedjsonstr);
-})()
+// const getJsonFromsessionStorage  = (function () {
+// 	// 1. load json inot a sessionStorage item (loadedjsonstr)
+// 	loadjson (treejsonURL); //Note: the loadjson() has to run within getJsonFromsessionStorage Otherwise the sessionStorage Item cannot properly work.
+//     /* again the trick is to show the sessionStorage item in console.log. If not, the sessionStorage item will be null
+//         and the page is not reloaded
+//         This problem because using sessionStorage. When using sessionStorage, such problem disappears
+//         */
+//     // console.log(sessionStorage.getItem("loadedjsonstr")) ////
+//     if (sessionStorage.getItem("loadedjsonstr") === null ){
+//         // document.location.reload();
+//         document_reload();
+//     }
+//     var loadedjsonstr = sessionStorage.getItem("loadedjsonstr");
+//     // console.log(loadedjsonstr)
+//     sessionStorage.removeItem("loadedjsonstr") // this line does not work
+//     return JSON.parse(loadedjsonstr);
+// })()
 
 /** reload the page for one time (this is to fix the bug of firefox that'document.location.reload()' causes
  *  firefox to constantly reload the doc )
  */
 function document_reload(){
-    console.log('to reload page')
+    // console.log('to reload page')
     sessionStorage.setItem('pagereloaded', 'false')
     if (sessionStorage.setItem === 'false'){
         document.location.reload();
         sessionStorage.setItem('pagereloaded', 'true')
     }
 }
+
+
+/**JQuery to check DOM Element changes and take actions as specified*/
+$(document).ready(function(){
+    //load existing file
+    $('#file_input').on('change', function(){
+
+       //console.log(this.files) // 'this' refers the input DOM element, this.files are a list of files (e.g., multiple files are selected in the open file dialog box)
+       var thefirstfileobj = this.files[0]; // the value of thefirstfile is a map with fields like 'name;, size, type, etc.
+        // console.log(thefirstfile)
+
+        // use the function readfile to read the first file, get the treeData, and use the treedata to make a new tree
+        readlocalfile(thefirstfileobj, function(f) { // the 'funciton(f){...}' part is the call back function coresponding to the 'callback' in the function readfile()
+            // console.log(f.target.result)
+            treeData=JSON.parse(f.target.result)
+            // create the tree data
+            NewTree(treeData)
+        });
+
+    });//end load existing file
+    
+    // //load subtree;
+    //         //load existing file
+    // $('#sub_input').on('change', function(e){
+
+    //     console.log(e)
+    //     readFile(this.files[0], function(f) {
+    //         //manipulate with result...
+    //         //$('#output_field').text(e.target.result);
+    //         //console.log(typeof(e.target.result))
+    //         var theLoadedSubJSON=JSON.parse(f.target.result); //f.target.result must be like [{"thekey": "thevalue"}] (i.e., theKey must be quoted)
+    //         //console.log(currentDataEle)
+    //         //theTasksAndCrosslinks=theLoadedJSON[0]
+    //         currentDataEle._subjson=theLoadedSubJSON;
+    //         //close the modal;
+    //         document.getElementById('ManageSubtreeModal').style.display="none";
+    //         //the text won't be updated on screen, unless the node html ele is deleted, and updated.
+    //         currentDataEle.theNodeG.remove();
+    //         updateTree(currentDataEle)
+    //     });
+
+    // }); //end of load subtree
+    
+    
+});//end of doc ready watch
+
+//https://developer.mozilla.org/en-US/docs/Web/API/FileReader
+// read contents of a local file
+function readlocalfile(thefileobj, callback_whendoneDosomething){ // the fileobj is a file system object, containing file name, size, path, etc.
+    var newreaderinstance = new FileReader(); // create a new instance of FileReader() class
+    newreaderinstance.readAsText(thefileobj); // use the method readAsText of the new instance to read the file
+    newreaderinstance.onload = callback_whendoneDosomething; // when the loading is done, run the call back function defined in the readfile instance
+}
+
+
 
 
 /**add a new element */

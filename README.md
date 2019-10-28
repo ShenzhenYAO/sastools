@@ -1,4 +1,8 @@
 simple d3 v4 tree diagram. 
+commit 113a
+
+Load file from URL and from local by functions readlocalfile(), and newTreebyJsonfromURL() in components.js
+
 commit 19: 112a
 
 1. simplify the executive.js, put the tree creating steps into NewTree() and move it to component.js

@@ -19,5 +19,12 @@
 		stroke-dasharray: 3,3;
 	}
 
+	.menudiv {
+		margin: 5px;
+        padding: 5px;
+	}
+	button {
+		margin: 2px;
+	}
 
 
