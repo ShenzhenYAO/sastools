@@ -11,8 +11,8 @@ addtitledesc();
 // 0.2 add buttons
 // 0.2.1 new diagram (use jquery)
 var menudiv = d3body.append('div').attrs({'class': 'menudiv'})
-menudiv.append('button').attrs({'onclick': 'refreshAndCreateNewGrandTree()'}).text('New diagram')
-menudiv.append('button').attrs({'onclick': 'refreshAndImportFromEGPAfterReloading()'}).text('Import EGP')
+menudiv.append('button').attrs({'onclick': 'CreateNewGrandTree()'}).text('New diagram')
+menudiv.append('button').attrs({'onclick': 'ImportFromEGPAfterReloading()'}).text('Import EGP')
 menudiv.append('input').attrs({'type': 'file', 'id':'file_input'})
 menudiv.append('button').attrs({'onclick': 'exportData_local()'}).text('ExportJSON').styles({'margin-right':'20px'})
 menudiv.append('button').attrs({'onclick': 'showSentences()'}).text('showTextBox')

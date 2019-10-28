@@ -1,4 +1,12 @@
 simple d3 v4 tree diagram. 
+commit 115a
+
+
+
+commit 114a
+
+Create a new tree
+
 commit 113a
 
 Load file from URL and from local by functions readlocalfile(), and newTreebyJsonfromURL() in components.js

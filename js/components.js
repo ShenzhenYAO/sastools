@@ -89,6 +89,29 @@ function document_reload(){
 }
 
 
+
+// if the 'new diagram' button is clicked
+function CreateNewGrandTree(){
+	// console.log("refresh and run newGrandTree")
+    //create a new treeJSon, assign idx
+    treeData=[{idx:generateUUID(), name:"new"}]
+    // make a new tree
+    NewTree(treeData)
+}
+
+// randomly generate a non-repeating id
+//https://bl.ocks.org/adamfeuer/042bfa0dde0059e2b288
+function generateUUID(){
+    var d = new Date().getTime();
+    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = (d + Math.random()*16)%16 | 0;
+        d = Math.floor(d/16);
+        return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+    });
+    return uuid;
+};
+
+
 /**JQuery to check DOM Element changes and take actions as specified*/
 $(document).ready(function(){
     //load existing file
