@@ -475,7 +475,7 @@ function NewTree(thetreedata){
 
     var proposedTreesize = estTreesize(rootdatapoint)
     // console.log('the estimated tree size ()')
-    // console.log(width_tree, height_tree)
+    // console.log(proposedTreesize.width, proposedTreesize.height)
 
 
     // /**B.1.3 
@@ -1504,3 +1504,140 @@ function getSortedRowsCols(thisDataArray){
 }	//end of function
 
 
+
+	//sava tasks and crosslinks into a local JSON file
+	function exportData_local_d3v4(){
+		//expand all
+		//expandAll(theGrandRoot_obj) //it causes error and stop exporting
+		
+        //newidea, purify the root data by only selecting the ones won't causing circular structure
+        var thesrcdata=[rootdatapoint_sortedrowscols.data]// this is for v4, as the root data structure is different from that of v3
+        //However, simply taking the .data part at the root level is good enough, as the data inside has the same structure  as thatof v3
+
+
+        // console.log(thesrcdata)
+		var updatedData=selectCopy(thesrcdata)		
+        // console.log(updatedData)	
+        	
+		var fileName = "myData";
+		//save it to local disk
+		saveData(updatedData, fileName);		
+    }
+    
+    /* a function saveData*/
+	var saveData = (function () {
+		/*In the function, create an invisible element, which is a hyperlink named 'a'*/
+		var a = document.createElement("a");
+			/*in the body section of the current document, create a child element, with a tag name of 'a' (in html, those tagged 'a' is for hyperlink*/
+				document.body.appendChild(a);
+				/*make it invisible*/
+				a.style = "display: none";
+				/*the next is to return strings from the second function as command lines.
+					for the second function, the parameters 'data' and 'filename' are from the first function*/
+				return function (data, fileName) {
+					/*create a variable called 'json', to make the object 'data' into plain text*/
+					var json = JSON.stringify(data),
+						/*create a blob object
+							a blob is a file like object.
+							https://developer.mozilla.org/en-US/docs/Web/API/Blob
+							make it a binary type (octet/strem)
+						*/
+						blob = new Blob([json], {type: "octet/stream"}),
+						/*Pop up a window, for saving the created blob object*/
+						url = window.URL.createObjectURL(blob);
+						
+						/*make the link of the a element as the url*/
+						a.href = url;
+						/*set the name of the downloaded file*/
+						a.download = fileName;
+						/*click to go to the url, i.e., to open the SavaAs window*/
+						a.click();
+						/*display the savaAs window*/
+						window.URL.revokeObjectURL(url);
+						};
+			}());
+
+
+//select the properties to be copied into the cleaned JSON for export
+//this part is updated as the root data structure changed in d3v4
+function selectCopy(obj){
+	var ar2 = []; // create empty array to hold copy
+
+	for (var i = 0, len = obj.length; i < len; i++) {
+		ar2[i] = {}; // empty object to hold properties added below
+		for (var prop in obj[i]) {
+			if(
+			prop === "idx" ||
+			prop === "name" ||
+			prop === "NodeDescription"
+			) {
+			ar2[i][prop] = obj[i][prop]; // copy properties from arObj to ar2
+			}
+			if (prop === "children" && obj[i][prop] !== null){
+				var theNewChildren=[];
+				var theChildren = obj[i][prop];
+				//console.log("theChildren")
+				//console.log(theChildren)
+				theChildren.forEach(function(d){
+				//console.log("theChild")
+				//console.log([d])
+					var theNewKid= selectCopy([d]);
+					
+					if (theNewKid[0][0]=== undefined){
+						var theNewKid2=theNewKid[0];
+					}else{
+						var theNewKid2=theNewKid[0][0];
+					}
+					//console.log("theNewKid")
+					//console.log(theNewKid2)
+					theNewChildren.push(theNewKid2);
+				})
+				ar2[i][prop]=theNewChildren;
+			}//children
+			if (prop === "_children" && obj[i][prop] !== null){
+				var theNewChildren=[];
+				var theChildren = obj[i][prop];
+				//console.log("_theChildren")
+				//console.log(theChildren)
+				theChildren.forEach(function(d){
+				//console.log("_theChild")
+				//console.log([d])
+					var theNewKid= selectCopy([d]);
+					
+					if (theNewKid[0][0]=== undefined){
+						var theNewKid2=theNewKid[0];
+					}else{
+						var theNewKid2=theNewKid[0][0];
+					}
+					//console.log("theNewKid")
+					//console.log(theNewKid2)
+					theNewChildren.push(theNewKid2);
+				})
+				ar2[i][prop]=theNewChildren;
+			}//_children
+			if (prop === "_subjson"){
+				var theNewChildren=[];
+				var theChildren = obj[i][prop];
+				//console.log("theChildren")
+				//console.log(theChildren)
+				theChildren.forEach(function(d){
+				//console.log("theChild")
+				//console.log([d])
+					var theNewKid= selectCopy([d]);
+					
+					if (theNewKid[0][0]=== undefined){
+						var theNewKid2=theNewKid[0];
+					}else{
+						var theNewKid2=theNewKid[0][0];
+					}
+					//console.log("theNewKid")
+					//console.log(theNewKid[0][0])
+					theNewChildren.push(theNewKid2);
+				})
+				ar2[i][prop]=theNewChildren;
+			}//_subjson
+		}
+	};
+	return ar2;
+}	
+	

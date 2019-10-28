@@ -1,7 +1,7 @@
 simple d3 v4 tree diagram. 
 commit 115a
 
-
+Export as an JSON to a local file
 
 commit 114a
 
