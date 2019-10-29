@@ -1,4 +1,9 @@
 simple d3 v4 tree diagram. 
+commit 117a
+
+1. Us JS to create the 'add new node 'modal, instead of using html
+
+
 commit 116a
 1. Right click menu
 2. Collapse nodes when click the item 'collapse' in the right click menu

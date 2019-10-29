@@ -1757,7 +1757,7 @@ function confirmDelete(){
 function showCreateForm(){
 
 	// Get the modal
-		var modal = document.getElementById('CreateModal');
+		var modal = document.getElementById('NewNode');
 
 		// Get the button that opens the modal
 		//var btn = document.getElementById("myBtn");
@@ -1773,7 +1773,7 @@ function showCreateForm(){
 		// When the user clicks on <span> (x), close the modal
 		span.onclick = function() {
 		  modal.style.display = "none";
-		  closeCreateModal();
+		  closeNewNodeModal();
 		}
 
 		// When the user clicks anywhere outside of the modal, close it
@@ -1784,8 +1784,8 @@ function showCreateForm(){
 		}
 }
 
-function closeCreateModal(){
-	document.getElementById('CreateModal').style.display = "none";
+function closeNewNodeModal(){
+	document.getElementById('NewNode').style.display = "none";
 }
 
 
@@ -1849,7 +1849,7 @@ function createNode() {
     }
     
     //close the pop up menu
-    document.getElementById('CreateModal').style.display = "none";
+    document.getElementById('NewNode').style.display = "none";
 
 
     //do the make chagnge tree, and also do the custline updateTree(theParentToAppendChild.tree_obj.dataroot)
