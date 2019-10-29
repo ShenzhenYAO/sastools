@@ -38,7 +38,7 @@
 
 /**global vars */
 var 
-    gitcommitversion = '115a',
+    gitcommitversion = '116a',
 
     treejsonURL = 'data/doctype.json',     // the url of the external json file with tree data
     treeData,   // to hold the tree data 
@@ -123,7 +123,125 @@ var
 
 var makechangetreeresult={}; // this is to save features produced by makechangetree
 
+// for modals
+var theParentToAppendChild;
 
+
+// right click menu
+
+var menu = [
+    {
+            title: 'Show or hide subtree',
+            action: function(elm, d, i) {
+                    //console.log('Show subtree');
+                rightclick_toggleExpandDetails(d);	
+            }
+    },
+    {
+            title: 'Rename node',
+            action: function(elm, d, i) {
+                    //console.log('Rename node');
+                    theNodeToRename=d; //set a global var theNodeToRename to remember the clicked node
+                    showRenameForm();
+                    //show the current node name
+                    $('#RenameNodeName').val(d.name);
+                    $('#RenameNodeName').focus();
+            }
+    },
+    {
+        title: 'Delete node',
+        action: function(elm, d, i) {
+
+            //confirm the delete action
+            var confirmdel=confirmDelete();
+            if (confirmdel===true && d.parent !== null & d.parent !== undefined ){
+                //console.log('Delete node');
+                // console.log(d)
+            
+                deleteNode(d);
+
+                var proposedTreesize=estTreesize(rootdatapoint_sortedrowscols)
+                //   console.log(proposedTreesize.width, proposedTreesize.height)
+                rootdatapoint_sortedrowscols.x0 = proposedTreesize.height /2; // redefine the vertical middle point for position the root node
+                
+                // create the tree instance using proposed tree size (according for the changes made for show/hiding nodes)
+                treeinstance = d3.tree().size([proposedTreesize.height, proposedTreesize.width]);
+                updateTree= MakeChangeTree(rootdatapoint_sortedrowscols) 
+                pan ()
+                custlink(rootdatapoint_sortedrowscols, updateTree.nodeupdate )
+            }                    
+        }
+    },
+    {
+            title: 'New node',
+            action: function(elm, d, i) {
+                    //console.log('Create child node');
+                    theParentToAppendChild = d;
+                    // console.log(theParentToAppendChild)
+                    showCreateForm();
+                    //create_node_modal_active = true;
+                    //$('#CreateNodeModal').foundation('reveal', 'open');
+                    $('#CreateNodeName').val("New"); //by default, the name of the new node is 'New'
+                    $('#CreateNodeName').focus();
+            }
+    },
+    {
+            title: 'Add description',
+            action: function(elm, d, i) {
+                    //console.log('Add description');
+                    currentDataEle = d;
+                    showInputTextForm();
+                    //create_node_modal_active = true;
+                    //$('#CreateNodeModal').foundation('reveal', 'open');
+                   $('#myInputBox').focus();
+            }
+    }
+    ,
+    {
+            title: 'Manage subtree',
+            action: function(elm, d, i) {
+                    currentDataEle = d;
+                    showMangeSubtreeForm();
+                    //create_node_modal_active = true;
+                    //$('#CreateNodeModal').foundation('reveal', 'open');
+                    //$('#CreateNodeName').focus();
+            }
+    }
+    ,
+    {
+            title: 'ExpandAll',
+            action: function(elm, d, i) {
+                    //currentDataEle = d;
+                    expandAll(d);
+                    //create_node_modal_active = true;
+                    //$('#CreateNodeModal').foundation('reveal', 'open');
+                    //$('#CreateNodeName').focus();
+            }
+    }
+    ,
+    {
+            title: 'CollapesAll',
+            action: function(elm, d, i) {
+                    //currentDataEle = d;
+                    //console.log(elm);
+                    //console.log(d)
+                    collapse(d) //check if the function exists
+                    
+            }
+    }
+    ,
+    {
+            title: 'ZoomIn',
+            action: function(elm, d, i) {
+                    //currentDataEle = d;
+                    //console.log(elm);
+                    //console.log(d)
+                    ZoomInOutSelectedNode(d) //check if the function exists
+                    
+            }
+    }
+
+]
 
 
 

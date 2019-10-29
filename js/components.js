@@ -222,7 +222,7 @@ function MakeChangeTree(parentdatapoint) {
 		.attr("transform", function(d) {
 			return "translate(" + parentdatapoint.y0 + "," + parentdatapoint.x0 + ")"; }) //each g are added at the position x0,y0 of the source data
 		.on("click", showhidedescendants)
-        .on('contextmenu', ZoomInOutSelectedNode) // right click to zoom in/out
+        .on('contextmenu', d3.contextMenu(menu))//ZoomInOutSelectedNode) // right click to zoom in/out
         .on("mousedown", dragdrop)  //check the newest version of dragdrop in components.js
     ;
     // console.log('nodeEnter ======')
@@ -379,6 +379,7 @@ function diagonal(s, d) {
 function showhidedescendants(d) {
 	//console.log("a node is clicked");
     //console.log(d);
+
     if (d.children) {
         d._children = d.children;
         d.children = null;
@@ -393,6 +394,7 @@ function showhidedescendants(d) {
     // create the tree instance using proposed tree size (according for the changes made for show/hiding nodes)
     treeinstance = d3.tree().size([proposedTreesize.height, proposedTreesize.width]);
     updateTree = MakeChangeTree(d);
+    pan();
     custlink(rootdatapoint_sortedrowscols, updateTree.nodeupdate ); // add cross link, it should be separate from
 }	
 
@@ -432,11 +434,22 @@ function estTreesize(therootdatapoint){
 // Collapse the node and all it's children. It is also new in d3v4
 // recursively collapse all nodes
 function collapse(d) {
+    
 	if(d.children) {
 		d._children = d.children
 		d._children.forEach(collapse)
 		d.children = null
-	}
+    }
+
+    var proposedTreesize=estTreesize(rootdatapoint_sortedrowscols)
+    //   console.log(proposedTreesize.width, proposedTreesize.height)
+    rootdatapoint_sortedrowscols.x0 = proposedTreesize.height /2; // redefine the vertical middle point for position the root node
+    // create the tree instance using proposed tree size (according for the changes made for show/hiding nodes)
+    treeinstance = d3.tree().size([proposedTreesize.height, proposedTreesize.width]);
+    updateTree = MakeChangeTree(d);
+    pan();
+    custlink(rootdatapoint_sortedrowscols, updateTree.nodeupdate ); // add cross link, it should be separate from 
+
 }
 
 // create a new tree, add pan and custlinks
@@ -466,8 +479,7 @@ function NewTree(thetreedata){
     /**B.1.1 Get the rootdatapointdata point. Also for each data point calculate the default x and y coordinates
      * Note: rootdatapointis not only the rootdatapointitself. it also contains its descendants (i.e., children, grandchildren... etc).  
     */
-    var rootdatapoint= d3.hierarchy(treeJSON, function(d) { return d.children; }); //v4
-
+    var rootdatapoint= d3.hierarchy(treeJSON, function(d) { return d.children; }); //v4 Note: it creates .depth and .height, but not .id
 
     /**B.1.2 calculate the number of columns and rows based on the datapoints in rootdatapoint
      * https://github.com/d3/d3-hierarchy/blob/master/README.md#tree
@@ -721,6 +733,7 @@ function zoomed() {
 /**the function to select a node, zoom in/out it, and put it in the center */
   //ZoomInOutSelectedNode: zoom in out the selected note
   function ZoomInOutSelectedNode(d){
+
     //disable the default right click menu
     d3.event.preventDefault(); 
 
@@ -928,7 +941,7 @@ function getmousekey(){
 // when the mouse is pressed down, the following actions will be triggled
 // drag and drop function works when a mousedown is detected for a g.nodeGs element, which is set in components.MakeChangeTree()    
 function dragdrop () {
-
+    
     event.stopPropagation(); // the mousedown is also listened by the treeG (for dragging the map) This line prevents
 
     var mousedown=1; // to indicate that mousedown status = 1 (this is for debug purpose)
@@ -981,6 +994,8 @@ function dragdrop () {
         var mousemove= 1;
         // console.log( '2. mousedown & move = ' + mousedown + ',' + mousemove)
         d3.event.preventDefault();// prevent the default text dragging
+
+        
 
         // make the selected g and its components dimmed
         // ideally once the mouse move is detected, it is better to make the selected node and its descendants invisible. 
@@ -1041,6 +1056,8 @@ function dragdrop () {
         d3.selectAll('g.nodeGs')    
             .attr('pointer-events', 'mouseover') //? is this line a must???
             .on("mouseover", function(d){
+
+
                 // console.log('3. mousedown move = ' + mousedown + ',' + mousemove + ' over the node: ' + d.data.name)
                 mouseoverObj = d3.select(this)
                 mouseoverObj.select('circle.nodecircles').style('fill', nodecircle_fill_dragover_color);
@@ -1267,8 +1284,9 @@ function dragdrop () {
                       
                         // create the tree instance using proposed tree size (according for the changes made for show/hiding nodes)
                         treeinstance = d3.tree().size([proposedTreesize.height, proposedTreesize.width]);
-                         updateTree= MakeChangeTree(rootdatapoint_sortedrowscols) 
-                         custlink(rootdatapoint_sortedrowscols, updateTree.nodeupdate )
+                        updateTree= MakeChangeTree(rootdatapoint_sortedrowscols) 
+                        pan()
+                        custlink(rootdatapoint_sortedrowscols, updateTree.nodeupdate )
                     }
                 })
 
@@ -1461,8 +1479,6 @@ function getSortedRowsCols(thisDataArray){
         function(d,i){
             rows2[i]={value:d, oldindex:i};
         }
-        
-
     );
     //console.log(cols1)			
     var cols3=cols2.sort(function(a,b){
@@ -1640,4 +1656,214 @@ function selectCopy(obj){
 	};
 	return ar2;
 }	
-	
+    
+
+
+/*contextmenu************************************************
+https://bl.ocks.org/adamfeuer/042bfa0dde0059e2b288
+*/
+d3.contextMenu = function (menu, openCallback) {
+
+
+	// create the div element that will hold the context menu
+	d3.selectAll('.d3-context-menu').data([1])
+		.enter()
+		.append('div')
+		.attr('class', 'd3-context-menu');
+
+	// close menu
+    d3.select('body').on('click.d3-context-menu', function() {
+		d3.select('.d3-context-menu').style('display', 'none');
+    });
+
+	// this gets executed when a contextmenu event occurs
+	return function(data, index) {
+        var elm = this;
+
+		d3.selectAll('.d3-context-menu').html('');
+		var list = d3.selectAll('.d3-context-menu').append('ul');
+		list.selectAll('li').data(menu).enter()
+			.append('li')
+			.html(function(d) {
+				return (typeof d.title === 'string') ? d.title : d.title(data);
+			})
+			.on('click', function(d, i) {
+				d.action(elm, data, index);
+                d3.select('.d3-context-menu').style('display', 'none');
+			});
+
+		// the openCallback allows an action to fire before the menu is displayed
+		// an example usage would be closing a tooltip
+		if (openCallback) {
+			if (openCallback(data, index) === false) {
+				return;
+			}
+		}
+
+		// display context menu
+		d3.select('.d3-context-menu')
+			.style('left', (d3.event.pageX - 2) + 'px')
+			.style('top', (d3.event.pageY - 2) + 'px')
+			.style('display', 'block');
+
+		d3.event.preventDefault();
+        d3.event.stopPropagation();
+        d3.select(window).on('mousedown', null) //// !!!! must have. Without it, it'll trigger mouse down for panning
+
+	};
+};
+/*End of contextmenu*************************************************/
+
+
+
+/**The following part is to delete a new node**************** */
+
+function deleteNode(theNode){
+    //determine the parent of theNode
+    var theParent=theNode.parent;
+    // console.log('the new node before deleting ===')
+    // console.log(theNode)
+    //if the node has parent, find theNode as the children of its parent
+    if (theParent !== undefined && theParent !== null ){
+        for (i=0;i<theParent.children.length;i++){
+            if (theParent.data.children[i].idx === theNode.data.idx){//d3v4 (add .data)
+//console.log(i, theParent.children[i].idx)
+                theParent.children.splice(i,1)
+                theParent.data.children.splice(i,1) //d3v4
+//console.log(i, theParent.children)
+            }
+        }
+    }
+    // console.log(theParent.children.length)
+    if (theParent.children.length === 0) { // theParent.children === [] does not work
+        delete theParent['children']
+        // console.log(theParent)
+    } // new from try 89 (if .children = [], remove .children )
+    if (theParent.data.children.length === 0) {
+        delete theParent.data['children']
+    } // new from try 89 (if .data.children = [], remove .children )
+}
+
+//confirm to delete
+function confirmDelete(){
+    var del = confirm("Confirm to delete!");
+  return del;
+}
+
+/**The above part is to delete a new node**************** */
+
+
+/**The following part is  to creating a new node**************** */
+function showCreateForm(){
+
+	// Get the modal
+		var modal = document.getElementById('CreateModal');
+
+		// Get the button that opens the modal
+		//var btn = document.getElementById("myBtn");
+
+		// Get the <span> element that closes the modal
+		var span = document.getElementById("CreateClose");
+
+		// When the user clicks on the button, open the modal 
+//		d.onclick = function() {
+		  modal.style.display = "block";
+//		}
+
+		// When the user clicks on <span> (x), close the modal
+		span.onclick = function() {
+		  modal.style.display = "none";
+		  closeCreateModal();
+		}
+
+		// When the user clicks anywhere outside of the modal, close it
+		window.onclick = function(event) {
+		  if (event.target == modal) {
+			//modal.style.display = "none";
+		  }
+		}
+}
+
+function closeCreateModal(){
+	document.getElementById('CreateModal').style.display = "none";
+}
+
+
+function createNode() {
+
+    // console.log(theParentToAppendChild) // it is defined in the var 'menu' (init.js). It is the data point of the node right clicked for creating node
+    
+    var name = $('#CreateNodeName').val();
+    //create an uid for the new node
+    var theUID='MY' + generateUUID();
+    /**Following is the structure of a new data point:
+     * .data
+     *      .idx
+     *      .name
+     * .depth: <the parent node's depth + 1>
+     * .height:0
+     * .parent: <the node to which the new node will be appended>     
+     * .x0 <the parent node's x>* 
+     * .y0 (the parent node's y)
+     */
+    var theNewKid = 
+        {// modified from try 89
+        'data': {
+            'idx':theUID,
+            'name': name
+        },
+        'depth': theParentToAppendChild.depth + 1,
+        'height': 0, 
+        'parent': theParentToAppendChild,
+        'x0': theParentToAppendChild.x,
+        'y0': theParentToAppendChild.y
+    }
+
+
+    // console.log(theNewKid)
+    console.log(theParentToAppendChild)
+
+    //push it into theParentToAppendChild;
+    //if there is no children, nor _children
+    if ((theParentToAppendChild.children === undefined ||  theParentToAppendChild.children === null)
+            && (theParentToAppendChild._children === undefined || theParentToAppendChild._children === null)
+    ){
+        theParentToAppendChild.children=[];
+        theParentToAppendChild.children.push(theNewKid); // if both .children and ._children are null or undefined
+        theParentToAppendChild.data.children=[];
+        theParentToAppendChild.data.children.push(theNewKid.data) // new in d3V4
+    }else{
+        if ( (theParentToAppendChild.children === null  || theParentToAppendChild.children ===undefined) 
+                    &&  theParentToAppendChild._children !== null && theParentToAppendChild._children !==undefined								
+        ){
+            theParentToAppendChild._children.push(theNewKid);	// if .children is null/undefined, but _children is not	
+            theParentToAppendChild.data.children.push(theNewKid.data) // new in d3v4. hmm, in .data, it is always like data.children, nothing like data._children			
+        }else {
+                if ( theParentToAppendChild.children !== null  && theParentToAppendChild.children !== undefined  ) {
+                    theParentToAppendChild.children.push(theNewKid); // if ._children is null/undefined, but .children is not
+                    theParentToAppendChild.data.children.push(theNewKid.data) // new in d3V4
+                }else {
+                    console.log("something is wrong, line 1751") // if both .children and ._children have things inside
+                }
+        }
+    }
+    
+    //close the pop up menu
+    document.getElementById('CreateModal').style.display = "none";
+
+
+    //do the make chagnge tree, and also do the custline updateTree(theParentToAppendChild.tree_obj.dataroot)
+    var proposedTreesize=estTreesize(rootdatapoint_sortedrowscols)
+    //   console.log(proposedTreesize.width, proposedTreesize.height)
+    rootdatapoint_sortedrowscols.x0 = proposedTreesize.height /2; // redefine the vertical middle point for position the root node
+    // create the tree instance using proposed tree size (according for the changes made for show/hiding nodes)
+    treeinstance = d3.tree().size([proposedTreesize.height, proposedTreesize.width]);
+    updateTree = MakeChangeTree(theParentToAppendChild);
+    pan ()
+    custlink(rootdatapoint_sortedrowscols, updateTree.nodeupdate ); // add cross link, it should be separate from
+    // console.log('rootdatapoint_sortedrowscols ===')
+    // console.log(rootdatapoint_sortedrowscols)
+}
+
+/**The above part is to creating a new node**************** */
+

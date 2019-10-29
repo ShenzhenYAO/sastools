@@ -10,14 +10,14 @@ addtitledesc();
 //event listeners and buttons, and slides, and other gadgets https://www.d3-graph-gallery.com/graph/interactivity_button.html
 // 0.2 add buttons
 // 0.2.1 new diagram (use jquery)
-var menudiv = d3body.append('div').attrs({'class': 'menudiv'})
-menudiv.append('button').attrs({'onclick': 'CreateNewGrandTree()'}).text('New diagram')
-menudiv.append('button').attrs({'onclick': 'ImportFromEGPAfterReloading()'}).text('Import EGP')
-menudiv.append('input').attrs({'type': 'file', 'id':'file_input'})
-menudiv.append('button').attrs({'onclick': 'exportData_local_d3v4()'}).text('ExportJSON').styles({'margin-right':'20px'})
-menudiv.append('button').attrs({'onclick': 'showSentences()'}).text('showTextBox')
-menudiv.append('button').attrs({'onclick': 'hideSentences()'}).text('hideTextBox')
-menudiv.append('button').attrs({'onclick': 'showSearch()', 'id':'showSearchBtn'}).text('Search')
+var buttonsdiv = d3body.append('div').attrs({'class': 'buttonsdiv'})
+buttonsdiv.append('button').attrs({'onclick': 'CreateNewGrandTree()'}).text('New diagram')
+buttonsdiv.append('button').attrs({'onclick': 'ImportFromEGPAfterReloading()'}).text('Import EGP')
+buttonsdiv.append('input').attrs({'type': 'file', 'id':'file_input'})
+buttonsdiv.append('button').attrs({'onclick': 'exportData_local_d3v4()'}).text('ExportJSON').styles({'margin-right':'20px'})
+buttonsdiv.append('button').attrs({'onclick': 'showSentences()'}).text('showTextBox')
+buttonsdiv.append('button').attrs({'onclick': 'hideSentences()'}).text('hideTextBox')
+buttonsdiv.append('button').attrs({'onclick': 'showSearch()', 'id':'showSearchBtn'}).text('Search')
 
 
 

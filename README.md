@@ -1,4 +1,12 @@
 simple d3 v4 tree diagram. 
+commit 116a
+1. Right click menu
+2. Collapse nodes when click the item 'collapse' in the right click menu
+3. Delete a node when click the item 'delete node' in the right click menu
+4. Build modals
+5. Append a new node when click the item 'add node' in the right click menu
+6. fixed the bug that after right click, the mouse is sticked for moving (the bug is fixed in 'd3.contextMenu' by adding 'd3.select(window).on('mousedown', null)') 
+
 commit 115a
 
 Export as an JSON to a local file
