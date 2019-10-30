@@ -1293,7 +1293,6 @@ function dragdrop () {
             })
         }
 
-
         // stop mouseover actions
         d3.selectAll('g.nodeGs').on("mouseover", null)
 
@@ -1310,6 +1309,9 @@ function dragdrop () {
         pseudoNodeCircle.attr('r', 1e-6)
         // hide the text box 
         pseudoNodeText.text('').style("opacity", 1e-6)
+
+        // resume rightclick  actions for showing contextmenu
+        d3.selectAll('g.nodeGs').on("contextmenu", d3.contextMenu(menu))
     }
 
 } // end drag drop
@@ -1757,31 +1759,33 @@ function confirmDelete(){
 function showCreateForm(){
 
 	// Get the modal
-		var modal = document.getElementById('NewNode');
+    var modal = document.getElementById('theModal');
 
-		// Get the button that opens the modal
-		//var btn = document.getElementById("myBtn");
+    // Get the button that opens the modal
+    //var btn = document.getElementById("myBtn");
 
-		// Get the <span> element that closes the modal
-		var span = document.getElementById("CreateClose");
+    // Get the <span> element that closes the modal
+    var span = document.getElementById("ModalClose");
 
-		// When the user clicks on the button, open the modal 
-//		d.onclick = function() {
-		  modal.style.display = "block";
-//		}
+    // When the user clicks on the button, open the modal 
+    modal.style.display = "block";
 
-		// When the user clicks on <span> (x), close the modal
-		span.onclick = function() {
-		  modal.style.display = "none";
-		  closeNewNodeModal();
-		}
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+        modal.style.display = "none";
+        //remove the modal
+        $('#theModal').remove();
+    }
 
-		// When the user clicks anywhere outside of the modal, close it
-		window.onclick = function(event) {
-		  if (event.target == modal) {
-			//modal.style.display = "none";
-		  }
-		}
+    // When the user clicks anywhere outside of the modal, close it? no, do nothing
+    window.onclick = function(event) {
+        if (event.target !== modal) {
+        //remove the modal
+        //$('#theModal').remove();
+        }
+    }
+
+    
 }
 
 function closeNewNodeModal(){
@@ -1793,7 +1797,7 @@ function createNode() {
 
     // console.log(theParentToAppendChild) // it is defined in the var 'menu' (init.js). It is the data point of the node right clicked for creating node
     
-    var name = $('#CreateNodeName').val();
+    var name = $('#ModalInput').val();
     //create an uid for the new node
     var theUID='MY' + generateUUID();
     /**Following is the structure of a new data point:
@@ -1821,7 +1825,7 @@ function createNode() {
 
 
     // console.log(theNewKid)
-    console.log(theParentToAppendChild)
+    // console.log(theParentToAppendChild)
 
     //push it into theParentToAppendChild;
     //if there is no children, nor _children
@@ -1848,8 +1852,8 @@ function createNode() {
         }
     }
     
-    //close the pop up menu
-    document.getElementById('NewNode').style.display = "none";
+    //remove the modal
+    $('#theModal').remove(); //modified from try89
 
 
     //do the make chagnge tree, and also do the custline updateTree(theParentToAppendChild.tree_obj.dataroot)
@@ -1863,7 +1867,67 @@ function createNode() {
     custlink(rootdatapoint_sortedrowscols, updateTree.nodeupdate ); // add cross link, it should be separate from
     // console.log('rootdatapoint_sortedrowscols ===')
     // console.log(rootdatapoint_sortedrowscols)
+
+    
 }
 
 /**The above part is to creating a new node**************** */
+
+
+
+/** the following part is to rename a node */
+//https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_modal_bottom	
+function showRenameForm(){
+
+	// Get the modal
+		var modal = document.getElementById('theModal');
+
+		// Get the button that opens the modal
+		//var btn = document.getElementById("myBtn");
+
+		// Get the <span> element that closes the modal
+		var span = document.getElementById("ModalClose");
+
+		// When the user clicks on the button, open the modal 
+//		d.onclick = function() {
+		  modal.style.display = "block";
+//		}
+
+		// When the user clicks on <span> (x), close the modal
+		span.onclick = function() {
+          modal.style.display = "none";
+          $('#theModal').remove();
+		}
+
+		// When the user clicks anywhere outside of the modal, close it? No, do nothing
+		window.onclick = function(event) {
+		  if (event.target == modal) {
+            //$('#theModal').remove();
+		  }
+		}
+}
+
+function renameNode() {
+
+    var name = $('#ModalInput').val();
+    //console.log('New Node name: ' + name);
+    theNodeToRename.data.name = name;
+    //close the pop up menu
+    $('#theModal').remove();
+
+    //!!! must have. the renamed node won't be displayed unless the clicked node is removed and redepolyed!
+    theNodetoRenameElm.remove();
+
+    //do the make chagnge tree, and also do the custline updateTree(theParentToAppendChild.tree_obj.dataroot)
+    var proposedTreesize=estTreesize(rootdatapoint_sortedrowscols)
+    //   console.log(proposedTreesize.width, proposedTreesize.height)
+    rootdatapoint_sortedrowscols.x0 = proposedTreesize.height /2; // redefine the vertical middle point for position the root node
+    // create the tree instance using proposed tree size (according for the changes made for show/hiding nodes)
+    treeinstance = d3.tree().size([proposedTreesize.height, proposedTreesize.width]);
+    updateTree = MakeChangeTree(theNodeToRename);
+    pan ()
+    custlink(rootdatapoint_sortedrowscols, updateTree.nodeupdate ); // add cross link, it should be separate from
+}
+
+/** the following part is to rename a node */
 

@@ -1,8 +1,11 @@
 simple d3 v4 tree diagram. 
+commit 118a
+1. Rename node
+2. Use the same function (makemodal() in work.js) to make modals
+
 commit 117a
 
-1. Us JS to create the 'add new node 'modal, instead of using html
-
+1. Us JavaScript to create the 'add new node 'modal, instead of using html
 
 commit 116a
 1. Right click menu

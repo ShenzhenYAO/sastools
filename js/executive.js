@@ -19,6 +19,11 @@ buttonsdiv.append('button').attrs({'onclick': 'showSentences()'}).text('showText
 buttonsdiv.append('button').attrs({'onclick': 'hideSentences()'}).text('hideTextBox')
 buttonsdiv.append('button').attrs({'onclick': 'showSearch()', 'id':'showSearchBtn'}).text('Search')
 
+// 0.3 add modals
+//0.3.1 new node modal
+
+
+
 
 
 //0.2 add two boxes

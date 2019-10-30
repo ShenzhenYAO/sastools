@@ -38,7 +38,7 @@
 
 /**global vars */
 var 
-    gitcommitversion = '117a',
+    gitcommitversion = '118a',
 
     treejsonURL = 'data/doctype.json',     // the url of the external json file with tree data
     treeData,   // to hold the tree data 
@@ -125,6 +125,7 @@ var makechangetreeresult={}; // this is to save features produced by makechanget
 
 // for modals
 var theParentToAppendChild;
+var theNodeToRename,theNodetoRenameElm;
 
 
 // right click menu
@@ -140,12 +141,16 @@ var menu = [
     {
             title: 'Rename node',
             action: function(elm, d, i) {
-                    //console.log('Rename node');
-                    theNodeToRename=d; //set a global var theNodeToRename to remember the clicked node
-                    showRenameForm();
-                    //show the current node name
-                    $('#RenameNodeName').val(d.name);
-                    $('#RenameNodeName').focus();
+                makemodal('theModal', 'Rename a node', 'Node name', 'renameNode()')
+                // console.log('Rename node');
+                theNodeToRename=d; //
+                theNodetoRenameElm=elm;
+                showRenameForm(); //showRenameForm();
+                //show the current node name
+                $('#ModalInput').val(d.data.name); //d3v4
+                $('#ModalInput').focus();
+        
+                //$('#theModal').remove(); //!!! cannot put it here, as the modal will open and close, nothing can be seen on the screen
             }
     },
     {
@@ -175,14 +180,20 @@ var menu = [
     {
             title: 'New node',
             action: function(elm, d, i) {
-                    //console.log('Create child node');
-                    theParentToAppendChild = d;
-                    // console.log(theParentToAppendChild)
-                    showCreateForm();
-                    //create_node_modal_active = true;
-                    //$('#CreateNodeModal').foundation('reveal', 'open');
-                    $('#CreateNodeName').val("New"); //by default, the name of the new node is 'New'
-                    $('#CreateNodeName').focus();
+
+                // create the modal
+                makemodal('theModal', 'Append a new node', 'Node name', 'createNode()')
+
+                //console.log('Create child node');
+                theParentToAppendChild = d;
+                // console.log(theParentToAppendChild)
+                showCreateForm();
+                //create_node_modal_active = true;
+                //$('#CreateNodeModal').foundation('reveal', 'open');
+                $('#ModalInput').val("New"); //by default, the name of the new node is 'New'
+                $('#ModalInput').focus();
+
+                
             }
     },
     {
@@ -242,6 +253,9 @@ var menu = [
     }
 
 ]
+
+
+
 
 
 
