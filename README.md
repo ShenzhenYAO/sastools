@@ -1,4 +1,11 @@
-simple d3 v4 tree diagram. 
+simple d3 v4 tree diagram.
+commit 119a
+1. debug doctype root node, right click collapse does not work (not a bug, just take time)
+2. click elsewhere than the right click menu, the pan stop working
+3. click x to close modal, pan stops
+4. keep loading the same tree despite of changing source of local file to load
+
+
 commit 118a
 1. Rename node
 2. Use the same function (makemodal() in work.js) to make modals

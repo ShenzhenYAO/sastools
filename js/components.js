@@ -117,16 +117,20 @@ $(document).ready(function(){
     //load existing file
     $('#file_input').on('change', function(){
 
-       //console.log(this.files) // 'this' refers the input DOM element, this.files are a list of files (e.g., multiple files are selected in the open file dialog box)
-       var thefirstfileobj = this.files[0]; // the value of thefirstfile is a map with fields like 'name;, size, type, etc.
-        // console.log(thefirstfile)
+        //console.log(this.files) // 'this' refers the input DOM element, this.files are a list of files (e.g., multiple files are selected in the open file dialog box)
+        var thefirstfileobj = this.files[0]; // the value of thefirstfile is a map with fields like 'name;, size, type, etc.
+        // console.log('thefirstfileobj======')
+        // console.log(thefirstfileobj)
 
         // use the function readfile to read the first file, get the treeData, and use the treedata to make a new tree
         readlocalfile(thefirstfileobj, function(f) { // the 'funciton(f){...}' part is the call back function coresponding to the 'callback' in the function readfile()
             // console.log(f.target.result)
             treeData=JSON.parse(f.target.result)
             // create the tree data
+            // console.log('treeData when file_input is ready ======')
+            // console.log(treeData)
             NewTree(treeData)
+            // treeData = null;
         });
 
     });//end load existing file
@@ -462,7 +466,7 @@ function NewTree(thetreedata){
     } else {
         treeJSON = thetreedata;
     }
-    //console.log(treeJSON)
+    // console.log(treeJSON)
 
 
     /**B. Add tree ************************************************/
@@ -480,6 +484,7 @@ function NewTree(thetreedata){
      * Note: rootdatapointis not only the rootdatapointitself. it also contains its descendants (i.e., children, grandchildren... etc).  
     */
     var rootdatapoint= d3.hierarchy(treeJSON, function(d) { return d.children; }); //v4 Note: it creates .depth and .height, but not .id
+    // console.log(rootdatapoint)
 
     /**B.1.2 calculate the number of columns and rows based on the datapoints in rootdatapoint
      * https://github.com/d3/d3-hierarchy/blob/master/README.md#tree
@@ -1587,7 +1592,8 @@ function selectCopy(obj){
 			if(
 			prop === "idx" ||
 			prop === "name" ||
-			prop === "NodeDescription"
+			prop === "NodeDescription"||
+            prop === "custparents"
 			) {
 			ar2[i][prop] = obj[i][prop]; // copy properties from arObj to ar2
 			}
@@ -1711,7 +1717,7 @@ d3.contextMenu = function (menu, openCallback) {
 		d3.event.preventDefault();
         d3.event.stopPropagation();
         d3.select(window).on('mousedown', null) //// !!!! must have. Without it, it'll trigger mouse down for panning
-
+        pan()// !!!! must have. Without it, pan function stopped by the line above (i.e., stop listening to mousedown)
 	};
 };
 /*End of contextmenu*************************************************/

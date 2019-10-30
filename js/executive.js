@@ -22,10 +22,6 @@ buttonsdiv.append('button').attrs({'onclick': 'showSearch()', 'id':'showSearchBt
 // 0.3 add modals
 //0.3.1 new node modal
 
-
-
-
-
 //0.2 add two boxes
 var bodyd3=d3.select('body');
 var bigdiv= bodyd3.append('div')
