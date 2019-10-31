@@ -1,4 +1,19 @@
 simple d3 v4 tree diagram.
+commit 120a
+
+1. Changed collapseAll(), collapse. If collapse to root, simulate a right click on the treerect to return to the default view of the root node
+2. Enable expandAll() in the right click menu
+3. Add description, fix the bug that description text cannot be edited.
+    In function mousedown_pan(), disable the line:
+        //////d3.event.preventDefault(); //!!! must have! to avoid text dragging
+        // well it causes the description input modal stop working, do not use it!!!!)
+4. In function inputTextChangeUpdate(), change the line to:
+    var theDivs=d3.selectAll("div")['_groups'][0]; // d3v4, [0][0] does not work!
+5. Bugs: 
+1) after bringing up the description modal, the nicEdit js is loaded, and when right click on the treerect it cause nicEdit to report error.
+2) when editing descript or renaming a node, the tree under the modal moves as mouse moves
+
+
 commit 119a
 1. debug doctype root node, right click collapse does not work (not a bug, just take time)
 2. click elsewhere than the right click menu, the pan stop working

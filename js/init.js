@@ -38,7 +38,7 @@
 
 /**global vars */
 var 
-    gitcommitversion = '119a',
+    gitcommitversion = '120a',
 
     treejsonURL = 'data/doctype.json',     // the url of the external json file with tree data
     treeData,   // to hold the tree data 
@@ -126,32 +126,25 @@ var makechangetreeresult={}; // this is to save features produced by makechanget
 // for modals
 var theParentToAppendChild;
 var theNodeToRename,theNodetoRenameElm;
+var currentDataEle, theInputMainDiv, nicEditor, NicEditInputInstance;
 
 
 // right click menu
-
 var menu = [
     {
-            title: 'Show or hide subtree',
-            action: function(elm, d, i) {
-                    //console.log('Show subtree');
-                rightclick_toggleExpandDetails(d);	
-            }
-    },
-    {
-            title: 'Rename node',
-            action: function(elm, d, i) {
-                makemodal('theModal', 'Rename a node', 'Node name', 'renameNode()')
-                // console.log('Rename node');
-                theNodeToRename=d; //
-                theNodetoRenameElm=elm;
-                showRenameForm(); //showRenameForm();
-                //show the current node name
-                $('#ModalInput').val(d.data.name); //d3v4
-                $('#ModalInput').focus();
-        
-                //$('#theModal').remove(); //!!! cannot put it here, as the modal will open and close, nothing can be seen on the screen
-            }
+        title: 'Rename node',
+        action: function(elm, d, i) {
+            makemodal('theModal', 'Rename a node', 'Node name', 'renameNode()')
+            // console.log('Rename node');
+            theNodeToRename=d; //
+            theNodetoRenameElm=elm;
+            showRenameForm(); //showRenameForm();
+            //show the current node name
+            $('#ModalInput').val(d.data.name); //d3v4
+            $('#ModalInput').focus();
+
+            //$('#theModal').remove(); //!!! cannot put it here, as the modal will open and close, nothing can be seen on the screen
+        }
     },
     {
         title: 'Delete node',
@@ -178,78 +171,102 @@ var menu = [
         }
     },
     {
-            title: 'New node',
-            action: function(elm, d, i) {
-
-                // create the modal
-                makemodal('theModal', 'Append a new node', 'Node name', 'createNode()')
-
-                //console.log('Create child node');
-                theParentToAppendChild = d;
-                // console.log(theParentToAppendChild)
-                showCreateForm();
-                //create_node_modal_active = true;
-                //$('#CreateNodeModal').foundation('reveal', 'open');
-                $('#ModalInput').val("New"); //by default, the name of the new node is 'New'
-                $('#ModalInput').focus();
-
+        title: 'New node',
+        action: function(elm, d, i) {
                 
-            }
+            // create the modal
+            makemodal('theModal', 'Append a new node', 'Node name', 'createNode()')
+
+            //console.log('Create child node');
+            theParentToAppendChild = d;
+            // console.log(theParentToAppendChild)
+            showCreateForm();
+            //create_node_modal_active = true;
+            //$('#CreateNodeModal').foundation('reveal', 'open');
+            $('#ModalInput').val("New"); //by default, the name of the new node is 'New'
+            $('#ModalInput').focus(); 
+        
+        }
     },
     {
-            title: 'Add description',
-            action: function(elm, d, i) {
-                    //console.log('Add description');
-                    currentDataEle = d;
+        title: 'Edit description',
+        action: function(elm, d, i) {
+            //console.log('Edit description');
+            currentDataEle = d;
+
+            makemodal('theModal', 'Description', null, null)
+            /** This is an asynchoronous issue
+             * 
+             * wait for 0.1 second to allow the makemodal() done, and then carry on to run showInputTextForm...
+                the idea is that the modal has to be built first. 
+                
+                This is an asynchoronous issue. niceEdit app should be loaded when running makemodal. However, before it is
+            loaded, the program carries on and run showInputTextForm(). As there is no nicEdit instance to work 
+            with (i.e., the nicEdit formated text app is not working, there is no nicEdit app working, 
+            the program will stop and report error.
+
+                Waiting for 0.1 sec won't let users feel that they are waiting, but it is long enough for nicEdit app to load.
+            */
+            setTimeout (function (){
+                    //wait for 100 ms and to the following:
                     showInputTextForm();
-                    //create_node_modal_active = true;
-                    //$('#CreateNodeModal').foundation('reveal', 'open');
-                   $('#myInputBox').focus();
-            }
+                    $('#myInputBox').focus();
+                }, 100
+            );
+
+            // showInputTextForm();
+            // //create_node_modal_active = true;
+            // //$('#CreateNodeModal').foundation('reveal', 'open');
+            // $('#myInputBox').focus();
+        }
     }
     ,
     {
-            title: 'Manage subtree',
-            action: function(elm, d, i) {
-                    currentDataEle = d;
-                    showMangeSubtreeForm();
-                    //create_node_modal_active = true;
-                    //$('#CreateNodeModal').foundation('reveal', 'open');
-                    //$('#CreateNodeName').focus();
-            }
+        title: 'ExpandAll',
+        action: function(elm, d, i) {
+        //currentDataEle = d;
+        expandAll(d);
+        //create_node_modal_active = true;
+        //$('#CreateNodeModal').foundation('reveal', 'open');
+        //$('#CreateNodeName').focus();
+        }
     }
     ,
     {
-            title: 'ExpandAll',
-            action: function(elm, d, i) {
-                    //currentDataEle = d;
-                    expandAll(d);
-                    //create_node_modal_active = true;
-                    //$('#CreateNodeModal').foundation('reveal', 'open');
-                    //$('#CreateNodeName').focus();
-            }
+        title: 'CollapesAll',
+        action: function(elm, d, i) {
+        //currentDataEle = d;
+        //console.log(elm);
+        //console.log(d)
+        collapseAll(d) //check if the function exists
+        }
     }
     ,
     {
-            title: 'CollapesAll',
-            action: function(elm, d, i) {
-                    //currentDataEle = d;
-                    //console.log(elm);
-                    //console.log(d)
-                    collapse(d) //check if the function exists
-                    
-            }
-    }
-    ,
+        title: 'ZoomIn',
+        action: function(elm, d, i) {
+        //currentDataEle = d;
+        //console.log(elm);
+        //console.log(d)
+        ZoomInOutSelectedNode(d) //check if the function exists
+        }
+    },
     {
-            title: 'ZoomIn',
-            action: function(elm, d, i) {
-                    //currentDataEle = d;
-                    //console.log(elm);
-                    //console.log(d)
-                    ZoomInOutSelectedNode(d) //check if the function exists
-                    
-            }
+        title: 'Show or hide subtree',
+        action: function(elm, d, i) {
+                //console.log('Show subtree');
+        rightclick_toggleExpandDetails(d);	
+        }
+    },
+    {
+        title: 'Manage subtree',
+        action: function(elm, d, i) {
+        currentDataEle = d;
+        showMangeSubtreeForm();
+        //create_node_modal_active = true;
+        //$('#CreateNodeModal').foundation('reveal', 'open');
+        //$('#CreateNodeName').focus();
+        }
     }
 
 ]

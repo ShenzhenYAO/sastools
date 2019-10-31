@@ -444,17 +444,76 @@ function collapse(d) {
 		d._children.forEach(collapse)
 		d.children = null
     }
+}
+function collapseAll(source){
+    collapse(source)
+     var proposedTreesize=estTreesize(rootdatapoint_sortedrowscols)
+    //   console.log(proposedTreesize.width, proposedTreesize.height)
+    rootdatapoint_sortedrowscols.x0 = proposedTreesize.height /2; // redefine the vertical middle point for position the root node
+    // create the tree instance using proposed tree size (according for the changes made for show/hiding nodes)
+    treeinstance = d3.tree().size([proposedTreesize.height, proposedTreesize.width]);
+    updateTree = MakeChangeTree(source);
+    pan();
+    custlink(rootdatapoint_sortedrowscols, updateTree.nodeupdate ); // add cross link, it should be separate from
+    
+    // if collapse to root, return the default view (simulate a right click on treerect)
+    if (source.parent === null || source.parent === undefined) {
+        //right click the rect to return to the deafult tree view
+        // console.log(source)
+        https://stackoverflow.com/questions/7914684/trigger-right-click-using-pure-javascript
+        var element =thetreerect.node()
+        if (window.CustomEvent) {
+            element.dispatchEvent(new CustomEvent('contextmenu'));
+        } else if (document.createEvent) {
+            var ev = document.createEvent('HTMLEvents');
+            ev.initEvent('contextmenu', true, false);
+            element.dispatchEvent(ev);
+        } else { // Internet Explorer
+            element.fireEvent('oncontextmenu');
+        }
+    }
+    
+}
 
+
+
+
+function expandAll(source){
+	var theurl ="http://epicanada.x10host.com/sound/clickbutoon2.mp3";
+	playclicksound(theurl);
+    expand(source); 
     var proposedTreesize=estTreesize(rootdatapoint_sortedrowscols)
     //   console.log(proposedTreesize.width, proposedTreesize.height)
     rootdatapoint_sortedrowscols.x0 = proposedTreesize.height /2; // redefine the vertical middle point for position the root node
     // create the tree instance using proposed tree size (according for the changes made for show/hiding nodes)
     treeinstance = d3.tree().size([proposedTreesize.height, proposedTreesize.width]);
-    updateTree = MakeChangeTree(d);
+    updateTree = MakeChangeTree(source);
     pan();
-    custlink(rootdatapoint_sortedrowscols, updateTree.nodeupdate ); // add cross link, it should be separate from 
-
+    custlink(rootdatapoint_sortedrowscols, updateTree.nodeupdate ); // add cross link, it should be separate from
 }
+function expand(d){   
+    var children = (d.children)?d.children:d._children;
+    if (d._children) {        
+        d.children = d._children;
+        d._children = null;       
+    }
+    if(d.children){ // recursively expand d.children
+        d.children.forEach(c=>{
+            expand(c)
+        })
+    }
+}
+
+
+function playclicksound(theURL){	
+    /*var theurl ="http://epicanada.x10host.com/sound/clickbutoon2.mp3"*/
+    var theAudio = new Audio(theURL);	
+    theAudio.play();
+}	
+
+    
+
+
 
 // create a new tree, add pan and custlinks
 function NewTree(thetreedata){
@@ -1334,7 +1393,8 @@ function pan () {
 
     function mousedown_pan() {
 
-        d3.event.preventDefault(); //!!! must have! to avoid text dragging 
+        //////d3.event.preventDefault(); //!!! must have! to avoid text dragging
+        // well it causes the description input modal stop working, do not use it!!!!
         
         //1. determine whether the mousedown is within the treerect area
         /**    the clicked is the window DOM, but how to know if the click is within the treeview box?   */
@@ -1937,3 +1997,236 @@ function renameNode() {
 
 /** the following part is to rename a node */
 
+
+
+
+
+/**the following is related to create a modal for description editing */ 
+function showInputTextForm(){
+
+    // Get the modal
+    var modal = document.getElementById('theModal');
+
+    // Get the button that opens the modal
+    //var btn = document.getElementById("myBtn");
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementById("ModalClose");
+
+    // When the user clicks on the button, open the modal 
+    modal.style.display = "block";
+
+    //get the first element with class name = modal-content
+    var modalcontentbox = modal.getElementsByClassName('modal-content')[0];
+
+	modalcontentbox.style.width="80%";
+	modalcontentbox.style.height="80%";
+// console.log(NicEditInputInstance)
+	//if NicEditInputInstance has not been created, create it
+	if (NicEditInputInstance === undefined) {
+
+        //create a textarea in the box "myInputBox"
+        //<textarea id="NicEdit" cols="180" rows="30">Some this Text</textarea>
+        var myInputBox=document.getElementById("myInputBox");
+        
+        d3.select("#myInputBox").append("textarea")
+            .attr("id", "NicEdit")
+            .attr("cols", "120")
+            .attr("rows", "36")
+            .on('click', function(){
+                console.log('textarea clicked')
+            })
+            .text(function(){
+                if(currentDataEle.data.NodeDescription !== undefined ){
+                    return currentDataEle.data.NodeDescription;
+                }else { return "";}
+            })
+        ;
+        
+        //	console.log("create for the first time")
+        NicEditInputInstance= new nicEditor().panelInstance('NicEdit');
+        //https://stackoverflow.com/questions/11704769/nicedit-in-hidden-div-is-resized-small
+        $('.nicEdit-panelContain').parent().width('100%');
+        $('.nicEdit-panelContain').parent().next().width('100%');
+			 
+	}
+		
+		//load the existing contents. Has to load into 1) the main div box, and 2), the hidden textarea
+//console.log(currentDataEle.data.NodeDescription)
+    if (currentDataEle.data.NodeDescription !== undefined){
+        //console.log("before")			
+        //console.log(NicEditInputInstance)
+        //document.getElementById("NicEdit").style.display="block";
+        
+        //load the existing description into the main div
+        // console.log('theinputmaindiv outside if=======')
+        // console.log(theInputMainDiv)
+        if (theInputMainDiv!==undefined) {
+
+            // console.log('theinputmaindiv inside if=======')
+            // console.log(theInputMainDiv)
+
+            theInputMainDiv.value=currentDataEle.data.NodeDescription; //d3v4
+            theInputMainDiv.innerHTML=currentDataEle.data.NodeDescription;
+            // theInputMainDiv.css('overflow', 'auto')
+            theInputMainDiv.style.overflow = 'auto';
+        }
+        //load the existing description into the textarea;
+        // console.log(currentDataEle)
+        document.getElementById("NicEdit").value=currentDataEle.data.NodeDescription; //d3v4
+        document.getElementById("NicEdit").innerHTML=currentDataEle.data.NodeDescription; //d3v4
+        
+        //console.log(theInputMainDiv);
+        //console.log(document.getElementById("NicEdit").innerHTML);
+        //console.log(document.getElementById("NicEdit").value);
+        //console.log(currentDataEle.name + ", " + currentDataEle.data.NodeDescription);			
+        //console.log(document.getElementById("NicEdit").innerHTML);
+    }		
+
+	InputTextChangeListener();
+
+    //console.log(currentDataEle.data.NodeDescription);
+    
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+        
+        modal.style.display = "none";
+
+        //   //clean up the contents in both the main div, and the hidden textarea
+        document.getElementById("NicEdit").value="";
+        document.getElementById("NicEdit").innerHTML="";
+        if(theInputMainDiv !== undefined) {
+            theInputMainDiv.value="";
+            theInputMainDiv.innerHTML="";
+        }
+
+        NicEditInputInstance = undefined; // must have!!!! so that the textarea will be recreated...
+        $('#theModal').remove();// delete NicEditInputInstance;
+        
+
+        //v("at closing")
+        //console.log("thetextArea = " + document.getElementById("NicEdit").value)
+        //console.log("thetextArea = " + document.getElementById("NicEdit").innerHTML)
+        //console.log(currentDataEle.name + ", " + currentDataEle.data.NodeDescription)
+    }
+
+    // When the user clicks anywhere outside of the modal, close it // no, do nothing
+    window.onclick = function(event) {
+        if (event.target == modal) {
+        // modal.style.display = "none";			
+        }
+    }
+
+}//end of show input form
+
+
+//best embedding formatted text editors (the NicEdit is the best)
+//https://smartbear.com/blog/develop/five-free-javascript-libraries-to-add-text-editing/
+function InputTextChangeListener(){
+	var myInputBox=document.getElementById("myInputBox");    
+    // console.log(myInputBox)
+    myInputBox.addEventListener("input", function(event) { //use input instead of keyup, as keyup does not detect font or hyperlink change that are not caued by key pressing
+        inputTextChangeUpdate();
+    })
+}
+
+function inputTextChangeUpdate(){
+	
+    //nicEditors.findEditor('NicEdit').saveContent();
+    // var theDivs=d3.selectAll("div")[0];// d3v3
+    var theDivs=d3.selectAll("div")['_groups'][0]; // d3v4, [0][0] does not work!
+    // console.log(theDivs)
+    //find theDIV with the class name containing 'nicEdit-main'
+    theDivs.forEach(function(d){
+        theClassName =d.className	
+        if (/nicEdit-button/i.test(theClassName) ){
+
+        //https://www.w3schools.com/cssref/css3_pr_background-origin.asp
+        //the toolbox icons are small and ugly. but to change need redefine the url of icon gifs.
+        //console.log(d)
+            //d.style.backgroundRepeat="no-repeat";
+            //d.style.backgroundSize="auto"
+
+            //d.background-size="contain";
+            //d.style.width = "40px";
+            //d.style.height="40px";
+            
+        }
+        //if (theClassName.includes("nicEdit-main")){console.log(theClassName)
+        if (/nicEdit-main/i.test(theClassName)){
+            // console.log(d)
+            //save d.innerHTML into currentDataEle as NodeDescription;
+            theInputMainDiv=d;
+            currentDataEle.data.NodeDescription = d.innerHTML
+// console.log(theInputMainDiv)
+// console.log(currentDataEle)
+            theInputMainDiv.style.overflow = 'auto';
+            theInputMainDiv.style.width='100%';
+            theInputMainDiv.style.height='400px';
+            theInputMainDiv.style.minHeight='200px';
+            //console.log(currentDataEle.data.NodeDescription)
+        }
+    })
+}
+
+/**the above is to create a modal for description editing */ 
+
+
+
+
+//make a modal for adding a new node, rename a node, and description editing. The modal will be created and removed each time
+function makemodal(id, title, label, action){
+    /**1.make a background
+        this is to add a halfly transparent div on top of the current page. 
+        It is to make a 'dim' effect of the whole page
+    */ 
+    var modalbackground = d3body
+        .append('div')
+        .attrs({'id': id, 'class': 'myModal'}) // id (e.g., theModal)
+    
+    /**2. within the background, create a dialog box 
+     *  this is a box of the whole dialog area
+    */
+    var modaldialogbox = modalbackground.append('div').attrs({'class': 'modal-content'}) // this is a box of the whole dialog area
+
+    /**3a. within the dialog box, create a header div */
+    var modalheader=modaldialogbox.append('div').attrs({'class': 'modal-header'})
+
+        /**3a.1 within the header, create a span as the modal close button*/
+        var modalclosebutton=modalheader.append('span').attrs({'class': 'close', 'id':'ModalClose'} ).html('x')
+        /**3a.2 within the header, create a h2 as the modal title*/
+        var modalboxtitle=modalheader.append('h2').html(title) // modal header title ('e.g, Append a new node)
+
+    /**3b. within the dialog box, create the body div */
+    var modalbody = modaldialogbox.append('div').attrs({'class': 'modal-body'}) 
+
+    // if 'title' is 'Description' make the description type modal, else make a type for rename, del, new node, etc.
+    if (title === 'Description') {
+        //change the modal boxtitle by adding the title
+        modalboxtitle.html(title + ": " + currentDataEle.data.name)
+        modalbody.attrs({'id':'myInputBox'}).styles({"overflow": "auto;"}) 
+        modalbody.append('script').attr('src', 'http://js.nicedit.com/nicEdit-latest.js')
+
+    } else { //make a type of modal for rename, del, new node, etc
+
+        /**3b1. within the body box, create the body title h2 */
+        // var modalbodytitle = modalbody.append('h2').attrs({'id': 'modalTitle'}).html('Create Node')  // modal body title
+
+        /**3b2. within the body box, create a div to hold rows that appears in the body */
+        var modalbodyrow = modalbody.append('div').attrs({'class': 'row'})
+
+        /**3b2a. within the body row div, create a div to hold body row contents */
+        var modalbodyrowcontents = modalbodyrow.append('div').attrs({'class': 'large-12 columns'})
+
+            /**3b2a1. within the body row contents div, create a label to indicate 'Node name' */
+            var modalbodyrowcontentslabel = modalbodyrowcontents.append('label').text(label)  // prompt str, e.g 'Node name'
+                /**3b2a1a. within the body row contents label, create an input DOM element to indicate 'Node name' */
+                var modalbodyrowcontentslabelinput = modalbodyrowcontentslabel.append('input')
+                    .attrs({'type':'text','class':'inputName', 'id':'ModalInput'}) //CreateNodeName
+                    .styles({'placehoder':'node name', 'width':'80%'})
+                /**3b2a1b. within the body row contents label, create a button to submit input */
+                var modalbodyrowcontentslabelbutton = modalbodyrowcontentslabel.append('button')
+                    .attrs({'onclick':action}) // e.g.,'createNode()' 
+                    .text('OK')
+    }
+}
