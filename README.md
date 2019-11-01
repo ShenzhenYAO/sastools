@@ -1,5 +1,25 @@
 simple d3 v4 tree diagram.
+commit 121a
+1. change circle color if containing descriptions
+2. turn label red if containing to do
+3. debug of nicEdit.js. The original link is using http:// which is not allowed by netlify (has to be https://)
+    therefore the nicEdit.js was downloaded and put in '/tool/nicEdit'. Two files are placed there. the gif must be there (for display icons).
+    for makemodal() in components.js, the link to nicEdit.js was changed to 'tools/nicEdit/niceEdit.js
+    also in nicEdit.js change was made to customize the gif path (change to: iconsPath : 'tools/nicEdit/nicEditorIcons.gif',)
+
+to do:
+1. Text link to nodes
+2. text search , etc
+
+Bugs: 
+1) after bringing up the description modal, the nicEdit js is loaded, and when right click on the treerect it cause nicEdit to report error. 
+2) when editing descript or renaming a node, the tree under the modal moves as mouse moves (how about when listening to mousedown/move, if a modal is open, do not move the treeG...)
+
+
 commit 120a
+#########################################################
+great milestone: having most functions ready!
+#########################################################
 
 1. Changed collapseAll(), collapse. If collapse to root, simulate a right click on the treerect to return to the default view of the root node
 2. Enable expandAll() in the right click menu

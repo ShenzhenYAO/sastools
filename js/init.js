@@ -38,7 +38,7 @@
 
 /**global vars */
 var 
-    gitcommitversion = '120a',
+    gitcommitversion = '121a',
 
     treejsonURL = 'data/doctype.json',     // the url of the external json file with tree data
     treeData,   // to hold the tree data 
@@ -188,7 +188,8 @@ var menu = [
         
         }
     },
-    {
+    { // check this for better rich-text editors https://www.webdesignerdepot.com/2008/12/20-excellent-free-rich-text-editors/
+      // https://handsontable.com/blog/articles/2017/8/11-best-rich-text-editors  
         title: 'Edit description',
         action: function(elm, d, i) {
             //console.log('Edit description');
@@ -211,7 +212,7 @@ var menu = [
                     //wait for 100 ms and to the following:
                     showInputTextForm();
                     $('#myInputBox').focus();
-                }, 100
+                }, 500
             );
 
             // showInputTextForm();

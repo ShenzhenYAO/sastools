@@ -258,7 +258,7 @@ function MakeChangeTree(parentdatapoint) {
 
 	
 	// update (change properties of the g.nodeGs elements, including x/y coordinate, size, color, etc)
-     var nodeUpdate = nodeEnter.merge(node); // v4
+     var nodeUpdate = nodeEnter.merge(node); // d3v4
     //  console.log('nodeUpdate ======')
     //  console.log(nodeUpdate)
 
@@ -272,18 +272,21 @@ function MakeChangeTree(parentdatapoint) {
 	nodeUpdate.select("circle.nodecircles")
 		.transition().duration(showhidedescendants_duration)
 		.attr("r", nodecircle_radius)
-			.style(
-			"fill", 
-			function(d) { 
-				return d._children ? nodecircle_fill_hidedescendants_color : nodecircle_fill_showdescendants_color; 
-			}
-		);
+		.style("fill", function(d) { 
+			return d._children ? nodecircle_fill_hidedescendants_color : nodecircle_fill_showdescendants_color; 
+        })
+        .style("stroke", function(d){return (d.data.NodeDescription?"blue":nodecircle_border_color)}) //d3v4 show different color on whether or not having description
+        ;
 	
 	//update (change properties of the text elements, including x/y coordinate, size, color, etc)
 	nodeUpdate.select("div.nodetext")
 		.transition().duration(showhidedescendants_duration)
 		.style("opacity", 1)
-		.style("font-size", nodetext_font_size)
+        .style("font-size", nodetext_font_size)
+        .style('color', d=>{ // if the description contains [to do], turn label into red color
+            var theCheckToDo=checkToDo(d);
+			if (theCheckToDo===1){return "red";}else{return "black";}
+        })
 		;
 		
 	/** exit g groups (For the elements that are not joined in node, make them travel back to the coordinate x y of 
@@ -2205,7 +2208,8 @@ function makemodal(id, title, label, action){
         //change the modal boxtitle by adding the title
         modalboxtitle.html(title + ": " + currentDataEle.data.name)
         modalbody.attrs({'id':'myInputBox'}).styles({"overflow": "auto;"}) 
-        modalbody.append('script').attr('src', 'http://js.nicedit.com/nicEdit-latest.js')
+        //modalbody.append('script').attr('src', 'http://js.nicedit.com/nicEdit-latest.js') // problem! it does not work to change to https://js.nicedit.com/nicEdit-latest.js http: cannot be used on netlify
+        modalbody.append('script').attr('src', 'tools/nicEdit/nicEdit.js') // the file was downloaded from http://nicedit.com/download.php
 
     } else { //make a type of modal for rename, del, new node, etc
 
@@ -2229,4 +2233,17 @@ function makemodal(id, title, label, action){
                     .attrs({'onclick':action}) // e.g.,'createNode()' 
                     .text('OK')
     }
+}
+
+
+//check if the data ele contains nodeDescription, and the nodeDescription contains [to do]
+function checkToDo(dataEle){
+	var theNodeDesc;
+	if (dataEle.data.NodeDescription){theNodeDesc=dataEle.data.NodeDescription} ; //d3v4
+	var theResult=0;
+	if (theNodeDesc !== undefined && /\[to Do\]/i.test(theNodeDesc)){
+//		console.log(/\[to Do\]/i.test(theNodeDesc));
+		theResult= 1;
+	}
+	return theResult;
 }
