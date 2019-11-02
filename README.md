@@ -1,4 +1,14 @@
 simple d3 v4 tree diagram.
+
+commit 124a
+*********************************************************
+GREAT MILESONE!
+******************************************************
+
+1. add buttons to zoom in and out the treemap
+2. rearranged the textviewbox and the treeviewbox
+
+
 commit 123a
 1. Show hint box, on hint text input update the NodeDescription. Replace old tag (////clue ////) with new tags(///h h///)
 2. Show/hind textview box on clicking the buttons

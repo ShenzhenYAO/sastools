@@ -156,6 +156,52 @@ var thetreeG = addnewEle(null, null, null, 'thetreeg', svg, null, 'g', transfm )
 //!!!! here thetreeG.on('mousedown') does not work
 // thetreeG.on('mousedown', pan)
 
+/** add zoom in and out buttons in treeG ************************************/
+var zoombuttonsG = svg.append('g').attr('class','zoombuttonsG');
+zoombuttonsG.attr('transform', 'translate(0, 100)')
+var zoominBtnG = zoombuttonsG.append('g').attr('class','zooming')
+    .append('foreignObject').attr('width', 30).attr('height', '30')
+        .append('xhtml:div')
+        .text('+')
+        .styles({
+            "width":'80%', 
+            'height':'80%', 
+            'font-size':'25px',
+            'text-align': 'center',
+            'vertical-align': 'middle',
+            // 'float':'left',
+            // 'overflow': 'auto',
+            // 'background-color': 'lightblue',
+            // 'padding' :'5px',
+            'margin':'2px',
+            'border-style':'solid',
+            'border-width': '1px'
+        })
+var zoomoutBtnG = zoombuttonsG.append('g').attr('class','zoomoutg').attr('transform', 'translate(0,35)')
+    .append('foreignObject').attr('width', 30).attr('height', '30')
+        .append('xhtml:div')
+        .text('-')
+        .styles({
+            "width":'80%', 
+            'height':'80%', 
+            'font-size':'25px',
+            'text-align': 'center',
+            'vertical-align': 'middle',
+            // 'float':'left',
+            // 'overflow': 'auto',
+            // 'background-color': 'lightblue',
+            // 'padding' :'5px',
+            'margin':'2px',
+            'border-style':'solid',
+            'border-width': '1px'
+        })
+
+zoominBtnG.on('click', ZoomInTree)
+zoomoutBtnG.on('click', ZoomOutTree)
+/** add zoom in and out buttons in treeG ************************************/
+
+
+
 
 /**A. load tree Data as a json obj from an external json file 
  * Note: getJsonFromsessionStorage is results from a IFFE function getting results from sessionStorage items.

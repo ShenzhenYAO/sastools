@@ -799,7 +799,7 @@ function zoomed() {
 
 /**the function to select a node, zoom in/out it, and put it in the center */
   //ZoomInOutSelectedNode: zoom in out the selected note
-  function ZoomInOutSelectedNode(d){
+function ZoomInOutSelectedNode(d){
 
     //disable the default right click menu
     d3.event.preventDefault(); 
@@ -868,7 +868,7 @@ function zoomed() {
         .attr('transform', translateStr)
     ;
     
-}
+} // end ZoomInOutSelectedNode()
 
 
 /**given a flatterned data points with sorted row and col info, determine the maxRow and maxCol */
@@ -2525,7 +2525,7 @@ function CentralNode_selectedText(d){
 
         //5.1.2.a.2 determine the string for zooming (scale)
         // the syntax is like 'scale(10)'
-        zoomLevel = 1;// zoomSettings.zoomLevel;
+        //zoomLevel = 1;// zoomSettings.zoomLevel; do not change the current zoomLevel
 
         //5.1.2.a.3 update the centeredNode, i.e., let it be the currentl selected node
         centeredNode = d
@@ -2815,3 +2815,33 @@ function hideSentences(){
     $("#hintBox").hide();
     $('.textviewbox').width(0);
 }
+
+
+
+
+//ZoomInOutSelectedNode: zoom in out the selected note
+function ZoomInTree(){
+    //disable the default right click menu
+    d3.event.preventDefault(); 
+    zoomLevel=zoomLevel*2; //zoomLevel is a global var, saving the current zoomLevel
+    var scaleStr = 'scale (' + zoomLevel + ')'
+    thetreeG.transition()
+        .duration(zoomSettings.duration)
+        .ease(zoomSettings.ease) 
+        .attr('transform', scaleStr)
+    ;   
+} // end ZoomInTree()
+//ZoomInOutSelectedNode: zoom in out the selected note
+function ZoomOutTree(){
+    //disable the default right click menu
+    d3.event.preventDefault(); 
+    zoomLevel=zoomLevel/2; //zoomLevel is a global var, saving the current zoomLevel
+    //if (zoomLevel <= 0){zoomLevel=1}
+    var scaleStr = 'scale (' + zoomLevel + ')'
+    thetreeG.transition()
+        .duration(zoomSettings.duration)
+        .ease(zoomSettings.ease) 
+        .attr('transform', scaleStr)
+    ;
+   
+} // end ZoomOutTree()

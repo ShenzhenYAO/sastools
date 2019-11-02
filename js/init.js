@@ -38,7 +38,7 @@
 
 /**global vars */
 var 
-    gitcommitversion = '123a',
+    gitcommitversion = '124a',
 
     treejsonURL = 'data/doctype2.json',     // the url of the external json file with tree data
     treeData,   // to hold the tree data 
@@ -71,12 +71,12 @@ var zoomSettings = {
     zoomLevel: 2
   };
 
-  var zoomLevel=1; // the level of zoomming (scale, i.e., the times to enlarge/shrink), by default=1; 
+var zoomLevel=1; // the level of zoomming (scale, i.e., the times to enlarge/shrink), by default=1; 
 
 /** viewbox width (two boxes side by side, left for text, right for diagram) */
-var width_textviewbox = width_body* .70,
+var width_textviewbox = width_body *.6,
     height_textviewbox = height_body,
-    width_treeviewbox = width_body, // leave 5% for padding
+    width_treeviewbox = width_textviewbox * .7//width_body, // leave 5% for padding
     height_treeviewbox = height_body,
 
     borderweight_viewbox = 1
