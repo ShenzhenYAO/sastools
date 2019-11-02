@@ -1,0 +1,35 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Index</title>
+        <link rel="shortcut icon" href="#">
+        <link rel="stylesheet" href="css/style_index.css" >
+        <!-- load the jquery 3.3.1 library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <!-- load the d3.js library -->
+        <script src="https://d3js.org/d3.v4.min.js"></script>
+        <!-- the following allows to use attrs({})-->
+        <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
+    </head>
+    <body>
+        <script>
+            //create a view box
+            var theviewbox = d3.select('body').append('div')
+
+            var theNodeDesc='///t<div>this is the first node</div><div>t///'
+            var thecontent_afterchange ='///t' + 'this is the fir@st node<br><div>&nbsp;</div>' +'t///'
+            var theNodeDescTextSeg = '///t' 
+                    + theNodeDesc.substring(
+                        theNodeDesc.lastIndexOf('///t') + 4,
+                        theNodeDesc.lastIndexOf('t///')
+                    )  
+                    + 't///' 
+
+            console.log(theNodeDesc==theNodeDescTextSeg)
+
+            str3=theNodeDesc.replace(theNodeDescTextSeg, thecontent_afterchange)
+
+            theviewbox.html(str3)
+        </script>        
+    </body>
+</html>

@@ -441,11 +441,11 @@ function estTreesize(therootdatapoint){
 // Collapse the node and all it's children. It is also new in d3v4
 // recursively collapse all nodes
 function collapse(d) {
-    
+    // console.log(d)
 	if(d.children) {
-		d._children = d.children
-		d._children.forEach(collapse)
-		d.children = null
+        d._children = d.children
+        d.children = null
+		d._children.forEach(collapse)		
     }
 }
 function collapseAll(source){
@@ -867,9 +867,8 @@ function zoomed() {
         .ease(zoomSettings.ease) 
         .attr('transform', translateStr)
     ;
-
     
-  }
+}
 
 
 /**given a flatterned data points with sorted row and col info, determine the maxRow and maxCol */

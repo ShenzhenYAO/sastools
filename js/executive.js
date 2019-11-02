@@ -27,7 +27,7 @@ var bodyd3=d3.select('body');
 var bigdiv= bodyd3.append('div')
 .attr('class', 'bigdiv')
 .styles({
-    'width':(width_body) + 'px',
+    'width':(width_body*2) + 'px',
     'height':height_body + 'px',
     'float':'left',
     'border-width': borderweight_viewbox + 'px'

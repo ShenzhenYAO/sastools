@@ -1,4 +1,12 @@
 simple d3 v4 tree diagram.
+commit 122a
+
+1. Add TextBox, and hintBox in the textviewbox
+2. Selecting description text in textbox, the corresponding node will show up at the middle left of the tree map
+3. Changes of description in textbox will be updated in nodes' description. Also, change in node's description will be updated into the text box if hitting the showTextBox button
+
+
+
 commit 121a
 1. change circle color if containing descriptions
 2. turn label red if containing to do
@@ -14,6 +22,7 @@ to do:
 Bugs: 
 1) after bringing up the description modal, the nicEdit js is loaded, and when right click on the treerect it cause nicEdit to report error. 
 2) when editing descript or renaming a node, the tree under the modal moves as mouse moves (how about when listening to mousedown/move, if a modal is open, do not move the treeG...)
+3) nicEdit hyperlink not added, the hyperlink is always 'javascript:nicTemp()';
 
 
 commit 120a

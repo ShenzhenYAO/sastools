@@ -38,7 +38,7 @@
 
 /**global vars */
 var 
-    gitcommitversion = '121a',
+    gitcommitversion = '122a',
 
     treejsonURL = 'data/doctype.json',     // the url of the external json file with tree data
     treeData,   // to hold the tree data 
@@ -50,7 +50,11 @@ var
     flatterneddatapoints_sortedrowscols, // adding sorted rows and cols (to be put in a tree) of points in flatterneddatapoints
     treemaxrowscols, // the maxrows and cols in an array 
     
-    pseudoNodeG, pseudoNodeCircle, pseudoNodeText
+    pseudoNodeG, pseudoNodeCircle, pseudoNodeText,
+    
+    thetextbox,thehintbox    
+
+
 ;
 
 /** for zooming and pan
@@ -72,9 +76,9 @@ var zoomSettings = {
   var zoomLevel=1; // the level of zoomming (scale, i.e., the times to enlarge/shrink), by default=1; 
 
 /** viewbox width (two boxes side by side, left for text, right for diagram) */
-var width_textviewbox = width_body * .20,
+var width_textviewbox = width_body* .80,
     height_textviewbox = height_body,
-    width_treeviewbox = width_body- width_textviewbox-width_body*.05, // leave 5% for padding
+    width_treeviewbox = width_body*2 - width_textviewbox-width_body*.05, // leave 5% for padding
     height_treeviewbox = height_body,
 
     borderweight_viewbox = 1
@@ -212,7 +216,7 @@ var menu = [
                     //wait for 100 ms and to the following:
                     showInputTextForm();
                     $('#myInputBox').focus();
-                }, 500
+                }, 100
             );
 
             // showInputTextForm();
