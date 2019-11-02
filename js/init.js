@@ -216,7 +216,7 @@ var menu = [
                     //wait for 100 ms and to the following:
                     showInputTextForm();
                     $('#myInputBox').focus();
-                }, 100
+                }, 500
             );
 
             // showInputTextForm();
