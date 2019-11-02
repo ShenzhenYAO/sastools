@@ -214,11 +214,7 @@ var menu = [
                     //wait for 100 ms and to the following:
                     showInputTextForm();
                     $('#myInputBox').focus();
-<<<<<<< HEAD
                 }, 500 // 100 is too fast for Netlify
-=======
-                }, 500
->>>>>>> b82bb0b980fe2fa8f59f5efea86769c6975a5fde
             );
 
             // showInputTextForm();
