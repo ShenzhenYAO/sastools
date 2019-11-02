@@ -1,4 +1,14 @@
 simple d3 v4 tree diagram.
+commit 123a
+1. Show hint box, on hint text input update the NodeDescription. Replace old tag (////clue ////) with new tags(///h h///)
+2. Show/hind textview box on clicking the buttons
+
+To do:
+1. search
+2. lock the selected node
+3. the nicEdit bug
+4. separately zoom in and out the text box, and the tree box
+
 commit 122a
 
 1. Add TextBox, and hintBox in the textviewbox

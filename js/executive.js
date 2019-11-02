@@ -36,13 +36,13 @@ var bigdiv= bodyd3.append('div')
 var textviewbox=bigdiv.append('div')
     .attr('class', 'textviewbox')
     .styles({
-        'width':(width_textviewbox) + 'px',
+        'width':(0) + 'px', // by default, not showing the textview box
         'height':height_body + 'px',
         'float':'left',
         'border-style':'solid',
         'border-width': borderweight_viewbox + 'px'
     })
-    // .text('div1')
+// .text('div1')
 var treeviewbox = bigdiv.append('div')
     .attr('class', 'treeviewbox')
     .styles({
@@ -53,6 +53,46 @@ var treeviewbox = bigdiv.append('div')
         'border-width': '1px'
     })
     // .text('div2')
+
+
+    
+/**The following is to show textbox and link text to treenode *************************** */
+
+//build a textBox:
+thetextbox=textviewbox.append('div')
+    .attrs({'id': 'textBox', 'contenteditable': 'true'})
+    .styles({
+        "width":'65%', 
+        'height':'0px', 
+        'max-height':height_textviewbox + 'px',
+        'font-size':'25px',
+        'float':'left',
+        'overflow': 'auto',
+        'background-color': 'lightgrey',
+        'padding' :'5px',
+        'margin':'2px',
+        'line-height': '1.6',
+        'display':'none'
+    })
+;
+
+//build a text hint box:
+thehintbox=textviewbox.append('div')
+    .attrs({'id': 'hintBox', 'contenteditable': 'true'})
+    .styles({
+        "width":'30%', 
+        'height':'0px', 
+        'max-height':height_textviewbox + 'px',
+        'font-size':'25px',
+        'float':'left',
+        'overflow': 'auto',
+        'background-color': 'lightblue',
+        'padding' :'5px',
+        'margin':'2px',
+        'line-height': '1.6',
+        'display':'none'
+    })
+;
 
 
 

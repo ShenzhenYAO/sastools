@@ -38,9 +38,9 @@
 
 /**global vars */
 var 
-    gitcommitversion = '122a',
+    gitcommitversion = '123a',
 
-    treejsonURL = 'data/doctype.json',     // the url of the external json file with tree data
+    treejsonURL = 'data/doctype2.json',     // the url of the external json file with tree data
     treeData,   // to hold the tree data 
     treeJSON,   // to hold the tree JSON from treeData
     i = 0,  // no need
@@ -52,9 +52,7 @@ var
     
     pseudoNodeG, pseudoNodeCircle, pseudoNodeText,
     
-    thetextbox,thehintbox    
-
-
+    thetextbox,thehintbox
 ;
 
 /** for zooming and pan
@@ -76,9 +74,9 @@ var zoomSettings = {
   var zoomLevel=1; // the level of zoomming (scale, i.e., the times to enlarge/shrink), by default=1; 
 
 /** viewbox width (two boxes side by side, left for text, right for diagram) */
-var width_textviewbox = width_body* .80,
+var width_textviewbox = width_body* .70,
     height_textviewbox = height_body,
-    width_treeviewbox = width_body*2 - width_textviewbox-width_body*.05, // leave 5% for padding
+    width_treeviewbox = width_body, // leave 5% for padding
     height_treeviewbox = height_body,
 
     borderweight_viewbox = 1
@@ -216,7 +214,11 @@ var menu = [
                     //wait for 100 ms and to the following:
                     showInputTextForm();
                     $('#myInputBox').focus();
+<<<<<<< HEAD
+                }, 500 // 100 is too fast for Netlify
+=======
                 }, 500
+>>>>>>> b82bb0b980fe2fa8f59f5efea86769c6975a5fde
             );
 
             // showInputTextForm();
