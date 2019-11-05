@@ -226,7 +226,7 @@ function MakeChangeTree(parentdatapoint) {
 		.attr("transform", function(d) {
 			return "translate(" + parentdatapoint.y0 + "," + parentdatapoint.x0 + ")"; }) //each g are added at the position x0,y0 of the source data
 		.on("click", showhidedescendants)
-        .on('contextmenu', d3.contextMenu(menu))//ZoomInOutSelectedNode) // right click to zoom in/out
+        .on('contextmenu', d3.contextMenu(nodemenu))//ZoomInOutSelectedNode) // right click to zoom in/out
         .on("mousedown", dragdrop)  //check the newest version of dragdrop in components.js
     ;
     // console.log('nodeEnter ======')
@@ -741,7 +741,9 @@ function custlink(parentdatapoint, shownnodes){
             var o = {x: parentdatapoint.x0, y: parentdatapoint.y0}; // this is different here from building links
             // var o = {x: d.parent.x, y: d.parent.y}; // for each path, let the link start from the parent's x, y
             return diagonal(o,o); //v4 // initially, let the s (source) and d(destination) coordinates of the path be the same: x0, y0 of the parentdatapoint
-        });
+        })// right click to show the custlinkmenu (including delete)
+        .on("contextmenu", d3.contextMenu(custlinkmenu))
+        ;
     // console.log('custlinkEnter ===')
     // console.log(custlinkEnter)
 
@@ -766,10 +768,45 @@ function custlink(parentdatapoint, shownnodes){
             return diagonal(o, o); // v4 it is the final path after transition: all waypionts are at the x,y of the parentdatapoint	
         })
         .remove();
-
+    
 } // end custlink()
 
 
+function deletecustlink (thecustlinkElm){
+
+    thecustlinkd3obj =d3.select(thecustlinkElm)
+
+    var thecustlinkdata;
+    thecustlinkd3obj.attr('fakeattr', d=>{
+        thecustlinkdata =d;
+    })
+
+    // console.log(thecustlinkdata)
+    // the idx of the target node of the thecustlinkdata
+    // var thetgtidx = thecustlinkdata.idx
+    var thesrcidx = thecustlinkdata.parent.data.idx
+    if (thecustlinkdata.data.custparents !== null &&  thecustlinkdata.data.custparents !== undefined ){
+        //loop to match thesrcidx to an idx in custparents
+        var thecustparents = thecustlinkdata.data.custparents 
+        thecustparents.forEach((d, i) =>{
+            if (d.idx === thesrcidx){
+                // delete the matched idx from the custparents
+                thecustparents.splice(i,1)
+            }
+        })
+        // console.log(thecustlinkdata.data)
+        // if thecustparents is empty, delete the field thecustparent
+        if (thecustlinkdata.data.custparents.length ===0){
+            delete thecustlinkdata.data.custparents
+        }
+        //The custparent of the target node in root data is also deleted:
+        //console.log(updateTree)
+    }
+      //delete the custparent from the target node
+    //remove the custlink path
+    // console.log(thecustlinkd3obj.node())
+    thecustlinkElm.remove()
+} // end deletecustlink
 
 
 
@@ -1525,7 +1562,7 @@ function dragdrop() {
         pseudoNodeText.text('').style("opacity", 1e-6)
 
         // resume rightclick  actions for showing contextmenu
-        d3.selectAll('g.nodeGs').on("contextmenu", d3.contextMenu(menu))
+        d3.selectAll('g.nodeGs').on("contextmenu", d3.contextMenu(nodemenu))
     }
 
 } // end drag drop

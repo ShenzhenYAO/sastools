@@ -38,7 +38,7 @@
 
 /**global vars */
 var 
-    gitcommitversion = '125a',
+    gitcommitversion = '126a',
 
     treejsonURL = 'data/treedata.json',     // the url of the external json file with tree data
     treeData,   // to hold the tree data 
@@ -135,8 +135,8 @@ var theNodeToRename,theNodetoRenameElm;
 var currentDataEle, theInputMainDiv, nicEditor, NicEditInputInstance;
 
 
-// right click menu
-var menu = [
+// right click menu for nodes
+var nodemenu = [
     {
         title: 'Rename node',
         action: function(elm, d, i) {
@@ -276,6 +276,18 @@ var menu = [
         }
     }
 
+] // end nodemenu
+
+
+// menu of custlink when a custlink is right clicked
+var custlinkmenu = [
+    {
+        title: 'delete link',
+        action: function(elm, d, i) {
+            // console.log (elm)
+            deletecustlink(elm, d)
+        }
+    }
 ]
 
 
