@@ -38,9 +38,9 @@
 
 /**global vars */
 var 
-    gitcommitversion = '124a',
+    gitcommitversion = '125a',
 
-    treejsonURL = 'data/doctype2.json',     // the url of the external json file with tree data
+    treejsonURL = 'data/treedata.json',     // the url of the external json file with tree data
     treeData,   // to hold the tree data 
     treeJSON,   // to hold the tree JSON from treeData
     i = 0,  // no need
@@ -74,9 +74,9 @@ var zoomSettings = {
 var zoomLevel=1; // the level of zoomming (scale, i.e., the times to enlarge/shrink), by default=1; 
 
 /** viewbox width (two boxes side by side, left for text, right for diagram) */
-var width_textviewbox = width_body *.6,
+var width_textviewbox = width_body *.9,
     height_textviewbox = height_body,
-    width_treeviewbox = width_textviewbox * .7//width_body, // leave 5% for padding
+    width_treeviewbox = width_textviewbox * .9//width_body, // leave 5% for padding
     height_treeviewbox = height_body,
 
     borderweight_viewbox = 1
@@ -124,6 +124,10 @@ var
 ;
 
 var makechangetreeresult={}; // this is to save features produced by makechangetree
+
+// for drag and drop
+var mouseoverObj; //,theParentToChangeObj;
+var theSrcD3Obj, theTgtD3Obj;
 
 // for modals
 var theParentToAppendChild;
@@ -225,7 +229,7 @@ var menu = [
     }
     ,
     {
-        title: 'ExpandAll',
+        title: 'Expand descendants',
         action: function(elm, d, i) {
         //currentDataEle = d;
         expandAll(d);
@@ -236,7 +240,7 @@ var menu = [
     }
     ,
     {
-        title: 'CollapesAll',
+        title: 'Collapes descendants',
         action: function(elm, d, i) {
         //currentDataEle = d;
         //console.log(elm);

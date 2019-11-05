@@ -1,4 +1,10 @@
 simple d3 v4 tree diagram.
+commit 125a
+
+1. Testing using d3v4 and jquery js in local file seems fine
+2. testing d3v5 (The only proeblem is that the loading of js from URL is not correct. )
+3. Fixed the bug: prevent the underneathe treeG moving when the mouse is down and moving in the modal area (in modaldialogbox())
+4. Adding shift-drag/drop to add custlink and update custparents (next is to right click and delete cust links??)
 
 commit 124a
 *********************************************************

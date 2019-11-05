@@ -709,8 +709,6 @@ function custlink(parentdatapoint, shownnodes){
             }
             
 
-            
-
             if (d_ChildOf_n===0) {
                 // get the x y property
                 d.parent.x = n.x, d.parent.y = n.y;
@@ -1006,9 +1004,10 @@ function getmousekey(){
 
 // when the mouse is pressed down, the following actions will be triggled
 // drag and drop function works when a mousedown is detected for a g.nodeGs element, which is set in components.MakeChangeTree()    
-function dragdrop () {
+function dragdrop() {
     
     event.stopPropagation(); // the mousedown is also listened by the treeG (for dragging the map) This line prevents
+    event.preventDefault();
 
     var mousedown=1; // to indicate that mousedown status = 1 (this is for debug purpose)
     // console.log('1. mousedown= ' + mousedown)
@@ -1048,20 +1047,170 @@ function dragdrop () {
         .attr('class', 'pseudonodetext')
         .text(showtext) 
 
-
-    var mouseoverObj;     // will be used for both mouse over and out
+    //add a pseudo cross link
+    var theSrcXY = {'x':0, 'y':0}; //initialize the src xy obj
+    //get the x, y of the sourceObj;
+    theSelectedObj.attr('fakeattr', d=>{
+        theSrcXY.x = d.x;
+        theSrcXY.y = d.y;
+    })
+    // add a pseudo crosslink
+    var thepseudolink = thetreeG.append('path')
+        .attr('class', 'peudolinks')
+        .attr('d', d=>{
+            return diagonal(theSrcXY,theSrcXY);
+        })
+    
 
     // detect mouse move
     d3.select(window)
-    .on("mousemove", mousemove_dragdrop)
-    .on("mouseup", mouseup_dragdrop);
+        .on("mousemove", mousemove_dragdrop)
+        .on("mouseup", mouseup_dragdrop);
 
-    function mousemove_dragdrop () {
-        var mousemove= 1;
-        // console.log( '2. mousedown & move = ' + mousedown + ',' + mousemove)
+    //on mousemove, check the keys and do different tasks
+    function mousemove_dragdrop(){
+        // for left mouse button only, run drag and drop to change node parent
+        if (getmousekey() === 'primary(left)'){
+            mousemove_dragdrop_primary();
+        } 
+        if (getmousekey() === 'shift-primary(left)') {
+            // console.log('shift-primary(left) pressed')
+            mousemove_dragdrop_shiftprimary () ;
+        }
+    }
+
+    //on mouseup, check the keys and do different tasks
+    function mouseup_dragdrop(d){
+        //when mouse is up, need to determine whether the mouse is over a node or not
+        // note that the mouseup is not binded to any mouse button; therefore the getmousekey() returns values like 'unknown',or 'shift-unknown' (the heading and trailing '-' are always trimmed)
+        // for left mouse button only, run drag and drop to change node parent
+        if (getmousekey() === 'unknown'){///!!! make a video about it
+            mouseup_dragdrop_primary();
+        } 
+        if (getmousekey() === 'shift-unknown') {
+            // console.log('shift key pressed when mouse is up')
+            mouseup_dragdrop_shiftprimary () ;
+        }
+    }
+
+    // on shift - mouse up, do the following
+    function mouseup_dragdrop_shiftprimary () {          
+        var mousemove=0, mousedown=0; // these are for debug purpose
+
+        //remove the pseudo link
+        thepseudolink.remove()
+
+        /** if theTgtD3Obj not null, not undefined:
+         * 1) find .data.custparents of theTgtD3Obj
+         * 1) add the idx of theSrcD3Obj into the custparents of theTgtD3Obj
+         * 3) run MakeChangeTree()
+         */
+        var theSrcIdx;
+        if (theTgtD3Obj !== null && theTgtD3Obj != undefined){
+            //0) get the idx of the source d3 obj
+            theSrcD3Obj.attr("fakeattr", d=>{
+                theSrcIdx = d.data.idx;
+            })
+            
+            var addcustlink =0; 
+
+            //1) find and update .data.custparents of theTgtD3Obj
+            theTgtD3Obj.attr("fakeattr", function(d){
+                // console.log('data binding to the target node')
+                // console.log(d)
+                var srcIdxExist=0;
+                if (d.data.custparents === null || d.data.custparents === undefined){
+                    d.data.custparents=[]
+                    // inidicate that the srcIdx does not exist
+                    // !!! but do not push the srcIdx yet, as the srcIdx might be d.data.idx itself. In that case, srcIdxExist should be 1, i.e., the node itself cannot be its custparent
+                    srcIdxExist =0;
+                } else {                    
+                    // if theSrcIdx is the target nodes's idx, let srcIdxExist=1 (do not add its own idx to its custparents)
+                    if (d.data.idx === theSrcIdx ){
+                        srcIdxExist=1;
+                    }
+                    // loop and check if theSrcIdx is in the list. If so, let srcIdxExist=1
+                    d.data.custparents.forEach(e=>{
+                        if (e.idx === theSrcIdx) {
+                            srcIdxExist =1;
+                        } 
+                    })
+                }
+                if (srcIdxExist === 0){ // if theSrcIdx does not exist, add it to the parent list
+                    d.data.custparents.push({'idx': theSrcIdx})
+                    addcustlink=1;
+                }                
+            })
+            //add cross line
+            if (addcustlink === 1){
+                // console.log(addcustlink)
+                var proposedTreesize=estTreesize(rootdatapoint_sortedrowscols)
+                //   console.log(proposedTreesize.width, proposedTreesize.height)
+                rootdatapoint_sortedrowscols.x0 = proposedTreesize.height /2; // redefine the vertical middle point for position the root node
+            
+                // create the tree instance using proposed tree size (according for the changes made for show/hiding nodes)
+                treeinstance = d3.tree().size([proposedTreesize.height, proposedTreesize.width]);
+                updateTree= MakeChangeTree(rootdatapoint_sortedrowscols) 
+                pan()
+                custlink(rootdatapoint_sortedrowscols, updateTree.nodeupdate )
+            } 
+            
+            d3.event.stopPropagation()   // stop mouseover??           
+            
+        }
+    } // mouseup_dragdrop_shiftprimary
+
+
+
+    function mousemove_dragdrop_shiftprimary () {
+
         d3.event.preventDefault();// prevent the default text dragging
 
+        // determine the src d3obj
+        theSrcD3Obj=theSelectedObj;
+        // console.log(theSrcD3Obj)
+
+        //************************************************************************************ */        
+
+        // when mouse move, let the pseudo g move with the mouse, get the coordinates relative to the tree rect
+        var tmpxyarray=d3.mouse(thetreeG.node());
+        //calculate the coordinates and convert to strings for display and for transform.translate setting (i.e., for the text group to fly to)
+        var
+        mousecurrentxy = {"y": parseInt(tmpxyarray[0]), "x": parseInt(tmpxyarray[1])}; // y is horizontal, x vertical in d3 horizontal tree
+
+        //transit the path
+        thepseudolink.transition()
+            .duration(0)
+            .attr("stroke-opacity", 1)
+            .attr('d', function(d){ return diagonal(theSrcXY, mousecurrentxy)});
+
+        //************************************************************************************ */
         
+        /**check if mouse is over a g group, remember it as the targetD3Obj */
+        d3.selectAll('g.nodeGs')    
+            .attr('pointer-events', 'mouseover') //? is this line a must???
+            .on("mouseover", function(d){
+
+                // Remember the data point corresponding to the node group that the mouse is over
+                theTgtD3Obj = d3.select(this)
+                // console.log ('mouse is over ===')
+                // console.log(d)
+                // console.log(theTgtD3Obj)
+                //mouseoverObj.select('circle.nodecircles').style('fill', nodecircle_fill_dragover_color);
+            })
+            .on("mouseout", function(d){
+                theTgtD3Obj = null;
+            })
+        ;
+
+    } //end mousemove_dragdrop_shiftprimary
+
+
+
+    function mousemove_dragdrop_primary () {
+        var mousemove= 1;
+        // console.log( '2. mousedown & move = ' + mousedown + ',' + mousemove)
+        d3.event.preventDefault();// prevent the default text dragging        
 
         // make the selected g and its components dimmed
         // ideally once the mouse move is detected, it is better to make the selected node and its descendants invisible. 
@@ -1123,7 +1272,6 @@ function dragdrop () {
             .attr('pointer-events', 'mouseover') //? is this line a must???
             .on("mouseover", function(d){
 
-
                 // console.log('3. mousedown move = ' + mousedown + ',' + mousemove + ' over the node: ' + d.data.name)
                 mouseoverObj = d3.select(this)
                 mouseoverObj.select('circle.nodecircles').style('fill', nodecircle_fill_dragover_color);
@@ -1152,7 +1300,7 @@ function dragdrop () {
     }
 
     // on mouse up, do the following
-    function mouseup_dragdrop () {          
+    function mouseup_dragdrop_primary () {          
         var mousemove=0, mousedown=0; // these are for debug purpose
 
         // remember theParentToChangeObj
@@ -1381,7 +1529,6 @@ function dragdrop () {
     }
 
 } // end drag drop
-
 
 
 // to pan the tree (press mouse button down, hold and move the tree diagram within the svg box)
@@ -2190,6 +2337,9 @@ function makemodal(id, title, label, action){
      *  this is a box of the whole dialog area
     */
     var modaldialogbox = modalbackground.append('div').attrs({'class': 'modal-content'}) // this is a box of the whole dialog area
+        .on('mousedown', d=>{ // the following is to prevent thetreeG moving when the mouse is down and moving within the modal area 
+            event.stopPropagation();
+        }) 
 
     /**3a. within the dialog box, create a header div */
     var modalheader=modaldialogbox.append('div').attrs({'class': 'modal-header'})
