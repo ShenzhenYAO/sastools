@@ -1,6 +1,10 @@
 simple d3 v4 tree diagram.
-commit 126a
+commit 127a
+1. add functions to read html or txt and turn into treeJSON of sentences delimited by '.'
 
+
+commit 126a
+1. Add right click on custlinks to show link context menu in which users can select to delete custlink 
 
 
 commit 125a

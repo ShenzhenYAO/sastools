@@ -3032,3 +3032,130 @@ function ZoomOutTree(){
     ;
    
 } // end ZoomOutTree()
+
+
+// The following is an example to get html contents from URL, and save as a treeJason file
+function getHtmlAsTreeJSON(){
+
+    /* to get text from a URL and change it into a JSON obj
+    data is from https://www.gutenberg.org/files/3600/3600-h/3600-h.htm#chap12
+    the contents are components after the h1 dom elements: CHAPTER XII. — APOLOGY FOR RAIMOND SEBOND.
+    There are two types of ele: <p> and <pre>, each for normal text, and proverbs in french.
+    */
+
+    //1. fetch the dom from the url
+    // to solve the cors problem
+    //https://medium.com/@dtkatz/3-ways-to-fix-the-cors-error-and-how-access-control-allow-origin-works-d97d55946d9
+    var ExternalURL = "https://cors-anywhere.herokuapp.com/https://www.gutenberg.org/files/3600/3600-h/3600-h.htm#chap12"
+
+    var thehtmlstr;var textDOMEles;
+    $.ajax(ExternalURL, {
+        success: function(data) {
+            $('#tmpbox').html($(data).find('#tmpbox *'));
+            console.log('The page has been successfully loaded');
+            setTimeout (function (){
+                // console.log(thehtmlstr)
+                //parse html str as DOM elements
+                textDOMEles =  $.parseHTML( thehtmlstr )
+                // console.log(textDOMEles)
+                // get the elments after the h1/'CHAPTER XII. — APOLOGY FOR RAIMOND SEBOND.'
+                var startCatching=0, textArray=[];
+                //find the h2 with text 'CHAPTER XII. — APOLOGY FOR RAIMOND SEBOND.'
+                i=0
+                textDOMEles.forEach(elm=>{
+                    if ($(elm).is('h1') && $(elm).text().includes('CHAPTER XII. — APOLOGY FOR RAIMOND SEBOND.')  ){ //
+                        startCatching=1
+                        // console.log($(elm).text())
+                    }                             
+                    //after startCatching = 1, catch contents in <p>, and <pre>
+                    if (startCatching===1 && ($(elm).is('p') || $(elm).is('pre'))) {
+
+                        var thetxt = $(elm).text().trim()
+                        //split the text by period. This is to have sentences at large.
+                        var thetxtArr = thetxt.split('.')
+                        thetxtArr.forEach(d=>{
+                            tmpnode={
+                                'idx': generateUUID(), 
+                                'name': i++,
+                                'NodeDescription': '///t <br />' + d + '.<br /> t///'
+                            }
+                            textArray.push(tmpnode)
+                        })
+                    }
+                })
+                // console.log(textArray)
+
+                //finally, rep textArray will a parent node
+                var thebook=[{
+                    'idx':generateUUID(), 
+                    'name': 'chapter12',
+                    'children': textArray
+                }]
+                console.log(thebook)
+
+                NewTree(thebook)
+
+
+
+                }, 3000
+            );
+            thehtmlstr=data;
+        },
+        error: function() {
+            console.log('An error occurred');
+        }
+    });
+
+}
+
+// The following is an example to get text contents from URL, and save as a treeJason file
+function getTextAsTreeJSON(){
+
+    /* to get text from a URL and change it into a JSON obj
+    data is from https://www.gutenberg.org/files/3600/3600-h/3600-h.htm#chap12
+    the contents are components after the h1 dom elements: CHAPTER XII. — APOLOGY FOR RAIMOND SEBOND.
+    There are two types of ele: <p> and <pre>, each for normal text, and proverbs in french.
+    */
+
+    //1. fetch the dom from the url
+    // to solve the cors problem
+    //https://medium.com/@dtkatz/3-ways-to-fix-the-cors-error-and-how-access-control-allow-origin-works-d97d55946d9
+    var ExternalURL = "data/chapter12.txt"
+
+    var thehtmlstr;var textDOMEles;
+    $.ajax(ExternalURL, {
+        success: function(data) {
+            // $('#tmpbox').html($(data).find('#tmpbox *'));
+            console.log('The page has been successfully loaded');
+            setTimeout (function (){
+                    thehtmlstr=data
+                    console.log(thehtmlstr)
+                    textArray=thehtmlstr.split('—');
+                    var i=0; var nodesarray=[];
+                    textArray.forEach(d=>{
+                                tmpnode={
+                                    'idx': generateUUID(), 
+                                    'name': i++,
+                                    'NodeDescription': '///t <br />' + d + '<br /> t///'
+                                }
+                                nodesarray.push(tmpnode)
+                    })
+                    // console.log(textArray)
+
+                    //finally, rep textArray will a parent node
+                    var thebook=[{
+                        'idx':generateUUID(), 
+                        'name': 'chapter12',
+                        'children': nodesarray
+                    }]
+                    console.log(thebook)
+                    NewTree(thebook)
+                }, 3000
+            );
+        },
+        error: function() {
+            console.log('An error occurred');
+        }
+    });
+
+}
