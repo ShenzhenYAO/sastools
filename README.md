@@ -1,4 +1,7 @@
 simple d3 v4 tree diagram.
+commit 128a
+Open local egp file, and draw tree automatically (1) (Not loading code in each node yet)
+
 commit 127a
 1. add functions to read html or txt and turn into treeJSON of sentences delimited by '.'
 

@@ -159,4 +159,96 @@ setTimeout (function (){
 
 
 
+//notworking zip.js
+function notrun(){
+
+// function ImportFromEGPAfterReloading(d){
+
+//     // console.log(d)
+//     //https://stackoverflow.com/questions/32267930/get-name-of-files-of-zip-file-in-javascript
+//     var filesInput =d.files[0];
+
+//     console.log(filesInput)
+
+//     var reader = new FileReader();
+//     reader.readAsBinaryString(filesInput);
+
+//     reader.onloadend = function(e){
+        
+//         zip.useWebWorkers = false;//explicitly include (required) zip-workers ['zip.js','zip-fs.js','z-worker.js','inflate.js','deflate.js']
+
+//         zip.createReader(new zip.BlobReader(filesInput), function(zipReader) {
+//             zipReader.getEntries(readEntries);
+//         }, function (error) {
+//              console.log(error);
+//         });
+
+
+//         // var res;
+//         // // unzip files
+//         // console.log('unzip files ======')
+//         // var myZip = e.target.result;  
+//         // // console.log(myZip) 
+//         // var unzipper = new JSUnzip(myZip);
+
+//     //     unzipper.readEntries();    
+//     //     var myFiles = unzipper.entries;    
+
+//     //     for(var i=0; i<myFiles.length; i++) {
+//     //         var name = myFiles[i].fileName; // This is the file name
+//     //         var content = JSInflate.inflate(myFiles[i].data); // this is the content of the files within the zip file.
+//     //     }
+//     } 
+// }
+
+
+// function readEntries(entries) {
+//     var entryLength = entries.length;
+//     for (i = 0; i < entryLength; i++) {
+//         var entry = entries[i];
+//         // console.log(entry)
+//         var post_lastslash = entry.filename.lastIndexOf("/");
+//         if (post_lastslash ===0 ){
+//             var filePath='';
+//             var fileName=entry.filename
+//         } else {
+//            var filePath = entry.filename.substring(0, post_lastslash);
+//             var fileName = entry.filename.substring(post_lastslash + 1); //if inside folder 
+//         }
+//         // console.log(entry.filename)
+//         // console.log('path===========')
+//         // console.log(filePath);
+//         // console.log('file===========')
+//         // console.log(fileName)
+//         var ext = fileName.split(".").pop().toLowerCase();
+//         if (ext.toUpperCase() == 'DOC' || ext.toUpperCase() == 'PDF' ||
+//             ext.toUpperCase() == 'DOCX') {
+//             //logic
+//         }
+//         if (ext==='xml'){
+
+//             entry.getData(new zip.TextWriter(entry), function(text) {
+//                 // text contains the entry data as a String
+//                 // console.log(text);
+//             })
+//             // zip.createReader(new zip.BlobReader(filesInput), function(zipReader) {
+//             //     zipReader.getEntries(readEntries);
+//             // }, function (error) {
+//             //      console.log(error);
+//             // });
+
+
+
+//         }      
+        
+//     }
+// }
+
+
+
+
+
+}
+
+
 

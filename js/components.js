@@ -132,8 +132,12 @@ $(document).ready(function(){
             NewTree(treeData)
             // treeData = null;
         });
-
     });//end load existing file
+
+    // load egp
+    $('#egp_input').on('change', function(){
+        ImportFromEGPAfterReloading(this);
+    }) // load egp
     
     // //load subtree;
     //         //load existing file
@@ -791,7 +795,7 @@ function deletecustlink (thecustlinkElm){
         thecustparents.forEach((d, i) =>{
             if (d.idx === thesrcidx){
                 // delete the matched idx from the custparents
-                thecustparents.splice(i,1)
+                thecustparents.splice(i,1) // use splice() only there is ONE matched item in the array
             }
         })
         // console.log(thecustlinkdata.data)
@@ -1491,13 +1495,13 @@ function dragdrop() {
                         // within originalParentData's children find the one which equals to the selected obj data, and remove it from the children array
                         for (i=0; i < originalParentData.children.length;i++ ){
                             if (originalParentData.children[i] === theSelectedObjData){
-                                originalParentData.children.splice(i, 1);
+                                originalParentData.children.splice(i, 1); //use splice() only when there is ONE matched item
                                 break;
                             }
                         }
                         for (i=0;i<originalParentData.data.children.length;i++ ){
                             if (originalParentData.data.children[i] === theSelectedObjData.data){
-                                originalParentData.data.children.splice(i, 1);
+                                originalParentData.data.children.splice(i, 1); //use splice() only when there is ONE matched item
                                 break;
                             }
                         }
@@ -1793,7 +1797,7 @@ function getSortedRowsCols(thisDataArray){
 		saveData(updatedData, fileName);		
     }
     
-    /* a function saveData*/
+    /* a function to save JSON*/
 	var saveData = (function () {
 		/*In the function, create an invisible element, which is a hyperlink named 'a'*/
 		var a = document.createElement("a");
@@ -1824,7 +1828,7 @@ function getSortedRowsCols(thisDataArray){
 						/*display the savaAs window*/
 						window.URL.revokeObjectURL(url);
 						};
-			}());
+	}());
 
 
 //select the properties to be copied into the cleaned JSON for export
@@ -1982,8 +1986,8 @@ function deleteNode(theNode){
         for (i=0;i<theParent.children.length;i++){
             if (theParent.data.children[i].idx === theNode.data.idx){//d3v4 (add .data)
 //console.log(i, theParent.children[i].idx)
-                theParent.children.splice(i,1)
-                theParent.data.children.splice(i,1) //d3v4
+                theParent.children.splice(i,1) //use splice() only when there is ONE matched item
+                theParent.data.children.splice(i,1) //d3v4 //use splice() only when there is ONE matched item
 //console.log(i, theParent.children)
             }
         }
@@ -3091,7 +3095,7 @@ function getHtmlAsTreeJSON(){
                     'name': 'chapter12',
                     'children': textArray
                 }]
-                console.log(thebook)
+                // console.log(thebook)
 
                 NewTree(thebook)
 
@@ -3157,5 +3161,433 @@ function getTextAsTreeJSON(){
             console.log('An error occurred');
         }
     });
+}
+
+
+/**The following is related to handling egp to treeJSON *******************/
+
+/* a function to save File (similar to saveData (which is for saving JSON), but no need to stringfi the content*/
+var saveFile = (function () {
+    /*In the function, create an invisible element, which is a hyperlink named 'a'*/
+    var a = document.createElement("a");
+    /*in the body section of the current document, create a child element, with a tag name of 'a' (in html, those tagged 'a' is for hyperlink*/
+    document.body.appendChild(a);
+    /*make it invisible*/
+    a.style = "display: none";
+    /*the next is to return strings from the second function as command lines.
+        for the second function, the parameters 'data' and 'filename' are from the first function*/
+    return function (srcfilecontent, fileName) {
+        /*create a blob object
+            a blob is a file like object.
+            https://developer.mozilla.org/en-US/docs/Web/API/Blob
+            make it a binary type (octet/strem)
+        */
+        blob = new Blob([srcfilecontent], {type: "octet/stream"}),
+        // blob = new Blob([srcfilecontent], {type: "mime"}),
+        // blob = new Blob([srcfilecontent])
+        /*Pop up a window, for saving the created blob object*/
+        url = window.URL.createObjectURL(blob);
+        
+        /*make the link of the a element as the url*/
+        a.href = url;
+        /*set the name of the downloaded file*/
+        a.download = fileName;
+        /*click to go to the url, i.e., to open the SavaAs window*/
+        a.click();
+        /*display the savaAs window*/
+        window.URL.revokeObjectURL(url);
+        };
+}());
+
+// from a local egp file (or any zip files)
+function ImportFromEGPAfterReloading(d){
+
+    //initialize the root parent
+    var therootparent;
+
+    // console.log(d)
+    //https://stackoverflow.com/questions/32267930/get-name-of-files-of-zip-file-in-javascript
+    var thezipfile =d.files[0];
+
+    var reader = new FileReader();
+    reader.readAsBinaryString(thezipfile);
+
+    reader.onloadend = function(e){
+        var myZip = e.target.result;                 
+        var unzipper = new JSUnzip(myZip);
+
+        unzipper.readEntries();
+        
+        //myFiles, or the entries contains a flatterned list of files, in which
+            // the .fileName contains filePath and fileName in the
+        var myFiles = unzipper.entries;    
+
+        for(var i=0; i<myFiles.length; i++) {
+
+            var name = myFiles[i].fileName; // This is the file name
+            // console.log( myFiles[i].fileName)
+            
+            //find the file 'project.xml' and extract its content as html DOM
+            if (name === 'project.xml'){
+
+                var content = JSInflate.inflate(myFiles[i].data); // this is the content of the files within the zip file.
+                
+                //remove the non printable characters (indeed the non ascII chars)
+                var rcontent = content.replace(/[^\x20-\x7E]/g, ''); //!!!! must have, as the original content contains non-printable characters which cause error when transferrring to html DOM
+                //replace \ with \_. This is to prevent errors caused by backslash
+                rcontent = rcontent.replace(/\\/g, '\\_') ;
+
+                //The xml sucks, instead, import the rcontent str as HTMLDOM
+                var htmlDoc=$.parseHTML( rcontent )
+                // console.log($(htmlDoc)) // the node 'projectcollection' contains all relavant info
+
+                htmlDoc.forEach(elm=>{
+                    if ($(elm).is('Projectcollection')) {
+                        // console.log($(elm))
+                        // console.log($(elm).children())
+                        // var projectDoc=$(elm)
+                        // console.log(projectDoc.children().length)
+
+                        //0) determine the root parent, which is the ProjectCollection
+                        //idx
+                            var rootidx = elm.getElementsByTagName("ID")[0].innerHTML
+                        //name
+                            var rootname = elm.getElementsByTagName("Label")[0].innerHTML
+                        //type
+                            var roottype = elm.getElementsByTagName("Type")[0].innerHTML
+
+                        therootparent = {
+                            "idx": rootidx,
+                            "name": rootname,
+                            "type": roottype,
+                            "children": []
+                        }
+                        // console.log(therootparent)
+                        
+                        //1) push the task related items into an array, each item in the target array contains
+                        // idx (the unique id given by SAS egp), name (from <label>), and type (from <type>)
+                        var tasksarray = egpTasksToArray(elm) // the input is the DOM element, not the $(elm), ie., not the JQuerry object
+                        // console.log(tasksarray)
+                        //2) get a collection of links
+                        var linksarray_all = egpLinksToArray(elm)
+                        // console.log ('all links including those not to interested tasks')
+                        // console.log(linksarray_all)
+                        /*2a) !!! must have
+                            hold on, some links, either the .to or .from are of an idx that cannot be found in tasksarray
+                            Probably, taskarray only contains the interested tasks (type = task, etc)
+                            There are other items that a link is from or to, but these items are not included in taskarray
+                            So within linksarray, we need to remove those not to/from a task in taskarray
+                        */
+                        var linksarray = getLinksToTasks(tasksarray, linksarray_all)
+                        // console.log(linksarray)
+                        //2b) determine the default links, and the customized links
+                        var splitArrays = getDefaultCustLinks(linksarray)
+                        var defaultlinksarray = splitArrays.defaultlinks;
+                        var custlinksarray =  splitArrays.custlinks;
+                        // console.log(defaultlinksarray)
+                        // console.log(custlinksarray)
+
+                        //3) for each task, determine .children .custparents
+                        therootparent = getTaskChildrenCustparents(tasksarray,defaultlinksarray,custlinksarray,therootparent);
+                        // console.log(therootparent)
+
+                        //To this step, the treeJSON is ready, which is therootparent! Make a tree with therootparent
+                        NewTree(therootparent)
+
+                        // do not delete
+                        // for (i=0; i < projectDoc.children().length;i++ ){ // .forEach does not work!
+
+                        //     // console.log($(f))
+                        // }
+                    }
+                })
+
+                // var projectDoc=$(htmlDoc).projectcollection;
+                // console.log($(projectDoc))
+
+                
+                // save file to local drivers. DO NOT Delete
+                //saveFile(rcontent, 'newFile.xml')
+
+            } // end if (name === ...)
+        } // end for myfiles loop
+    } // end reader.onload =...
+
+    
+
+} // End ImportFromEGPAfterReloading
+
+// from all links, select those to and from a task
+function getLinksToTasks(tasksarray, all_links){
+    // get an array of idx from tasksarray
+    var idx_array_tasks = tasksarray.map(obj=>obj.idx)
+    // console.log(idx_array_tasks)
+    var theLinksToTasks=[]; // Note!!!! do not use splice(i,1) It'll mess up the order of the items in the array
+    // instead, create a new array and add qualified items into the new array
+
+    all_links.forEach((al,i)=>{
+           // if the to/from idx of the current link cannot be found in idx_array_tasks, delete the link
+        if (  idx_array_tasks.indexOf(al.to) === -1 || idx_array_tasks.indexOf(al.from) === -1 ){
+            // console.log('the following link is not to/from a task and is deleted')
+            // console.log(al)
+        }  else {
+            theLinksToTasks.push(all_links[i]) 
+        }      
+    })
+    // console.log(theLinksToTasks.length)
+    return theLinksToTasks
+}
+
+
+
+/**For each task in taskarray, determine .childrens, and .custparents */
+function getTaskChildrenCustparents(tasksarray,defaultlinksarray,custlinksarray,therootparent){
+
+    //Part 1: loop for each task in tasksarray:
+    tasksarray.forEach(t=>{
+        t.children =[], t.custparents =[];
+        /**The following is to determine .children, .custparents, and .bornparent*/
+
+        // A. loop for each defaultlink item to determine the bornparent, and the children of the current task
+        defaultlinksarray.forEach((dl, i)=>{
+
+            /* 1) to determine .bornparent:
+            *  a. loop for the defaultlinksarray for idx in '.to' as the same as t.idx
+            *      such a link from defaultlinksarray tells that the current task is a child in that link
+            *  b. for the link identified in step a., the idx in '.from' is the idx of the bornparent of the current task
+            *  c. now the tricky part. Using the idx determined in b, we'll need to find the
+            *       item in task that is of the same idx, and save that task item as the .bornparent 
+            *       of the current task. 
+            *       We cannot directly save the idx found in b as the .bornparent, as we'll need .bornparent 
+            *       to be an obj having all properties of that parent task (i.e., idx, name, and type), not only the idx 
+            * Note: for each task, there is 0 or 1 link item that can be found by step a.
+            */
+            if (t.idx === dl.to){
+                // get an array of idx from tasksarray
+                var idx_array_tasks = tasksarray.map(obj=>obj.idx)
+                // console.log(idx_array_tasks)
+
+                //get the index number of the item in idx_array_tasks, and with the idx value equals to dl.from
+                var IndexNumber_idxInTaskMatchingDLFrom = idx_array_tasks.indexOf(dl.from)
+                // console.log(IndexNumber_idxInTaskMatchingDLFrom)
+
+                //use the index number above, get the corresponding item in taskarray. This is the item with the same idx matching the idx in dl.from
+                t.bornparent = tasksarray[IndexNumber_idxInTaskMatchingDLFrom] 
+                
+                // Duhh, a more succinct way is the following:
+                //t.bornparent = tasksarray[tasksarray.map(obj=>obj.idx).indexOf(dl.from)]
+
+                // console.log('t.idx, dl.to, dl.from, and t.bornparent: ============')
+                // console.log(t.idx)
+                // console.log(dl.to)
+                // console.log(dl.from)
+                // console.log(t.bornparent)
+            }
+
+            /* 2) to determine .children:
+            *  a. loop for the defaultlinksarray and find the item with the idx in '.from' as the same as t.idx
+            *      such a link from defaultlinksarray tells that the current task has a child in that link
+            *  b. for the link identified in step a., the idx in '.to' is the idx of a child of the current task
+            *  c. now the tricky part. Within the idx determined in b, we'll need to find the
+            *       item in task that is of the same idx, and push that task item as a child in 
+            *        t.children (of the current task). 
+            *       We cannot push the idx found directly into t.children, as we'll need .children 
+            *       to have objs with all properties of that child task (i.e., idx, name, and type), 
+            *       not only the idx             * 
+            * Note: for each task, there could be multiple link item that can be found by step a.
+            */
+           if (t.idx === dl.from){
+                
+                //use the idx in dl.to of the current dl, get the corresponding item in taskarray. 
+                //This is the task which is a child of the current t                
+                var thechildtask = tasksarray[tasksarray.map(obj=>obj.idx).indexOf(dl.to)]
+                // the DOM from egp is quite messed up. sometimes a .to idx in a link cannot be matched 
+                    // to idx of any task
+                if (thechildtask === undefined) {
+                    console.log('hey something is wrong !!!' + i)
+                    console.log(t)
+                    console.log(dl)
+                } else{
+                    // push the child task into t.children
+                    t.children.push(thechildtask)
+                }                
+           }
+
+        })
+        // B. loop for each custlinksarray item to determine the idx (this time, idx only) of a custparent
+        custlinksarray.forEach(cl=>{
+
+            /* 1) to determine .custparent:
+            *  a. loop for the custlinksarray for idx in '.to' as the same as t.idx
+            *      such a link from custlinksarray tells that the current task is a child in that link
+            *  b. for the link identified in step a., the idx in '.from' is the idx of a custparent of the current task
+            *  c. push the idx found in b into t.custparents. .custparents is an array of idx. 
+            *       Unlike .bornparent, or .children, .custparents only contain idx, no other properties are required
+            * Note: for each task, there is multiple item that can be found by step a.
+            */
+           if (t.idx === cl.to){            
+                // push dl.from into t.custparients
+                t.custparents.push({"idx": cl.from})
+            }            
+        })
+    })
+
+
+    /** Part 2. Now for those task items which do not have .parent, link them to the root parent 
+     * (which is prepared in ImportFromEGPAfterReloading). The root parent has the idx of the 
+     * projectcollection 
+     * This has to be done after part 1. Although it seems that it repeats the same loop for each task,
+     *  this time each tasks has been exhaustive on its .parent.
+     * Those tasks without a parent node are truly not having a parent in the links. Only for these tasks it
+     *  is proper to add the root parent as their .parent 
+     * 
+    */
+   tasksarray.forEach(t=>{
+        if (t.bornparent === null || t.bornparent === undefined) {
+            /**Well, indeed it is rather pushing the task into root.children
+             * As in d3 tree, the interests are in .children, not .parent
+            */
+           therootparent.children.push(t)
+        } else {
+            delete t.bornparent 
+            /*Yes. The only purpose for .bornparent is to identify whether a task should be linked to the 
+                root parent. For those alreay have a bornparent, their relationship with the parent has been
+                defined in their parent task's .children. So the .bornparent here is redundant, and should be removed
+            */
+        }
+        /**also, delete .children if it is [], delete .custparent if it is [] */
+        // if (t.children===undefined || t.children === null ){t.children =[] }
+        if (t.children.length ===0 ){delete t.children}
+        if (t.custparents.length===0){delete t.custparents}
+   })
+
+//    console.log(therootparent)
+   return therootparent;
 
 }
+
+/**determine the default and customized links
+ * 1) sort the links by their '.to' field
+ * 2) get an array of the first item with distinct '.to' values (these are the distinct task nodes
+ *         and the .from is the parent). This array is for default links
+ * 3) for items not of the first, put them in another array, which is for customized links
+ */
+function getDefaultCustLinks(srclinks){
+    var theDefaultlinks=[], theCustlinks=[];
+    var last_linkto;
+    
+    // sort the links by .to field
+    srclinks.sort(function(a,b){
+        var textA=a.to.toUpperCase();
+        var textB=b.to.toUpperCase();
+            return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+        })
+        
+    //split the links into default links, and customized links.
+    // The allocation of default/customized links are quite arbituary, but it does not matter, as the
+        // relationship of these nodes can be changed in the tree map. 
+    srclinks.forEach(function(d){
+		//if the linkto is the same as the previous, add it to the customized links array
+		if (d.to === last_linkto){
+			theCustlinks.push(d);			
+		} else{
+			//if the linkto is new, add it to the default links array
+			theDefaultlinks.push(d);
+			last_linkto= d.to;
+		}
+	})
+    
+	return {'defaultlinks': theDefaultlinks,'custlinks': theCustlinks}
+}
+
+function egpLinksToArray(theDom){
+	
+    var ProjectCollectionElements= theDom.getElementsByTagName("Element"); //[0].children;
+
+// console.log(ProjectCollectionElements)	
+    
+    //get the elements as a d3 array, each for an element 
+    var ProjectCollectionLinks=[];
+    var eleLength = ProjectCollectionElements.length;
+    var i=0;
+    while (i < eleLength) {
+        //get the element's type
+        theElement=ProjectCollectionElements[i];
+            var theEleType = d3.select(theElement).attr("Type");
+//console.log(theEleType);
+            if (theEleType === "SAS.EG.ProjectElements.Link"){
+                //display label
+                // console.log(theElement.children[0].children[0].innerHTML)
+
+                //get the theLinkLogs
+                var theLinkLogs = theElement.getElementsByTagName("Log")[0];
+//console.log(theLinkLogs)
+                //get LinkedFrom TaskID
+                var theLinkedFromTaskID =theLinkLogs.getElementsByTagName("LinkFrom")[0].innerHTML; //Label, the index number may change
+//console.log(theLinkedFromTaskID)
+                var theLinkedToTaskID =theLinkLogs.getElementsByTagName("LinkTo")[0].innerHTML; //ID, the number may change
+//console.log(theLinkedToTaskID)
+                var theLink = {from:theLinkedFromTaskID, to:theLinkedToTaskID};
+                ProjectCollectionLinks.push(theLink);
+            }
+        i++;			
+    };
+//console.log(ProjectCollectionLinks)
+    return ProjectCollectionLinks;	
+}
+
+/*get task related information from the messy EGP dom. The intereted output includes tasks, EGTask, and Note
+  Note: The relationship of these items (who's the parent, who's the chidren, etc) will be determined by the links in a separate function
+*/
+function egpTasksToArray(theDom){
+	
+    // console.log (theDom)
+    
+    //get the project collection elements (tasks, process flow diagrams, links, etc.)
+    // these elements are wrapped in the dom element <Elements></Elements>
+    //var ProjectCollectionElements=d3.select(ProjectCollection.children[11].children)[0][0];//the index number 11 may change ... so better to get Elements by TagName
+    var ProjectCollectionElements= theDom.getElementsByTagName("Elements")[0].children;
+
+//console.log(ProjectCollectionElements)	
+    
+    //get the elements as a array, each for an element 
+    var ProjectCollectionTasks=[];
+    var eleLength = ProjectCollectionElements.length;
+    var i=0;
+    while (i < eleLength) {
+        //get the element's type
+        theElement=ProjectCollectionElements[i];
+            var theEleType = d3.select(theElement).attr("Type");
+//console.log(theEleType);
+            if (theEleType === "SAS.EG.ProjectElements.CodeTask"
+                ||
+                theEleType === "SAS.EG.ProjectElements.EGTask"
+                ||
+                theEleType === "SAS.EG.ProjectElements.Note"
+            ){
+            /**Note!!!! both shortcuts and tasks have the same type: Task
+             * However, they can be differentiated by <Element>.<CodeTask>.<Embedded>. 
+             * If the text within <Embedded> is True, it is a task; if 'False', a shortcut.
+             * For shortcuts, <Element>.<CodeTask>.<DNA> contains properties of the source of shortcut
+             * including (for example, for the source of a .sas file) the name, the FullPath, etc
+             */
+                // console.log(theElement)
+                //get the theTaskProperties
+                var theTaskProperties = theElement.children[0];
+//console.log(theTaskProperties)
+                //get theTaskLabel
+                var theTaskLabel =theTaskProperties.getElementsByTagName("Label")[0].innerHTML; //Label, the index number may change
+//console.log(theTaskLabel)
+                var theTaskID =theTaskProperties.getElementsByTagName("ID")[0].innerHTML; //ID, the number may change
+//console.log(theTaskID)
+                var theTaskType = theTaskProperties.getElementsByTagName("Type")[0].innerHTML;
+                var theTask = {idx:theTaskID, name:theTaskLabel, type:theTaskType};
+                ProjectCollectionTasks.push(theTask);
+            }
+        i++;			
+    };
+
+    //console.log(ProjectCollectionTasks)
+    return ProjectCollectionTasks;	
+}
+/**The above is related to handling egp to treeJSON *******************/
