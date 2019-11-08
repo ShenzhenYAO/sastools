@@ -1,10 +1,17 @@
 simple d3 v4 tree diagram.
+commit 129a
+***********************************
+GREAT MILESONE!
+**********************************
+Open local egp file and draw tree automatically (2) (Loading code in each task into tree nodes)
+(a sample egp file is in data/egpsimple.egp)
+
 commit 128a
 Open local egp file, and draw tree automatically (1) (Not loading code in each node yet)
 
 commit 127a
 1. add functions to read html or txt and turn into treeJSON of sentences delimited by '.'
-
+(a sample txt is at data/chapter12.txt. Or load it from URL as specified in function getHtmlAsTreeJSON )
 
 commit 126a
 1. Add right click on custlinks to show link context menu in which users can select to delete custlink 

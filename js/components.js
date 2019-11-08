@@ -122,22 +122,35 @@ $(document).ready(function(){
         // console.log('thefirstfileobj======')
         // console.log(thefirstfileobj)
 
-        // use the function readfile to read the first file, get the treeData, and use the treedata to make a new tree
-        readlocalfile(thefirstfileobj, function(f) { // the 'funciton(f){...}' part is the call back function coresponding to the 'callback' in the function readfile()
-            // console.log(f.target.result)
-            treeData=JSON.parse(f.target.result)
-            // create the tree data
-            // console.log('treeData when file_input is ready ======')
-            // console.log(treeData)
-            NewTree(treeData)
-            // treeData = null;
-        });
+        //get the extension name
+        var ext =thefirstfileobj.name.substring(thefirstfileobj.name.lastIndexOf('.')+1)
+        // console.log(ext)
+
+
+        if (ext.toLowerCase() === 'egp') { // if the extension is egp, run import from egp
+            ImportFromEGPAfterReloading(this);
+        } else { // else run import from json
+            // use the function readfile to read the first file, get the treeData, and use the treedata to make a new tree
+            readlocalfile(thefirstfileobj, function(f) { // the 'funciton(f){...}' part is the call back function coresponding to the 'callback' in the function readfile()
+                // console.log(f.target.result)
+                treeData=JSON.parse(f.target.result)
+                // create the tree data
+                // console.log('treeData when file_input is ready ======')
+                // console.log(treeData)
+                NewTree(treeData)
+                // treeData = null;
+            });
+        } // end if
+
+        //empty the input elm. !!! must have. Otherwise cannot repeatedly load the same file 
+        this.value = null
+
     });//end load existing file
 
-    // load egp
-    $('#egp_input').on('change', function(){
-        ImportFromEGPAfterReloading(this);
-    }) // load egp
+    // // load egp
+    // $('#egp_input').on('change', function(){
+    //     ImportFromEGPAfterReloading(this);
+    // }) // load egp
     
     // //load subtree;
     //         //load existing file
@@ -3048,7 +3061,7 @@ function getHtmlAsTreeJSON(){
     */
 
     //1. fetch the dom from the url
-    // to solve the cors problem
+    // to solve the cors problem !!! must have
     //https://medium.com/@dtkatz/3-ways-to-fix-the-cors-error-and-how-access-control-allow-origin-works-d97d55946d9
     var ExternalURL = "https://cors-anywhere.herokuapp.com/https://www.gutenberg.org/files/3600/3600-h/3600-h.htm#chap12"
 
@@ -3266,8 +3279,12 @@ function ImportFromEGPAfterReloading(d){
                         
                         //1) push the task related items into an array, each item in the target array contains
                         // idx (the unique id given by SAS egp), name (from <label>), and type (from <type>)
-                        var tasksarray = egpTasksToArray(elm) // the input is the DOM element, not the $(elm), ie., not the JQuerry object
+                        var tasksarray_nocode = egpTasksToArray(elm) // the input is the DOM element, not the $(elm), ie., not the JQuerry object
                         // console.log(tasksarray)
+                        
+                        //1a) for each task, get their contents from a file of the same id in the egp zip (a file in myFiles)
+                        var tasksarray = getTaskContents(tasksarray_nocode, myFiles)
+                        
                         //2) get a collection of links
                         var linksarray_all = egpLinksToArray(elm)
                         // console.log ('all links including those not to interested tasks')
@@ -3289,7 +3306,7 @@ function ImportFromEGPAfterReloading(d){
 
                         //3) for each task, determine .children .custparents
                         therootparent = getTaskChildrenCustparents(tasksarray,defaultlinksarray,custlinksarray,therootparent);
-                        // console.log(therootparent)
+                        console.log(therootparent)
 
                         //To this step, the treeJSON is ready, which is therootparent! Make a tree with therootparent
                         NewTree(therootparent)
@@ -3342,7 +3359,7 @@ function getLinksToTasks(tasksarray, all_links){
 
 /**For each task in taskarray, determine .childrens, and .custparents */
 function getTaskChildrenCustparents(tasksarray,defaultlinksarray,custlinksarray,therootparent){
-
+    // console.log(tasksarray)
     //Part 1: loop for each task in tasksarray:
     tasksarray.forEach(t=>{
         t.children =[], t.custparents =[];
@@ -3543,7 +3560,7 @@ function egpTasksToArray(theDom){
 	
     // console.log (theDom)
     
-    //get the project collection elements (tasks, process flow diagrams, links, etc.)
+    //get the project collection elements (tasks, note, etc.)
     // these elements are wrapped in the dom element <Elements></Elements>
     //var ProjectCollectionElements=d3.select(ProjectCollection.children[11].children)[0][0];//the index number 11 may change ... so better to get Elements by TagName
     var ProjectCollectionElements= theDom.getElementsByTagName("Elements")[0].children;
@@ -3581,7 +3598,24 @@ function egpTasksToArray(theDom){
                 var theTaskID =theTaskProperties.getElementsByTagName("ID")[0].innerHTML; //ID, the number may change
 //console.log(theTaskID)
                 var theTaskType = theTaskProperties.getElementsByTagName("Type")[0].innerHTML;
-                var theTask = {idx:theTaskID, name:theTaskLabel, type:theTaskType};
+
+                //If the task is a note, its contents are within the tag
+                if (theTaskType === "NOTE"){
+                    theNoteContent = theElement.getElementsByTagName("Text")[0].innerHTML;
+                    var theNoteContent1 = theNoteContent.replace(/\r\n|\r|\n/gm, '<br />') // must have, replace line break with html linebreaker symbols
+                    var theNoteContent2 =theNoteContent1.replace(/(&lt;)/g, '<')
+                    var theNoteContent3 = theNoteContent2.replace(/(&gt;)/g, ">")
+                    var theNoteContent4 = theNoteContent3.replace(/ /g, "&nbsp")
+                    var theNoteContent5 = theNoteContent4.replace(/\t/gm, '&nbsp&nbsp&nbsp&nbsp')
+                    var theNoteContent6 = '///t<br />' + theNoteContent5 + '<br />t///'
+                    console.log('theNoteContent')
+                    console.log(theNoteContent)
+                    console.log(theNoteContent6)
+                    var theTask = {idx:theTaskID, name:theTaskLabel, type:theTaskType,
+                                    NodeDescription:theNoteContent6 };
+                } else {
+                    var theTask = {idx:theTaskID, name:theTaskLabel, type:theTaskType};
+                }                
                 ProjectCollectionTasks.push(theTask);
             }
         i++;			
@@ -3589,5 +3623,45 @@ function egpTasksToArray(theDom){
 
     //console.log(ProjectCollectionTasks)
     return ProjectCollectionTasks;	
-}
+} // end egpTasksToArray
+
+
+
+// to get contents (e.g., sas code, comments) from the egp zip
+// the srcarray should contain idx, name, and type of the task
+function getTaskContents(srcarray, filesInZip){
+
+    srcarray.forEach(d=>{
+        /** in SAS egp, a task file (usually called a program) contains SAS code and 
+         * comments of the task. both the task content file, and the task itself shares the same id.
+         * specifically, the task file in the epg zip is named by the following rules:
+         * <id of the task> + '/code.sas'
+         * determine the file with contents of the task */
+        theidx = d.idx
+        // so the content file is:
+        thesascodefiletosearch = theidx + '/code.sas'
+
+        //loop for each file in filesInZip see if there is a matched file
+        for(var i=0; i< filesInZip.length; i++) {
+            var thefilename = filesInZip[i].fileName; // This is the file name
+            if (thefilename === thesascodefiletosearch) {
+                // console.log('matched file found ============')
+                // console.log(thefilename)
+                var content = JSInflate.inflate(filesInZip[i].data);
+                var rcontent1 = content.substring(1,2)
+                //the first 2 char are often non-printable characters. If so, delete them
+                var rcontent1a = rcontent1.replace(/[^ -~]+/g, ''); //!!!! must have
+                var rcontent2a = content.substring(3).replace(/\r\n|\r|\n/gm, '<br />') // must have, replace line break with html linebreaker symbols
+                var rcontent2b = rcontent2a.replace(/\t/gm, '&nbsp&nbsp&nbsp&nbsp')
+                var rcontent= rcontent1a + rcontent2b
+                console.log(rcontent)
+                d.NodeDescription = '///t<br />///s<br />' + rcontent + '<br />s///<br />t///'
+            }
+        } // end for loop
+
+    })
+    // console.log(srcarray)
+    return srcarray
+} // end of getTaskContents
+
 /**The above is related to handling egp to treeJSON *******************/
