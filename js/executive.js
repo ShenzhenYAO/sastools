@@ -44,7 +44,10 @@ var textviewbox=bigdiv.append('div')
         'height':height_body + 'px',
         'float':'left',
         'border-style':'solid',
-        'border-width': borderweight_viewbox + 'px'
+        'border-width': borderweight_viewbox + 'px',
+        // to make it resizable:
+        'resize':'both',
+        'overflow': 'auto'
     })
 // the box to hold the tree diagram
 var treeviewbox = bigdiv.append('div')
@@ -70,35 +73,42 @@ var treeviewbox = bigdiv.append('div')
 thetextbox=textviewbox.append('div')
     .attrs({'id': 'textBox', 'contenteditable': 'true'})
     .styles({
-        "width":'65%', 
-        'height':'0px', 
-        'max-height':height_textviewbox + 'px',
+        "width":'98%', 
+        'height':'80%', 
+        // 'max-height':height_textviewbox + 'px',
+        'max-height':'80%',
         'font-size':'25px',
-        'float':'left',
+        // 'float':'left',
         'overflow': 'auto',
         'background-color': 'lightgrey',
         'padding' :'5px',
         'margin':'2px',
         'line-height': '1.6',
-        'display':'none'
+        'display':'none',
+        // to make it resizable:
+        'resize':'both',
+        'overflow': 'auto'
     })
 ;
 
 //build a text hint box:
 thehintbox=textviewbox.append('div')
-    .attrs({'id': 'hintBox', 'contenteditable': 'true'})
+    .attrs({'id': 'hintBox', 'class': 'hintBox', 'contenteditable': 'true'})
     .styles({
-        "width":'30%', 
-        'height':'0px', 
-        'max-height':height_textviewbox + 'px',
-        'font-size':'25px',
-        'float':'left',
+        "width":'98%', 
+        'height':'18%', 
+        'max-height':'18%',
+        'font-size':'20px',
+        // 'float':'left',
         'overflow': 'auto',
         'background-color': 'lightblue',
         'padding' :'5px',
         'margin':'2px',
         'line-height': '1.6',
-        'display':'none'
+        'display':'none',
+        // to make it resizable:
+        'resize':'both',
+        'overflow': 'auto'
     })
 ;
 
@@ -243,6 +253,6 @@ function makeSvgRectGTree(){
 makeSvgRectGTree()
 
 // monitor the size changes
-observetreeboxsize()
+observetreeviewboxsize()
 
 

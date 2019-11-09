@@ -3712,8 +3712,8 @@ function getTaskContents(srcarray, filesInZip){
 /**The above is related to handling egp to treeJSON *******************/
 
 
-/**resize of treeviewbox, and  textviewbox (tested, works for chrome, and firefox)*/
-function observetreeboxsize(){
+/**The following is to resize of treeviewbox, and  textviewbox (tested, works for chrome, and firefox)*/
+function observetreeviewboxsize(){
     //when the treeviewbox changed, check it's size
     //https://alligator.io/js/resize-observer/
     const myObserver = new ResizeObserver(entries => {
@@ -3741,3 +3741,22 @@ function observetreeboxsize(){
     const elmsToObserve = document.querySelector('.treeviewbox');      
     myObserver.observe(elmsToObserve);
 }
+// the following is not used as it is not necessary
+function observetextvewboxsize(){
+    //when the treeviewbox changed, check it's size
+    //https://alligator.io/js/resize-observer/
+    const myObserver = new ResizeObserver(entries => {
+        // iterate over the entries, do something.
+        entries.forEach(entry => {
+
+            //update the textviewbox, svg size, and the rect size
+            width_textviewbox = entry.contentRect.width
+            height_textviewbox = entry.contentRect.height
+
+            });
+    });
+    const elmsToObserve = document.querySelector('.textviewbox');      
+    myObserver.observe(elmsToObserve);
+}
+
+/**The above is to resize of treeviewbox, and  textviewbox (tested, works for chrome, and firefox)*/

@@ -38,7 +38,7 @@
 
 /**global vars */
 var 
-    gitcommitversion = '130a',
+    gitcommitversion = '131a',
 
     treejsonURL = 'data/treedata.json',     // the url of the external json file with tree data
     treeData,   // to hold the tree data 

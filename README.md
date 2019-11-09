@@ -1,4 +1,8 @@
 simple d3 v4 tree diagram.
+commit 131a
+1. Textviewbox, textbox, and hintbox are all resizable
+
+
 commit 130a
 
 1. The custlinks now contains all links from the egp file, including the default links. That way, none of the links would be lost when changing parent in tree diagram. 
