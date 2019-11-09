@@ -1,4 +1,13 @@
 simple d3 v4 tree diagram.
+commit 130a
+
+1. The custlinks now contains all links from the egp file, including the default links. That way, none of the links would be lost when changing parent in tree diagram. 
+2. Click the text area to lock the tree on the focused node
+3. Treeviewbox resizable by observetreeboxsize()
+4. In excutive.js, making svg, rect, g, and the tree is wrapped in one function makeSvgRectGTree(). That way, it'll be convenient to repeat the whole process if needed. 
+5. Fixed bugs in ZoomInOutSelectedNode(), and in CentralNode_selectedText
+
+
 commit 129a
 ***********************************
 GREAT MILESONE!

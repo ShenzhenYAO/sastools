@@ -35,6 +35,8 @@ var bigdiv= bodyd3.append('div')
     'border-width': borderweight_viewbox + 'px'
     // 'white-space':'nowrap' // to prevent wrap, but seems unecessary
 })
+
+//the box to hold text
 var textviewbox=bigdiv.append('div')
     .attr('class', 'textviewbox')
     .styles({
@@ -44,17 +46,21 @@ var textviewbox=bigdiv.append('div')
         'border-style':'solid',
         'border-width': borderweight_viewbox + 'px'
     })
-// .text('div1')
+// the box to hold the tree diagram
 var treeviewbox = bigdiv.append('div')
     .attr('class', 'treeviewbox')
+    .attr('id', 'treeviewbox')
     .styles({
         'width':(width_treeviewbox) + 'px',
         'height':height_body + 'px',
         'float':'left',
         'border-style':'solid',
-        'border-width': '1px'
+        'border-width': '1px',
+        // to make it resizable:
+        'resize':'both',
+        'overflow': 'auto'
     })
-    // .text('div2')
+ 
 
 
     
@@ -96,143 +102,147 @@ thehintbox=textviewbox.append('div')
     })
 ;
 
+//the following steps are wrapped into one function, in case the whole process need to be repeated.
+function makeSvgRectGTree(){
+
+    /**0.3 Add a svg, tree rect, and treeg in body **********************************/
+
+    /**0.3.1.1 determine the svg */
+    // var svgwidth = width_tree + TreeMarginToSvg.left + TreeMarginToSvg.right,
+    //     svgheight = height_tree + TreeMarginToSvg.top + TreeMarginToSvg.bottom
+    //     ; // by tree size
+    // svgwidth = Math.max(svgwidth, width_treeviewbox); // the tree size or the viewbox size, which ever is larger
+    // svgheight = Math.max(svgheight, height_treeviewbox);
+
+    // modified! do not change the svg and the rect's size
+    svgwidth = width_treeviewbox - borderweight_viewbox *2; 
+    svgheight = height_treeviewbox - borderweight_viewbox*2;
+
+    svg = addnewEle(svgwidth, svgheight, null, 'thebigsvg', treeviewbox, null, 'svg', null );
+
+    /**0.3.1.2 add a mouse position tip. Note: not used as it isjsut for illustration */
+    // This trick is learned from https://github.com/Matt-Dionis/d3-map
+    // var themousepositiontip = svg.append('g')
+    //     .attr('class', 'mousepositiontip')
+    // var mousetiptext=themousepositiontip.append('text')
+    //     .attr('class', 'mousepositiontiptext')
+    //     .style('opacity', '0')
+    // ;
 
 
-/**0.3 Add a svg, tree rect, and treeg in body **********************************/
 
-/**0.3.1.1 determine the svg */
-// var svgwidth = width_tree + TreeMarginToSvg.left + TreeMarginToSvg.right,
-//     svgheight = height_tree + TreeMarginToSvg.top + TreeMarginToSvg.bottom
-//     ; // by tree size
-// svgwidth = Math.max(svgwidth, width_treeviewbox); // the tree size or the viewbox size, which ever is larger
-// svgheight = Math.max(svgheight, height_treeviewbox);
-
-// modified! do not change the svg and the rect's size
-svgwidth = width_treeviewbox - borderweight_viewbox *2; 
-svgheight = height_treeviewbox - borderweight_viewbox*2;
-
-var svg = addnewEle(svgwidth, svgheight, null, 'thebigsvg', treeviewbox, null, 'svg', null );
-
-/**0.3.1.2 add a mouse position tip. Note: not used as it isjsut for illustration */
-// This trick is learned from https://github.com/Matt-Dionis/d3-map
-// var themousepositiontip = svg.append('g')
-//     .attr('class', 'mousepositiontip')
-// var mousetiptext=themousepositiontip.append('text')
-//     .attr('class', 'mousepositiontiptext')
-//     .style('opacity', '0')
-// ;
+    /**0.3.1.3 enable zooming and pan, from F:\Personal\Virtual_Server\PHPWeb\D3 Pan drop drag\DeniseMauldin Box
+     * Note: not used because of its poor performance
+    */
+    // svg.call(
+    //     d3.zoom()
+    //         .scaleExtent([1 / 2, 12])
+    //         .on("zoom", zoomed) 
+    // )
 
 
-
-/**0.3.1.3 enable zooming and pan, from F:\Personal\Virtual_Server\PHPWeb\D3 Pan drop drag\DeniseMauldin Box
- * Note: not used because of its poor performance
-*/
-// svg.call(
-//     d3.zoom()
-//         .scaleExtent([1 / 2, 12])
-//         .on("zoom", zoomed) 
-// )
-
-
-/**0.3.2, append a rect to allow click on blank. From F:\Personal\Virtual_Server\PHPWeb\D3 Pan drop drag\DeniseMauldin Box */
-//insert a rect, so that we can click on the blank area, to zoom out
-var thetreerect=svg.append('rect')
-    .attrs({
-    'class': 'treerect',
-    'width': svgwidth,
-    'height': svgheight,
-    'id': 'I created'
-    // 'stroke': 'black'
-    })
-    // .style('pointer-events', 'all')
-    // .classed ('background', true)
-    .on('contextmenu', ZoomInOutSelectedNode)
-    // on mouse over, show mouse position
-    // .on('mouseover', showmouseposition)
-; 
-
-
-/**0.3.3 Add a g in svg */
-var transfm= "translate(" + TreeMarginToSvg.left + "," + TreeMarginToSvg.top + ")";
-var thetreeG = addnewEle(null, null, null, 'thetreeg', svg, null, 'g', transfm );
-//!!!! here thetreeG.on('mousedown') does not work
-// thetreeG.on('mousedown', pan)
-
-/** add zoom in and out buttons in treeG ************************************/
-var zoombuttonsG = svg.append('g').attr('class','zoombuttonsG');
-zoombuttonsG.attr('transform', 'translate(0, 100)')
-var zoominBtnG = zoombuttonsG.append('g').attr('class','zooming')
-    .append('foreignObject').attr('width', 30).attr('height', '30')
-        .append('xhtml:div')
-        .text('+')
-        .styles({
-            "width":'80%', 
-            'height':'80%', 
-            'font-size':'25px',
-            'text-align': 'center',
-            'vertical-align': 'middle',
-            // 'float':'left',
-            // 'overflow': 'auto',
-            // 'background-color': 'lightblue',
-            // 'padding' :'5px',
-            'margin':'2px',
-            'border-style':'solid',
-            'border-width': '1px'
+    /**0.3.2, append a rect to allow click on blank. From F:\Personal\Virtual_Server\PHPWeb\D3 Pan drop drag\DeniseMauldin Box */
+    //insert a rect, so that we can click on the blank area, to zoom out
+    thetreerect=svg.append('rect')
+        .attrs({
+        'class': 'treerect',
+        'width': svgwidth,
+        'height': svgheight,
+        'id': 'I created'
+        // 'stroke': 'black'
         })
-var zoomoutBtnG = zoombuttonsG.append('g').attr('class','zoomoutg').attr('transform', 'translate(0,35)')
-    .append('foreignObject').attr('width', 30).attr('height', '30')
-        .append('xhtml:div')
-        .text('-')
-        .styles({
-            "width":'80%', 
-            'height':'80%', 
-            'font-size':'25px',
-            'text-align': 'center',
-            'vertical-align': 'middle',
-            // 'float':'left',
-            // 'overflow': 'auto',
-            // 'background-color': 'lightblue',
-            // 'padding' :'5px',
-            'margin':'2px',
-            'border-style':'solid',
-            'border-width': '1px'
-        })
-
-zoominBtnG.on('click', ZoomInTree)
-zoomoutBtnG.on('click', ZoomOutTree)
-/** add zoom in and out buttons in treeG ************************************/
+        // .style('pointer-events', 'all')
+        // .classed ('background', true)
+        .on('contextmenu', ZoomInOutSelectedNode)
+        // on mouse over, show mouse position
+        // .on('mouseover', showmouseposition)
+    ; 
 
 
+    /**0.3.3 Add a g in svg */
+    var transfm= "translate(" + TreeMarginToSvg.left + "," + TreeMarginToSvg.top + ")";
+    thetreeG = addnewEle(null, null, null, 'thetreeg', svg, null, 'g', transfm );
+    //!!!! here thetreeG.on('mousedown') does not work
+    // thetreeG.on('mousedown', pan)
+
+    /** add zoom in and out buttons in treeG ************************************/
+    var zoombuttonsG = svg.append('g').attr('class','zoombuttonsG');
+    zoombuttonsG.attr('transform', 'translate(0, 100)')
+    var zoominBtnG = zoombuttonsG.append('g').attr('class','zooming')
+        .append('foreignObject').attr('width', 30).attr('height', '30')
+            .append('xhtml:div')
+            .text('+')
+            .styles({
+                "width":'80%', 
+                'height':'80%', 
+                'font-size':'25px',
+                'text-align': 'center',
+                'vertical-align': 'middle',
+                // 'float':'left',
+                // 'overflow': 'auto',
+                // 'background-color': 'lightblue',
+                // 'padding' :'5px',
+                'margin':'2px',
+                'border-style':'solid',
+                'border-width': '1px'
+            })
+    var zoomoutBtnG = zoombuttonsG.append('g').attr('class','zoomoutg').attr('transform', 'translate(0,35)')
+        .append('foreignObject').attr('width', 30).attr('height', '30')
+            .append('xhtml:div')
+            .text('-')
+            .styles({
+                "width":'80%', 
+                'height':'80%', 
+                'font-size':'25px',
+                'text-align': 'center',
+                'vertical-align': 'middle',
+                // 'float':'left',
+                // 'overflow': 'auto',
+                // 'background-color': 'lightblue',
+                // 'padding' :'5px',
+                'margin':'2px',
+                'border-style':'solid',
+                'border-width': '1px'
+            })
+
+    zoominBtnG.on('click', ZoomInTree)
+    zoomoutBtnG.on('click', ZoomOutTree)
+    /** add zoom in and out buttons in treeG ************************************/
 
 
-/**A. load tree Data as a json obj from an external json file 
- * Note: getJsonFromsessionStorage is results from a IFFE function getting results from sessionStorage items.
- * Such arrangement solves asynchronous issues (i.e., treeJSON does not waiting for d3.json(), and carries on with null). 
-*/
-// the original method before this version are repalced with the following newTreebyJsonfromURL(). The new one does not require sessionStorge
-// treeData = getJsonFromsessionStorage;
-// NewTree (treeData)
-
-newTreebyJsonfromURL(treejsonURL)
-
-// // the following illustrates the timing of loading json, making tree, and the value of treeData, and root data point 
-// // initially it cannot be seen because of the asynchoronous settings.
-// console.log('before the tree is made')
-// console.log(treeData)
-
-// // after 5 seconds, they are all saved
-// setTimeout (function (){
-//     console.log('five seconds after the tree is made')
-//     console.log(treeData)
-//     console.log(rootdatapoint_sortedrowscols)
-//     thetreeG.select('g.nodeGs').attr('fakeattr', function(d){
-//             console.log(d)
-//         })
-//     }, 5000
-// );
 
 
+    /**A. load tree Data as a json obj from an external json file 
+     * Note: getJsonFromsessionStorage is results from a IFFE function getting results from sessionStorage items.
+     * Such arrangement solves asynchronous issues (i.e., treeJSON does not waiting for d3.json(), and carries on with null). 
+    */
+    // the original method before this version are repalced with the following newTreebyJsonfromURL(). The new one does not require sessionStorge
+    // treeData = getJsonFromsessionStorage;
+    // NewTree (treeData)
 
+    newTreebyJsonfromURL(treejsonURL)
 
+    // // the following illustrates the timing of loading json, making tree, and the value of treeData, and root data point 
+    // // initially it cannot be seen because of the asynchoronous settings.
+    // console.log('before the tree is made')
+    // console.log(treeData)
+
+    // // after 5 seconds, they are all saved
+    // setTimeout (function (){
+    //     console.log('five seconds after the tree is made')
+    //     console.log(treeData)
+    //     console.log(rootdatapoint_sortedrowscols)
+    //     thetreeG.select('g.nodeGs').attr('fakeattr', function(d){
+    //             console.log(d)
+    //         })
+    //     }, 5000
+    // );
+
+}// makeSvgRectGTree
+
+makeSvgRectGTree()
+
+// monitor the size changes
+observetreeboxsize()
 
 

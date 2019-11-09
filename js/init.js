@@ -38,7 +38,7 @@
 
 /**global vars */
 var 
-    gitcommitversion = '129a',
+    gitcommitversion = '130a',
 
     treejsonURL = 'data/treedata.json',     // the url of the external json file with tree data
     treeData,   // to hold the tree data 
@@ -109,6 +109,8 @@ var rootdatapoint_sortedrowscols;
 var treeinstance; // important: treeinstance has to be defined outside the function
 var updateTree;
 
+var svg, thetreeG, thetreerect;
+
 
 /**about tree elements*/
 var 
@@ -133,6 +135,10 @@ var theSrcD3Obj, theTgtD3Obj;
 var theParentToAppendChild;
 var theNodeToRename,theNodetoRenameElm;
 var currentDataEle, theInputMainDiv, nicEditor, NicEditInputInstance;
+
+//for textview box
+var locknode = 0 ; // the node lock status (1 or 0). if locknode =1, when mouse is out of the selected text span, 
+        // no further actions will take (on tree map the focus will stay on the selected node)
 
 
 // right click menu for nodes

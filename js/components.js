@@ -114,6 +114,7 @@ function generateUUID(){
 
 /**JQuery to check DOM Element changes and take actions as specified*/
 $(document).ready(function(){
+
     //load existing file
     $('#file_input').on('change', function(){
 
@@ -852,6 +853,11 @@ function zoomed() {
 /**the function to select a node, zoom in/out it, and put it in the center */
   //ZoomInOutSelectedNode: zoom in out the selected note
 function ZoomInOutSelectedNode(d){
+    
+    // console.log('in zoom in out selected node ===============')
+
+    var currentsvgw = svg.attr('width')
+    var currentsvgh = svg.attr('height')
 
     //disable the default right click menu
     d3.event.preventDefault(); 
@@ -863,8 +869,9 @@ function ZoomInOutSelectedNode(d){
     //5.1.1 initialzie the vars for x, y coordinates, and the zoom levels
     var x; //x coordinate (horizontal) of the center of the selected path/shape to the left wall of the map g
     var y; // y coordinate (vertical)
-    var xy_pathcenter; // an object containing data about the selected path/shape, including its x and y
+    // var xy_pathcenter; // an object containing data about the selected path/shape, including its x and y
     var translateStr; // a string to specify the travelling (i.e. translating) settings
+
 
     //5.1.2 determine the toggling settings (i.e., zoom in, select a new county, or zoom out)
     if (d && centeredNode !== d) {
@@ -888,8 +895,8 @@ function ZoomInOutSelectedNode(d){
         // 5.1.2.b.1 set the x, y value as the center of the window
         ///**modified part 9, the following is different, */
         // console.log(width_treeviewbox)
-        x = width_treeviewbox / 2 - TreeMarginToSvg.left; //width1 / 2 ;
-        y = height_treeviewbox / 2 - offsetshiftup  ; // height2 /2;
+        x = currentsvgw / 2 - TreeMarginToSvg.left; //width1 / 2 ;
+        y = currentsvgh / 2 - offsetshiftup  ; // height2 /2;
 
         // 5.1.2.b.2 set the zoom level =1 (zoom out)
         zoomLevel = 1;
@@ -901,7 +908,7 @@ function ZoomInOutSelectedNode(d){
 
     //5.1.3 determine the string for travel (translate)
     // the syntax is like 'translate (221, 176)'
-    var translate_mapUpperLeft='translate (' + width_treeviewbox/2 + ',' + height_treeviewbox/2 + ')'
+    var translate_mapUpperLeft='translate (' + currentsvgw/2 + ',' + currentsvgh/2 + ')'
 
     //5.1.4 determine the string for enlarge/shrink (scale)
     var scaleStr = 'scale (' + zoomLevel + ')'
@@ -2605,62 +2612,93 @@ function showSentences(){
         $("#textBox").append(theSentenceHTML)
     });
 
+    //right click to lock
+    CtrlClickToLock();
+
     // listen to changes in the text box
     ShowSentenceChangeListener()
 
 }// end showSentences()
+
+/** the following are related to lock of nodes when a span jof show text is selected by ctrl-click */
+// when the show text is clicked, run showtextonclick
+function CtrlClickToLock(){
+    thetextbox.selectAll('span.showtext')
+        .on('click', showtextonclick)
+}
+//check the mouse key, if it is ctrl-unknown (a ctrl-click, toggle the locknode status)
+function showtextonclick(){
+
+    // console.log('a show text span was clicked')
+    var themousekey = getmousekey()
+    // console.log('themousekey ======')
+    // console.log(themousekey)
+    //for click, the last mouse action is mouse up. For mouse up, the mouse button is 'unknown'
+    //therefore ctrl-click indeed returns: ctrl-unknown
+    if (themousekey === 'ctrl-unknown') {
+        if (locknode === 1) {locknode=0}else{locknode=1};
+        // console.log('the node lock status = ' + locknode)
+    } 
+}
+/**the above are related to lock of nodes when a span jof show text is selected by ctrl-click */
 
 
 
 // on sentencehover, centerize the node in the tree diagram
 function onsentencehover(theEle){
 
-    // change color of the selected text
-	theEle.style.backgroundColor = "grey" //"#4677f8";
-	theEle.style.color="#fefefe";
-    theEle.style.outline = "5px solid grey"; //#66ff66
-    var theidx=$(theEle).attr('idx')
-    // console.log('theidx')
-    // console.log(theidx)
+    //only take actions if the locknode status is not 1
+    if (locknode != 1) {
 
-    //according to idx, get the node obj containing .idx, .data, .elm, and .d3obj 
-    var theTreeNode=getNodeByIdx(theidx)
+        // change color of the selected text
+        theEle.style.backgroundColor = "grey" //"#4677f8";
+        theEle.style.color="#fefefe";
+        theEle.style.outline = "5px solid grey"; //#66ff66
+        var theidx=$(theEle).attr('idx')
+        // console.log('theidx')
+        // console.log(theidx)
 
-    //enlarge the node circle, make the text bold with box
-    theTreeNode.d3obj.select('circle')
-        .styles({'fill':"lightgrey"})
-        .attrs({"stroke-width":nodecircle_border_width*2,
-            "r":nodecircle_radius*2
-        })
+        //according to idx, get the node obj containing .idx, .data, .elm, and .d3obj 
+        var theTreeNode=getNodeByIdx(theidx)
 
-    CentralNode_selectedText(theTreeNode.data)
+        //enlarge the node circle, make the text bold with box
+        theTreeNode.d3obj.select('circle')
+            .styles({'fill':"lightgrey"})
+            .attrs({"stroke-width":nodecircle_border_width*2,
+                "r":nodecircle_radius*2
+            })
 
-    //show hint text for the selected idx
-    ShowHintText(theTreeNode.data)
+        CentralNode_selectedText(theTreeNode.data)
 
+        //show hint text for the selected idx
+        ShowHintText(theTreeNode.data)
+        }
 }
 
 
 //on mouse moving out of the sentence, unhighlight the sentence, and returnt the circle to normal
 function onsentenceout(theEle){
 
-	theEle.style.backgroundColor = "initial";
-	theEle.style.color="initial";
-    theEle.style.outline = "initial";
-    var theidx=$(theEle).attr('idx')
+    //only take actions if the locknode status is not 1
+    if (locknode != 1) {
 
-    //according to idx, get the node obj containing .idx, .data, .elm, and .d3obj 
-    var theTreeNode=getNodeByIdx(theidx)
-        
-    //enlarge the node circle, make the text bold with box
-    theTreeNode.d3obj.select('circle')
-        .style('fill', function(d) {
-            return d._children ? nodecircle_fill_hidedescendants_color : nodecircle_fill_showdescendants_color; 
-        })
-        .attrs({"stroke-width":nodecircle_border_width,
-            "r":nodecircle_radius
-        });
+        theEle.style.backgroundColor = "initial";
+        theEle.style.color="initial";
+        theEle.style.outline = "initial";
+        var theidx=$(theEle).attr('idx')
 
+        //according to idx, get the node obj containing .idx, .data, .elm, and .d3obj 
+        var theTreeNode=getNodeByIdx(theidx)
+            
+        //enlarge the node circle, make the text bold with box
+        theTreeNode.d3obj.select('circle')
+            .style('fill', function(d) {
+                return d._children ? nodecircle_fill_hidedescendants_color : nodecircle_fill_showdescendants_color; 
+            })
+            .attrs({"stroke-width":nodecircle_border_width,
+                "r":nodecircle_radius
+            });
+    }
 }
 
 
@@ -2738,9 +2776,12 @@ function CentralNode_selectedText(d){
     //5.1.3 determine the string for travel (translate)
     // the syntax is like 'translate (221, 176)'
 
+    var currentsvgw = svg.attr('width')
+    var currentsvgh = svg.attr('height')
     //unlike click and zoom in zoom out, this time, put the selected node 60px to the left, not at the horizontal center
     //var translate_mapUpperLeft='translate (' + width_treeviewbox/2 + ',' + height_treeviewbox/2 + ')'
-    var translate_mapUpperLeft='translate (' + 100 + ',' + height_treeviewbox/2 + ')'
+    // by the way, the width_treeviwbox/2 height_treeviewbox/2 is not right. should be half of the current svg width and height
+    var translate_mapUpperLeft='translate (' + 100 + ',' + currentsvgh/2 + ')'
 
 
     //5.1.4 determine the string for enlarge/shrink (scale)
@@ -3027,7 +3068,7 @@ function hideSentences(){
 function ZoomInTree(){
     //disable the default right click menu
     d3.event.preventDefault(); 
-    zoomLevel=zoomLevel*2; //zoomLevel is a global var, saving the current zoomLevel
+    zoomLevel=zoomLevel*1.5; //zoomLevel is a global var, saving the current zoomLevel
     var scaleStr = 'scale (' + zoomLevel + ')'
     thetreeG.transition()
         .duration(zoomSettings.duration)
@@ -3039,7 +3080,7 @@ function ZoomInTree(){
 function ZoomOutTree(){
     //disable the default right click menu
     d3.event.preventDefault(); 
-    zoomLevel=zoomLevel/2; //zoomLevel is a global var, saving the current zoomLevel
+    zoomLevel=zoomLevel/1.5; //zoomLevel is a global var, saving the current zoomLevel
     //if (zoomLevel <= 0){zoomLevel=1}
     var scaleStr = 'scale (' + zoomLevel + ')'
     thetreeG.transition()
@@ -3514,7 +3555,11 @@ function getDefaultCustLinks(srclinks){
 		}
 	})
     
-	return {'defaultlinks': theDefaultlinks,'custlinks': theCustlinks}
+    // return {'defaultlinks': theDefaultlinks,'custlinks': theCustlinks} 
+    return {'defaultlinks': theDefaultlinks,'custlinks': srclinks} 
+    // changed, the default links array contains the first link for .to node, 
+    //but the custlink array contains all links! That way, later when changing parent in tree map, 
+    //none of the existing relationship will be lost
 }
 
 function egpLinksToArray(theDom){
@@ -3665,3 +3710,34 @@ function getTaskContents(srcarray, filesInZip){
 } // end of getTaskContents
 
 /**The above is related to handling egp to treeJSON *******************/
+
+
+/**resize of treeviewbox, and  textviewbox (tested, works for chrome, and firefox)*/
+function observetreeboxsize(){
+    //when the treeviewbox changed, check it's size
+    //https://alligator.io/js/resize-observer/
+    const myObserver = new ResizeObserver(entries => {
+        // iterate over the entries, do something.
+        entries.forEach(entry => {
+
+            //update the textviewbox, svg size, and the rect size
+            width_textviewbox = entry.contentRect.width
+            height_textviewbox = entry.contentRect.height
+            svgwidth = width_treeviewbox - borderweight_viewbox *2; 
+            svgheight = height_treeviewbox - borderweight_viewbox*2;
+
+            //update the size of the svg
+            svg.attrs({
+                'width': entry.contentRect.width- borderweight_viewbox *2, // note: it does not word here to use 'svgwidth'. Maybe it is not updated yet
+                'height':entry.contentRect.height - borderweight_viewbox*2
+            })
+            thetreerect.attrs({
+                'width': entry.contentRect.width- borderweight_viewbox *2,
+                'height':entry.contentRect.height - borderweight_viewbox*2
+            })
+
+            });
+    });
+    const elmsToObserve = document.querySelector('.treeviewbox');      
+    myObserver.observe(elmsToObserve);
+}
