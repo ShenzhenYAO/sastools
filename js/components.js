@@ -2048,9 +2048,11 @@ function showCreateForm(){
 
     // When the user clicks on <span> (x), close the modal
     span.onclick = function() {
-        modal.style.display = "none";
+
         //remove the modal
+        modal.style.display = "none";
         $('#theModal').remove();
+
     }
 
     // When the user clicks anywhere outside of the modal, close it? no, do nothing
@@ -2299,6 +2301,73 @@ function showInputTextForm(){
     
     // When the user clicks on <span> (x), close the modal
     span.onclick = function() {
+
+        // if the modal is for editing NodeDesription, and the textviewbox is visible, update the text
+        // get the idx of the current node description
+        var thecurrentnodeidx = currentDataEle.data.idx
+        var thecurrentnodecontents= currentDataEle.data.NodeDescription
+        // check if the textviewbox is open
+        var width_textviewbox = textviewbox.style('width')
+        // console.log('width_textviewbox: ' +  width_textviewbox)
+        if (width_textviewbox !== '0px'){
+
+            //part 1: reload the textbox (that way, the new text spans are made)
+            showSentences()
+
+            //part 2: scroll down, to the text span corresponding to the node in which the node description was just changed
+
+            // get all spans in textbox
+            var showtextspanElms = $('span.showtext')
+            for(var i=0; i<showtextspanElms.length; i++) {
+                // console.log(showtextspanElms[i])
+                var thespantextidx = $(showtextspanElms[i]).attr('idx')
+                // console.log(thespantextidx)
+                // find the span with the same idx as the node in which the node description was just changed
+                if (thespantextidx ===thecurrentnodeidx ){
+
+                    //highlight the selected span 
+                    var theEle = showtextspanElms[i]
+                    theEle.style.backgroundColor = "grey" //"#4677f8";
+                    theEle.style.color="#fefefe";
+                    theEle.style.outline = "5px solid grey"; //#66ff66
+
+                    /**The idea is to find the first span, scroll it up to top. That way,
+                     * all spans will always be scroll down starting from the top
+                    */
+                    // console.log('what is the clientrect.top of the first span element')
+                    var firstElm=showtextspanElms[0]
+                    var firstElmToTop = firstElm.getBoundingClientRect().top
+                    // console.log(firstElm.getBoundingClientRect())
+
+                    // scroll the first elm to top
+                    $('#textBox').animate({
+                        scrollTop: firstElmToTop 
+                    }, 0);
+
+                    /**Now determine the relative vertical distance between the first and the current
+                     *  span elms. This is the distance to scroll down
+                     *  To show the target elm in the middle, offset the scroll distance by
+                     *  half of the body height - the textviewbox to top (do not ask me why)
+                     */
+                    // console.log('theEle clientrect to top ')
+                    var elmClientRectToTop=theEle.getBoundingClientRect().top
+                    // console.log(elmClientRectToTop)
+
+                    // console.log('the relative vertical distance between the current and the first')
+                    //var relativeV = elmClientRectToTop - firstElmToTop // wrong! must use the most recent positions
+                    var relativeV =theEle.getBoundingClientRect().top - firstElm.getBoundingClientRect().top
+                    // console.log(relativeV)
+
+                    //now scroll the elm down for that relative distance. 
+                    $('#textBox').animate({
+                        scrollTop:  relativeV - (height_body/2 -textviewbox.node().getBoundingClientRect().top) 
+                    }, 500);
+
+                }
+            }
+
+        }
+        
         
         modal.style.display = "none";
 
@@ -2408,7 +2477,7 @@ function makemodal(id, title, label, action){
         /**3a.1 within the header, create a span as the modal close button*/
         var modalclosebutton=modalheader.append('span').attrs({'class': 'close', 'id':'ModalClose'} ).html('x')
         /**3a.2 within the header, create a h2 as the modal title*/
-        var modalboxtitle=modalheader.append('h2').html(title) // modal header title ('e.g, Append a new node)
+        var modalboxtitle=modalheader.append('h2').attr('id', 'modal-title').html(title) // modal header title ('e.g, Append a new node)
 
     /**3b. within the dialog box, create the body div */
     var modalbody = modaldialogbox.append('div').attrs({'class': 'modal-body'}) 
@@ -2565,11 +2634,10 @@ function replaceDIVbyBR(d){
                 
     // set the default result = ''
     var result='' ;
-
     // replace <div> with nothing
-    stripdiv=d.replace('<div>', '')
+    stripdiv=d.replace(/(<div>)/gmi, '') //g for global (change all matched not the first); m for multiple line; i for ignoring case (whether DIV or div)
     // replace </div> with a line breaker </br>
-    result=stripdiv.replace('</div>', '</br>')    
+    result=stripdiv.replace(/<\/div>'/gmi, '<br />')    
 
     return result
 }

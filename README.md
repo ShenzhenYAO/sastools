@@ -1,4 +1,8 @@
 simple d3 v4 tree diagram.
+commit 132a
+1. After open, and close the edit node description modal. If the textbox is visible, it'll scroll down to the text corresponding to the edited node.
+
+
 commit 131a
 1. Textviewbox, textbox, and hintbox are all resizable
 
