@@ -74,7 +74,8 @@ thetextbox=textviewbox.append('div')
     .attrs({'id': 'textBox', 'contenteditable': 'true'})
     .styles({
         "width":'98%', 
-        'height':'80%', 
+        'height':'80%',
+        'font-family': "Consolas", //Helvetica, sans-serif
         // 'max-height':height_textviewbox + 'px',
         'max-height':'80%',
         'font-size':'25px',

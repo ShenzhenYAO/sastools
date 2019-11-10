@@ -548,6 +548,9 @@ function NewTree(thetreedata){
     }
     // console.log(treeJSON)
 
+    // delete all existing nodeGs
+    d3.select('g.nodeGs').remove()
+
 
     /**B. Add tree ************************************************/
 
@@ -2327,9 +2330,9 @@ function showInputTextForm(){
 
                     //highlight the selected span 
                     var theEle = showtextspanElms[i]
-                    theEle.style.backgroundColor = "grey" //"#4677f8";
-                    theEle.style.color="#fefefe";
-                    theEle.style.outline = "5px solid grey"; //#66ff66
+                    theEle.style.backgroundColor = "#C8C8C8"//"grey" //"#4677f8";
+                    // theEle.style.color="#fefefe";
+                    // theEle.style.outline = "5px solid grey"; //#66ff66
 
                     /**The idea is to find the first span, scroll it up to top. That way,
                      * all spans will always be scroll down starting from the top
@@ -2646,7 +2649,13 @@ function replaceDIVbyBR(d){
 
 function showSentences(){
 
-    $('.textviewbox').width(width_textviewbox);
+    //check the width of the textviewbox, if it is not 0, stay with the current width
+    if ($('.textviewbox').width() !== 0 ) {
+        width_textviewbox = $('.textviewbox').width
+    } else {
+        $('.textviewbox').width(width_textviewbox);
+    }
+    
 
     //display the textBox and the hintBox
     $("#textBox").css('display', "block");
@@ -2718,10 +2727,10 @@ function onsentencehover(theEle){
     //only take actions if the locknode status is not 1
     if (locknode != 1) {
 
-        // change color of the selected text
-        theEle.style.backgroundColor = "grey" //"#4677f8";
-        theEle.style.color="#fefefe";
-        theEle.style.outline = "5px solid grey"; //#66ff66
+        // change color of the selected text (to highlight)
+        theEle.style.backgroundColor = '#C8C8C8' //"grey" //"#4677f8";
+        // theEle.style.color="#fefefe";
+        // theEle.style.outline = "5px solid grey"; //#66ff66
         var theidx=$(theEle).attr('idx')
         // console.log('theidx')
         // console.log(theidx)
@@ -3407,7 +3416,7 @@ function ImportFromEGPAfterReloading(d){
                         var linksarray = getLinksToTasks(tasksarray, linksarray_all)
                         // console.log(linksarray)
                         //2b) determine the default links, and the customized links
-                        var splitArrays = getDefaultCustLinks(linksarray)
+                        var splitArrays = getDefaultCustLinks(linksarray, tasksarray)
                         var defaultlinksarray = splitArrays.defaultlinks;
                         var custlinksarray =  splitArrays.custlinks;
                         // console.log(defaultlinksarray)
@@ -3415,7 +3424,8 @@ function ImportFromEGPAfterReloading(d){
 
                         //3) for each task, determine .children .custparents
                         therootparent = getTaskChildrenCustparents(tasksarray,defaultlinksarray,custlinksarray,therootparent);
-                        console.log(therootparent)
+                        // console.log(therootparent)
+
 
                         //To this step, the treeJSON is ready, which is therootparent! Make a tree with therootparent
                         NewTree(therootparent)
@@ -3598,37 +3608,90 @@ function getTaskChildrenCustparents(tasksarray,defaultlinksarray,custlinksarray,
  *         and the .from is the parent). This array is for default links
  * 3) for items not of the first, put them in another array, which is for customized links
  */
-function getDefaultCustLinks(srclinks){
+function getDefaultCustLinks(srclinks, tasksarray){
+
     var theDefaultlinks=[], theCustlinks=[];
     var last_linkto;
-    
-    // sort the links by .to field
-    srclinks.sort(function(a,b){
-        var textA=a.to.toUpperCase();
-        var textB=b.to.toUpperCase();
-            return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
-        })
+
+    /**The links should be sorted by names
+     * from a2 to b1
+     * from a1 to b1
+     * from a2 to b2
+     * from a1 to b2
+     * 
+     * First, the links should be sorted by .to names
+     * a2 => b1
+     * a1 => b1
+     * a1 => b2
+     * a2 => b2
+     * 
+     * Next, the links should be sorted by .from names 
+     * a1 => b1
+     * a2 => b1
+     * a1 => b2
+     * a2 => b2
+     * 
+     * That way, the names in lowest alphabetic order will be used as the default link. This is in line with
+     * the usual ways by which the programs are named.
+     * 
+     */
+
+     //1. add names from the taskarray into the links array (in EGP files, node lables, and links are saved separately. Therefore there is
+     // no name data in links)
+     var tmp1=[];
+     srclinks.forEach(d=>{
+         // the task name with the same idx as d.idx(in srclinks)
+        var toName = tasksarray[tasksarray.map(obj=>obj.idx).indexOf(d.to)].name
+        var fromName = tasksarray[tasksarray.map(obj=>obj.idx).indexOf(d.from)].name
+        tmp1.push(
+            {
+                to:{idx:d.to, name: toName},
+                from:{idx:d.from, name: fromName}
+            })
+     })
+
+    //2. make a sorting for tmp1 by multiple fields. first sort by .to.name; second, sort by .from.name
+    // the following solusion is pretty neat, from https://stackoverflow.com/questions/13211709/javascript-sort-array-by-multiple-number-fields
+    var tmp2=tmp1.sort(function(a, b) {
+        return a.to.name - b.to.name  ||  a.from.name - b.from.name;
+    });
+
         
     //split the links into default links, and customized links.
     // The allocation of default/customized links are quite arbituary, but it does not matter, as the
         // relationship of these nodes can be changed in the tree map. 
-    srclinks.forEach(function(d){
+    var distinctlinkto = [];
+    tmp2.forEach(function(d){
 		//if the linkto is the same as the previous, add it to the customized links array
-		if (d.to === last_linkto){
-			theCustlinks.push(d);			
-		} else{
-			//if the linkto is new, add it to the default links array
-			theDefaultlinks.push(d);
-			last_linkto= d.to;
-		}
-	})
+        // throw the names, make the target array items like {from:'', to:''}
+
+        // changed, the default links array contains the first link for .to node, 
+        //but the custlink array contains all links! That way, later when changing parent in tree map, 
+        //none of the existing relationship will be lost
+        theCustlinks.push({from:d.from.idx, to:d.to.idx});	
+        if (distinctlinkto.includes(d.to.idx)) {
+            // do nothing
+        }else{
+            //if the linkto is new, add it to the default links array
+			theDefaultlinks.push({to:d.to.idx,from:d.from.idx});
+			distinctlinkto.push(d.to.idx);
+        }	
+    })
+    
+    // console.log(tasksarray)
+    // console.log(srclinks)
+    // console.log(tmp1)
+    // console.log(tmp2)
+    // console.log(theDefaultlinks)
+    // console.log(theCustlinks)
     
     // return {'defaultlinks': theDefaultlinks,'custlinks': theCustlinks} 
-    return {'defaultlinks': theDefaultlinks,'custlinks': srclinks} 
+    return {'defaultlinks': theDefaultlinks,'custlinks': theCustlinks} 
     // changed, the default links array contains the first link for .to node, 
     //but the custlink array contains all links! That way, later when changing parent in tree map, 
     //none of the existing relationship will be lost
-}
+} // end getDefaultCustLinks
+
 
 function egpLinksToArray(theDom){
 	
@@ -3721,9 +3784,9 @@ function egpTasksToArray(theDom){
                     var theNoteContent4 = theNoteContent3.replace(/ /g, "&nbsp")
                     var theNoteContent5 = theNoteContent4.replace(/\t/gm, '&nbsp&nbsp&nbsp&nbsp')
                     var theNoteContent6 = '///t<br />' + theNoteContent5 + '<br />t///'
-                    console.log('theNoteContent')
-                    console.log(theNoteContent)
-                    console.log(theNoteContent6)
+                    // console.log('theNoteContent')
+                    // console.log(theNoteContent)
+                    // console.log(theNoteContent6)
                     var theTask = {idx:theTaskID, name:theTaskLabel, type:theTaskType,
                                     NodeDescription:theNoteContent6 };
                 } else {
@@ -3767,7 +3830,7 @@ function getTaskContents(srcarray, filesInZip){
                 var rcontent2a = content.substring(3).replace(/\r\n|\r|\n/gm, '<br />') // must have, replace line break with html linebreaker symbols
                 var rcontent2b = rcontent2a.replace(/\t/gm, '&nbsp&nbsp&nbsp&nbsp')
                 var rcontent= rcontent1a + rcontent2b
-                console.log(rcontent)
+                // console.log(rcontent)
                 d.NodeDescription = '///t<br />///s<br />' + rcontent + '<br />s///<br />t///'
             }
         } // end for loop
