@@ -12,24 +12,9 @@
         <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
     </head>
     <body>
+        <script src="js/work.js"></script>
         <script>
-            //create a view box
-            var theviewbox = d3.select('body').append('div')
 
-            var theNodeDesc='///t<div>this is the first node</div><div>t///'
-            var thecontent_afterchange ='///t' + 'this is the fir@st node<br><div>&nbsp;</div>' +'t///'
-            var theNodeDescTextSeg = '///t' 
-                    + theNodeDesc.substring(
-                        theNodeDesc.lastIndexOf('///t') + 4,
-                        theNodeDesc.lastIndexOf('t///')
-                    )  
-                    + 't///' 
-
-            console.log(theNodeDesc==theNodeDescTextSeg)
-
-            str3=theNodeDesc.replace(theNodeDescTextSeg, thecontent_afterchange)
-
-            theviewbox.html(str3)
         </script>        
     </body>
 </html>

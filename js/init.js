@@ -38,7 +38,7 @@
 
 /**global vars */
 var 
-    gitcommitversion = '133a',
+    gitcommitversion = '134a',
 
     treejsonURL = 'data/An apology for Raymond Sebond v1',     // the url of the external json file with tree data
     treeData,   // to hold the tree data 

@@ -1,4 +1,9 @@
 simple d3 v4 tree diagram.
+commit 134a
+1. In work.js, two functions to breaked down codes in an EGP program into blocks. The functions are codeToObj(), and PickupMatched()
+
+
+
 commit 133a
 1. Sort task by name, default link takes the .to task's name which is of the lowest alphabetic order (in getDefaultCustLinks())
 2. Check and update the text box width (showsentences()). So that it won't return to default width every time running showsentences()
