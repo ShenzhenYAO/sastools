@@ -1,6 +1,6 @@
 
 var text = `
-
+///s
 %let path=1;
 libname path 1;
 file a=1;
@@ -65,6 +65,9 @@ datA vxb3;
         set vxb2;
     run;quit;
 
+proc means;
+run;
+
 prOc sql;
     create table xxx as
     select 
@@ -83,21 +86,176 @@ title "/*try me, not a comment yay!!!*/";
 pRoc genmode; %* this is a single line comment with pct within a code block;
 qUit 
   ;run;
+s///
+`
+
+var aNode={};
+aNode.NodeDescription =`
+///s
+    /**some comment*/<br/>
+    data x;
+    &nbsp&nbsp&nbsp&nbsprun;
+
+    
+    %*&nbsps line comment&#59
+    proc y;
+    quit;
+s///
 
 `
+aNode.children =[]
+aNode.children[0] ={
+    idx:'aaa',
+    name:'aaa',
+    NodeDescription:text
+}
+
+// aNode.NodeDescription =text
+
+// add substeps of the current node
+function addSubSteps(d){
+
+    // get the NodeDescription
+    var theNodeText = d.NodeDescription;
+    // console.log(theNodeText)
+    //get the SAS code contents
+    var theRegEx = /(\/\/\/s)([\s\S])*?(s\/\/\/)/i;
+    
+    if (theNodeText !== null && theNodeText !== undefined && theNodeText.match(theRegEx) !== null) {
+        // get text of the first matched item
+        var theSASCodeContents = theNodeText.match(theRegEx)[0]
+        // strip off the ///s and s///
+        theSASCodeContents = theSASCodeContents.replace(/\/\/\/s/i, '')
+        theSASCodeContents = theSASCodeContents.replace(/s\/\/\//i, '')
+
+        //replace the html symbols (e.g., <br/>, #nbsp, &#59 )
+        theSASCodeContents=theSASCodeContents
+            .replace(/<br\/>/gi, '\n')
+            .replace(/&nbsp&nbsp&nbsp&nbsp/g, '\t')
+            .replace(/&nbsp/g, ' ')
+            .replace(/&#59/g, ';')
+        
+        // console.log(theSASCodeContents)
+
+        // now input the SAS code contents and make an obj from it
+        var theSubSteps = makeSubSteps(theSASCodeContents)
+        // console.log('substeps in addsubsteps ====')
+        // console.log(theSubSteps)
+
+        // push the substeps into d.children
+        if (theSubSteps !== null){
+            if (d.children === undefined || d.children === null){
+                d.children=[]
+            }
+            d.children.push(theSubSteps)
+        }
+
+    } // end if   (theNodeText.match(theRegEx)...
+    
+    //recursive for d.children
+
+    if (d.children) {
+        d.children.forEach(c=>{
+            addSubSteps(c)
+        })
+    }
+
+
+} //addSubSteps
+
+
+
+function notrun_testing(){
+    addSubSteps(aNode)
+    // console.log(aNode)
+    var thehtml='';
+    function getit(aNode){
+        console.log(aNode.children)
+        if (aNode.children.length > 0) {
+            aNode.children.forEach(d=>{
+                thehtml =thehtml + d.NodeDescription + '&#59<br/>======================================<br/>'
+                if (d.children){
+                    getit(d)
+                }
+            }) 
+        }
+    
+    }
+    getit(aNode)
+
+    d3.select('body').append('div').html(thehtml).styles({'font-size': '30px','font-family': "Consolas" })
+    // console.log(targetobj)
+}
+
+
+
+
+
+
 // use this function as I want to store the replaced strings (each of different contents) in order and in an array so that they can be restored
 function PickupMatched(srcobj, theRegEx, replacedkeyTemplate){
+    // console.log(theRegEx.source.includes('proc&nbsp') )
+    // console.log(/proc&nbsp([\s\S])*?quit&#59/i = /proc&nbsp([\s\S])*?quit&#59/i)
     // the srcobj must have .origin, .replaced, and .replacements
+    // check for the special condition of proc quit/ proc run
+    if (theRegEx.source.includes('proc&nbsp')) { // .source is to turn theRegEx into a string. The condition is whether the regex contains 'proc ', the regex could be for proc run, or proc quit
+ 
+        // console.log('getting content within a proc')
+        /**If the regex is about match contents in a PROC, the following scenarios need to be considered
+         * 1) PROC .... RUN;
+         * 2) PROC .... QUIT;
+         * It can run into error if the code is like the following, while matching contents between PROC and Quit.
+         *  PROC ....;
+         *      RUN;
+         *  PROC ....
+         *      Quit;
+         * In the above case, two procedures will be taken as one. Conversely it could happen when matching contents
+         *  between PROC and RUN.
+         * 
+         * So for the following, the idea is to get quit; or run; whichever comes first
+         */
+        var matchProcQuit = srcobj.replaced.match(/proc&nbsp([\s\S])*?quit&#59/i);
+        var matchProcRun = srcobj.replaced.match(/proc&nbsp([\s\S])*?run&#59/i);
+
+        // if one of the regex (proc...quit) (proc...run) is not null while the other is, use the non-null regex 
+        if (matchProcQuit !== null && matchProcRun === null ) {
+            theRegEx = /proc&nbsp([\s\S])*?quit&#59/;
+        } else if (matchProcQuit === null && matchProcRun !== null ) {
+            theRegEx = /proc&nbsp([\s\S])*?run&#59/;
+        } else if (matchProcQuit !== null && matchProcRun !== null) {
+            // if none of the two are null, check and take the regex of which the matched str is shorter
+            if (matchProcQuit[0] < matchProcRun[0] ) {
+                theRegEx = /proc&nbsp([\s\S])*?quit&#59/i
+                // console.log('getting content between proc and quit')
+            } else {
+                theRegEx = /proc&nbsp([\s\S])*?run&#59/i
+                // console.log('getting content between proc and run')
+            }
+        } // else ? what if both are null? In that case it'll be skipped by the following program
+    }
+    
+    
     if ( srcobj.replaced.match(theRegEx)!== null) {
+
+        // get the matched string
         var theMatched =   srcobj.replaced.match(theRegEx)[0];
+
+        // determine the length of the current .replacements (to be used as the index number)
         var replacedIndex = srcobj.replacements.length ;
+        // have an empty obj as the replacement piece
         var replacement={}
+        // .key of the replacement piece, which followings the specified template
         replacement.key = '___' + replacedIndex + '_' + replacedkeyTemplate  + '___';
+        // .value is the matched string
         replacement.value = theMatched;
         // console.log(replacement)
+
+        //push the replacement piece (the key, and the matched string) into .replacements
         srcobj.replacements.push(replacement)
         // console.log('the replacements ===============')
         // console.log(srcobj.replacements)
+
+        //in the text, replace the matched string (the first instance) with the match key
         var resultText = srcobj.replaced.replace(theRegEx, replacement.key)
         srcobj.replaced = resultText
 
@@ -109,7 +267,11 @@ function PickupMatched(srcobj, theRegEx, replacedkeyTemplate){
     }    
     return srcobj
 } // end PickupMatched
-    
+
+
+// given a text, turn it into an object
+// make text segments it into blocks and save in .block
+// replacing text such as comments, datasteps, etc by a key, and save the replaced text into .replacements 
 function codeToObj(theCodeText){
 
     // the src string is put into an obj, from this point, the rest are worked in that obj
@@ -184,7 +346,7 @@ function codeToObj(theCodeText){
     initobj = PickupMatched(initobj, regex_datasteps, 'datasteps0824')
     //add a semicolon at the end of the datastep objs
     initobj.replaced = initobj.replaced.replace(/_datasteps0824___/gmi, '_datasteps0824___&#59')
- 
+
 
     //13 things between proc and quit are a block
     regex_procs= /proc&nbsp([\s\S])*?quit&#59/i;
@@ -199,13 +361,90 @@ function codeToObj(theCodeText){
 
 } // end codeToObj()
 
-var targetobj= codeToObj(text)
 
-var thehtml='';
-targetobj.blocks.forEach(d=>{
-    thehtml =thehtml + d + '&#59<br/>======================================<br/>'
-})
+function makeSubSteps(text){
 
-d3.select('body').append('div').html(thehtml).styles({'font-size': '30px','font-family': "Consolas" })
-console.log(targetobj)
+    // turn the text into an obj with .blocks, and .replacements
+    var targetobj= codeToObj(text)
+
+    var j =0;
+    var subnodes=[]
+    //for each block, make it a piece of subnodedata, and push it into an array of subnodes
+    targetobj.blocks.forEach( (d, i) =>{
+        // get the contents of current block
+        d_nowhitespaces = d.replace('<br/>', '').replace('&nbsp', '').replace('&#59', '').replace(/s/g, '')
+        // console.log(d_nowhitespaces)
+        if (d_nowhitespaces.length) {// if the block has non-whitespace content
+            var thesubnodedata = {}
+            thesubnodedata.idx = generateUUID();
+            thesubnodedata.name = j++;
+            var restoredtext =restoreReplaced(d, targetobj.replacements);
+            /**the following is to replace semicolon, whitespace, tab, line breakers into html recognizable chars*/
+            restoredtext=restoredtext.replace(/;/g, '&#59')
+            restoredtext=restoredtext.replace(/(\r|\n|\r\n)/g, '<br/>')
+            restoredtext=restoredtext.replace(/\t/g, '&nbsp&nbsp&nbsp&nbsp')
+            restoredtext=restoredtext.replace(/( )/g, '&nbsp')
+            // console.log(restoredtext)
+
+            thesubnodedata.NodeDescription = restoredtext // restore the replaced text
+            subnodes.push(thesubnodedata)
+            
+        }
+    })
+
+    // for each subnodes, get its following subnode as its child
+    subnodes.forEach((d,i)=>{
+        if (i < subnodes.length-1) { // if the current node is not the last 
+            d.children=[];
+            d.children.push(subnodes[i+1])
+        }
+    })
+
+    // attache subnodes[0] to a node named substeps
+    if (subnodes.length>0) {
+        var substeps={}
+        substeps.idx = generateUUID();
+        substeps.name = 'substeps';
+        substeps.children = [];
+        substeps.children.push(subnodes[0])
+    }
+
+    // push substeps as the last child of the program node
+    return substeps    
+}
+
+
+
+//restore the text by replacings the keys with original text
+function restoreReplaced(t, r){
+    //in t (the block text), find contents between ___ and ___
+    var regex_key =/___[\s\S]*?___/; 
+    var restoredt=t;
+    if (t.match(regex_key) !== null){
+        var thekey = t.match(regex_key)[0]
+        valueToRestore = r[r.map(obj=>obj.key).indexOf(thekey)].value
+        restoredt = t.replace(thekey, valueToRestore)
+        // recursively, find the the again...
+        if (restoredt.match(regex_key) !== null){
+            restoredt= restoreReplaced(restoredt, r)
+        }        
+    }
+    return restoredt
+}
+
+
+
+
+
+
+
+function generateUUID(){
+    var d = new Date().getTime();
+    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = (d + Math.random()*16)%16 | 0;
+        d = Math.floor(d/16);
+        return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+    });
+    return uuid;
+};
 

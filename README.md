@@ -1,4 +1,12 @@
 simple d3 v4 tree diagram.
+commit 135a
+
+1. Automatically identify contents between PROC RUN or PROC QUIT
+2. Make subnodes (For text in NodeDescription, the <br/>, &nbsp... should be replaced by \n, ' '
+    so as to be treated by the two functions in 134a), Restore values (need to pay attention to the transformation of line breakers, spaces...within the replacements....)
+3. When load egp files, automatically add substeps for each node. However, it took too many resources and the system blows up!
+
+
 commit 134a
 1. In work.js, two functions to breaked down codes in an EGP program into blocks. The functions are codeToObj(), and PickupMatched()
 

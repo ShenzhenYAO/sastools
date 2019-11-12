@@ -2640,7 +2640,7 @@ function replaceDIVbyBR(d){
     // replace <div> with nothing
     stripdiv=d.replace(/(<div>)/gmi, '') //g for global (change all matched not the first); m for multiple line; i for ignoring case (whether DIV or div)
     // replace </div> with a line breaker </br>
-    result=stripdiv.replace(/<\/div>'/gmi, '<br />')    
+    result=stripdiv.replace(/<\/div>'/gmi, '<br/>')    
 
     return result
 }
@@ -3212,7 +3212,7 @@ function getHtmlAsTreeJSON(){
                             tmpnode={
                                 'idx': generateUUID(), 
                                 'name': i++,
-                                'NodeDescription': '///t <br />' + d + '.<br /> t///'
+                                'NodeDescription': '///t <br/>' + d + '.<br/> t///'
                             }
                             textArray.push(tmpnode)
                         })
@@ -3271,7 +3271,7 @@ function getTextAsTreeJSON(){
                                 tmpnode={
                                     'idx': generateUUID(), 
                                     'name': i++,
-                                    'NodeDescription': '///t <br />' + d + '<br /> t///'
+                                    'NodeDescription': '///t <br/>' + d + '<br/> t///'
                                 }
                                 nodesarray.push(tmpnode)
                     })
@@ -3426,6 +3426,8 @@ function ImportFromEGPAfterReloading(d){
                         therootparent = getTaskChildrenCustparents(tasksarray,defaultlinksarray,custlinksarray,therootparent);
                         // console.log(therootparent)
 
+                        //4) make substep nodes for each task node
+                        //throotparent = addSubSteps(therootparent)// too many, the system will blowout!!!
 
                         //To this step, the treeJSON is ready, which is therootparent! Make a tree with therootparent
                         NewTree(therootparent)
@@ -3778,12 +3780,12 @@ function egpTasksToArray(theDom){
                 //If the task is a note, its contents are within the tag
                 if (theTaskType === "NOTE"){
                     theNoteContent = theElement.getElementsByTagName("Text")[0].innerHTML;
-                    var theNoteContent1 = theNoteContent.replace(/\r\n|\r|\n/gm, '<br />') // must have, replace line break with html linebreaker symbols
+                    var theNoteContent1 = theNoteContent.replace(/\r\n|\r|\n/gm, '<br/>') // must have, replace line break with html linebreaker symbols
                     var theNoteContent2 =theNoteContent1.replace(/(&lt;)/g, '<')
                     var theNoteContent3 = theNoteContent2.replace(/(&gt;)/g, ">")
                     var theNoteContent4 = theNoteContent3.replace(/ /g, "&nbsp")
                     var theNoteContent5 = theNoteContent4.replace(/\t/gm, '&nbsp&nbsp&nbsp&nbsp')
-                    var theNoteContent6 = '///t<br />' + theNoteContent5 + '<br />t///'
+                    var theNoteContent6 = '///t<br/>' + theNoteContent5 + '<br/>t///'
                     // console.log('theNoteContent')
                     // console.log(theNoteContent)
                     // console.log(theNoteContent6)
@@ -3827,11 +3829,12 @@ function getTaskContents(srcarray, filesInZip){
                 var rcontent1 = content.substring(1,2)
                 //the first 2 char are often non-printable characters. If so, delete them
                 var rcontent1a = rcontent1.replace(/[^ -~]+/g, ''); //!!!! must have
-                var rcontent2a = content.substring(3).replace(/\r\n|\r|\n/gm, '<br />') // must have, replace line break with html linebreaker symbols
+                var rcontent2a = content.substring(3).replace(/\r\n|\r|\n/gm, '<br/>') // must have, replace line break with html linebreaker symbols
                 var rcontent2b = rcontent2a.replace(/\t/gm, '&nbsp&nbsp&nbsp&nbsp')
                 var rcontent= rcontent1a + rcontent2b
                 // console.log(rcontent)
-                d.NodeDescription = '///t<br />///s<br />' + rcontent + '<br />s///<br />t///'
+                d.NodeDescription = '///t<br/>///s<br/>' + rcontent + '<br/>s///<br/>t///'
+
             }
         } // end for loop
 
