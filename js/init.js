@@ -38,9 +38,9 @@
 
 /**global vars */
 var 
-    gitcommitversion = '134a',
+    gitcommitversion = '136a',
 
-    treejsonURL = 'data/An apology for Raymond Sebond v1',     // the url of the external json file with tree data
+    treejsonURL = 'data/statinExampleFromEPG.json',// 'data/treedata.json', //'data/An apology for Raymond Sebond v1',     // the url of the external json file with tree data
     treeData,   // to hold the tree data 
     treeJSON,   // to hold the tree JSON from treeData
     i = 0,  // no need
@@ -265,10 +265,34 @@ var nodemenu = [
         }
     },
     {
-        title: 'Show or hide subtree',
+        title: 'Show/hide substeps',
         action: function(elm, d, i) {
+
+            //check if the current note data has a child named 'substeps'
+            var childnames=[]
+            if (d.data.children ){
+                d.data.children.forEach( c=>{
+                    childnames.push(c.name)
+                })
+            }
+            if (childnames.includes('substeps')){ //if the name substeps exists, hide the substeps in .data._substeps
+                d.data._substeps = d.data.children[childnames.indexOf('substeps')]
+                d.data.children.splice(childnames.indexOf('substeps'),1) // delete the children named 'substeps'
+            } else if (d.data._substeps){ //if data._substeps exists, unhide the substeps
+                d.data.children.push(d.data._substeps) // ?unshift to put it as the first children
+                delete d.data._substeps     
+            } else {
                 //console.log('Show subtree');
-        rightclick_toggleExpandDetails(d);	
+                addSubSteps(d.data)
+
+            }
+            
+            // console.log('show subtree====')
+            // console.log(treeJSON)
+            // console.log(rootdatapoint_sortedrowscols.data)
+            treeJSON=rootdatapoint_sortedrowscols.data
+            NewTree(treeJSON)
+            
         }
     },
     {

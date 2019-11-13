@@ -1,4 +1,12 @@
 simple d3 v4 tree diagram.
+commit 136a
+1. Right click to show/hide/add substeps (if hiding, the substeps are saved as .data._substeps)
+2. Fix the bug of ;;;; (should be tab) in original nodedescript. (Maybe it is made by niceEit...)
+3. Fixed the bug that substeps are not exported (add ._substeps into the function selectCopy(), which is a function for cleaning the data json before export)
+
+Potential bug:
+There could be a bug (adding substeps to the wrong node, but could not repeat...)
+
 commit 135a
 
 1. Automatically identify contents between PROC RUN or PROC QUIT
