@@ -1270,7 +1270,6 @@ function dragdrop() {
     } //end mousemove_dragdrop_shiftprimary
 
 
-
     function mousemove_dragdrop_primary () {
         var mousemove= 1;
         // console.log( '2. mousedown & move = ' + mousedown + ',' + mousemove)
@@ -1413,8 +1412,6 @@ function dragdrop() {
                 //1. define d.children
                 var theParentToChangeData = d;
 
-
-
                 // 2. use the same trick to find data binded to the selected obj
                 // console.log('theSelectedObj==========')
                 // console.log(theSelectedObj)
@@ -1453,6 +1450,19 @@ function dragdrop() {
                     if (stopchangingparent != 1){
 
                         // console.log ('make changes ====')
+                        
+                        //!!! must have // added in commit 137a ============
+                        if (theSelectedObjData.data.custparents === undefined || theSelectedObjData.data.custparents === null){
+                            theSelectedObjData.data.custparents=[]
+                        }
+
+                        if (theSelectedObjData.data.custparents.includes(theParentToChangeData.data)) {}
+                        else {
+                            // add the selected obj data.data (this is the original data) to theParentToChangeData.data.chilren
+                            theSelectedObjData.data.custparents.push({idx:theParentToChangeData.data.idx})
+                        }                        
+                        //!!! must have // added in commit 137a =============
+                        
 
                         //!!! must have. change theParentToChangeData._children to children
                         if (theParentToChangeData._children) {
@@ -1465,17 +1475,21 @@ function dragdrop() {
                         if (theParentToChangeData.children===undefined || theParentToChangeData.children === null ){
                             theParentToChangeData.children=[]
                         }
-                        theParentToChangeData.children.push(theSelectedObjData) //simply push it to the end of the children array
-                        // console.log('theParentToChangeData===')
+                        if (theParentToChangeData.children.includes(theSelectedObjData)) {}
+                        else {
+                            theParentToChangeData.children.push(theSelectedObjData) //simply push it to the end of the children array
+                        }// console.log('theParentToChangeData===')
                         // console.log(theParentToChangeData)
 
                         //!!! must have
                         if (theParentToChangeData.data.children === undefined || theParentToChangeData.data.children === null){
                             theParentToChangeData.data.children=[]
                         }
-                        // add the selected obj data.data (this is the original data) to theParentToChangeData.data.chilren
-                        theParentToChangeData.data.children.push(theSelectedObjData.data)
-
+                        if (theParentToChangeData.data.children.includes(theSelectedObjData.data)) {}
+                        else {
+                            // add the selected obj data.data (this is the original data) to theParentToChangeData.data.chilren
+                            theParentToChangeData.data.children.push(theSelectedObjData.data)
+                        }
                         // find the original parent of the selected obj data
                         originalParentData = theSelectedObjData.parent
                         // console.log('originalParentData=================')
@@ -2096,7 +2110,10 @@ function createNode() {
         {// modified from try 89
         'data': {
             'idx':theUID,
-            'name': name
+            'name': name,
+            'custparents':[
+                {'idx': theParentToAppendChild.data.idx}
+            ]
         },
         'depth': theParentToAppendChild.depth + 1,
         'height': 0, 
@@ -2859,7 +2876,7 @@ function CentralNode_selectedText(d){
     //unlike click and zoom in zoom out, this time, put the selected node 60px to the left, not at the horizontal center
     //var translate_mapUpperLeft='translate (' + width_treeviewbox/2 + ',' + height_treeviewbox/2 + ')'
     // by the way, the width_treeviwbox/2 height_treeviewbox/2 is not right. should be half of the current svg width and height
-    var translate_mapUpperLeft='translate (' + 200 + ',' + currentsvgh/2 + ')'
+    var translate_mapUpperLeft='translate (' + 300 + ',' + currentsvgh/2 + ')'
 
 
     //5.1.4 determine the string for enlarge/shrink (scale)
@@ -3787,7 +3804,7 @@ function egpTasksToArray(theDom){
                     var theNoteContent = theNoteContent.replace(/;/gm, '&#59')
                     var theNoteContent = theNoteContent.replace(/\t/gm, '&nbsp&nbsp&nbsp&nbsp')
                     var theNoteContent = theNoteContent.replace(/ /g, "&nbsp")
-                    var theNoteContent = '///t<br/>' + theNoteContent7 + '<br/>t///'
+                    var theNoteContent = '///t<br/>' + theNoteContent + '<br/>t///'
                     // console.log('theNoteContent')
                     // console.log(theNoteContent)
                     // console.log(theNoteContent6)

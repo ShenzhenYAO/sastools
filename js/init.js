@@ -38,9 +38,9 @@
 
 /**global vars */
 var 
-    gitcommitversion = '136a',
+    gitcommitversion = '137a',
 
-    treejsonURL = 'data/statinExampleFromEPG.json',// 'data/treedata.json', //'data/An apology for Raymond Sebond v1',     // the url of the external json file with tree data
+    treejsonURL = 'data/drums20191009.json',// 'data/treedata.json', //'data/An apology for Raymond Sebond v1',     // the url of the external json file with tree data
     treeData,   // to hold the tree data 
     treeJSON,   // to hold the tree JSON from treeData
     i = 0,  // no need

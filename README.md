@@ -1,4 +1,11 @@
 simple d3 v4 tree diagram.
+commit 137a
+
+Bugs:
+1) Every time changing parents, the relationship should be updated in custparents
+2) For newly added nodes, the parent-child relatitonship should also be added into custparents
+
+
 commit 136a
 1. Right click to show/hide/add substeps (if hiding, the substeps are saved as .data._substeps)
 2. Fix the bug of ;;;; (should be tab) in original nodedescript. (Maybe it is made by niceEit...)
