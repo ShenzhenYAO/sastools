@@ -1,9 +1,14 @@
 simple d3 v4 tree diagram.
+commit 138a
+
+1. Export to word doc
+2. Fixed the bug that losing the selected node when drag and drop to the same parent (see comments after the line 'var originalParentData = theSelectedObjData.parent' in components.js)
+
 commit 137a
 
-Bugs:
-1) Every time changing parents, the relationship should be updated in custparents
-2) For newly added nodes, the parent-child relatitonship should also be added into custparents
+Bugs fixed:
+1. Every time changing parents, the relationship should be updated in custparents
+2. For newly added nodes, the parent-child relatitonship should also be added into custparents
 
 
 commit 136a

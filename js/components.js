@@ -1207,6 +1207,7 @@ function dragdrop() {
             })
             //add cross line
             if (addcustlink === 1){
+
                 // console.log(addcustlink)
                 var proposedTreesize=estTreesize(rootdatapoint_sortedrowscols)
                 //   console.log(proposedTreesize.width, proposedTreesize.height)
@@ -1449,6 +1450,50 @@ function dragdrop() {
 
                     if (stopchangingparent != 1){
 
+                        // find the original parent of the selected obj data
+                        var originalParentData = theSelectedObjData.parent
+                        // console.log('originalParentData=================')
+                        // console.log(originalParentData)                        
+                        
+                        /**The following blocks are for deleting original parent-children relationships
+                         * It has to be done before the rest
+                         * If the nodes are drag and dropped within the same parent, this will
+                         * cause :1) delete the orginal relationship; 2) add the selected node as the child
+                         *  to the orignal parent.
+                         * This is correct as the selected node will still be linked to the same parent, justing
+                         *  changing its position within the siblings. 
+                         * 
+                         * The program has been set as such that the same child won't be added for twice. This
+                         *  is to prevent adding duplcated children. 
+                         * For the above situation (moving the child within the same parent), if the adding-node is 
+                         *  preceeding the removing-node action, it'll cause error.
+                         *  When adding was performed first, the selected child won't be added into the same 
+                         * parent as it exists. However, the consequent removing action will remove the child.
+                         * As the child would never be added back, it'll be lost!
+                         *  
+                        */
+                        // within originalParentData's children find the one which equals to the selected obj data, and remove it from the children array
+                        for (i=0; i < originalParentData.children.length;i++ ){
+                            if (originalParentData.children[i] === theSelectedObjData){
+                                originalParentData.children.splice(i, 1); //use splice() only when there is ONE matched item
+                                break;
+                            }
+                        }
+                        for (i=0;i<originalParentData.data.children.length;i++ ){
+                            if (originalParentData.data.children[i] === theSelectedObjData.data){
+                                originalParentData.data.children.splice(i, 1); //use splice() only when there is ONE matched item
+                                break;
+                            }
+                        }
+                        // must have!!! if originalParentData.children =[] make it null. (d3 tree goes wrong if .children =[])
+                        if (originalParentData.children.length === 0){
+                            originalParentData.children=null;
+                        }
+                        // console.log('originalParentData.children=====')
+                        // console.log(originalParentData.children)
+
+
+
                         // console.log ('make changes ====')
                         
                         //!!! must have // added in commit 137a ============
@@ -1490,10 +1535,7 @@ function dragdrop() {
                             // add the selected obj data.data (this is the original data) to theParentToChangeData.data.chilren
                             theParentToChangeData.data.children.push(theSelectedObjData.data)
                         }
-                        // find the original parent of the selected obj data
-                        originalParentData = theSelectedObjData.parent
-                        // console.log('originalParentData=================')
-                        // console.log(originalParentData)
+
 
                         // change the .parent property of theSelectedObjdata, change to theParentToChangeData.data
                         theSelectedObjData.parent =theParentToChangeData; 
@@ -1529,25 +1571,9 @@ function dragdrop() {
                         getdescendants_hiddenchildren(d);
 
 
-                        // within originalParentData's children find the one which equals to the selected obj data, and remove it from the children array
-                        for (i=0; i < originalParentData.children.length;i++ ){
-                            if (originalParentData.children[i] === theSelectedObjData){
-                                originalParentData.children.splice(i, 1); //use splice() only when there is ONE matched item
-                                break;
-                            }
-                        }
-                        for (i=0;i<originalParentData.data.children.length;i++ ){
-                            if (originalParentData.data.children[i] === theSelectedObjData.data){
-                                originalParentData.data.children.splice(i, 1); //use splice() only when there is ONE matched item
-                                break;
-                            }
-                        }
-                        // must have!!! if originalParentData.children =[] make it null. (d3 tree goes wrong if .children =[])
-                        if (originalParentData.children.length === 0){
-                            originalParentData.children=null;
-                        }
-                        // console.log('originalParentData.children=====')
-                        // console.log(originalParentData.children)
+
+
+
                         
                         // !!! must have! let  x0 y0 of the selected data = that of the parent data
                         // Well, doesn't matter
@@ -4246,3 +4272,43 @@ function restoreReplaced(t, r){
 }
 
 /**the above is related to adding substeps according to sas program from an egp file */
+
+
+
+// The following is to export textbox contents to a word document
+//https://phppot.com/javascript/how-to-export-html-to-word-document-with-javascript/
+function exportHTML(srcHtml){
+    var header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' "+
+         "xmlns:w='urn:schemas-microsoft-com:office:word' "+
+         "xmlns='https://www.w3.org/TR/REC-html40'>"+
+         "<head><meta charset='utf-8'><title>Export HTML to Word Document with JavaScript</title></head><body>";
+    var footer = "</body></html>";
+    // var srcHtml = header+document.getElementById("source-html").innerHTML+footer;
+    
+    var source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(srcHtml);
+    var fileDownload = document.createElement("a");
+    document.body.appendChild(fileDownload);
+    fileDownload.href = source;
+    fileDownload.download = 'document.doc';
+    fileDownload.click();
+    document.body.removeChild(fileDownload);
+ }
+
+function exportTextBox2WordDoc(){
+    //check if the textbox is open
+    var width_textviewbox = textviewbox.style('width')
+    // console.log('width_textviewbox: ' +  width_textviewbox)
+    if (width_textviewbox !== '0px'){ // if the textview box is visible:
+        //get the contains in the text box
+        theText='<html><body>' + thetextbox.node().innerHTML + '</body></html>'
+        //strip t and s tags
+        theText=theText.replace(/\/\/\/t/gi, '')
+        theText=theText.replace(/t\/\/\//gi, '')
+        theText=theText.replace(/s\/\/\//gi, '')
+        theText=theText.replace(/\/\/\/s/gi, '')
+        console.log(theText) 
+        exportHTML (theText)
+    }
+}
+
+// The above is to export textbox contents to a word document
