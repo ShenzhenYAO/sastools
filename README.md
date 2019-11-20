@@ -1,4 +1,11 @@
 simple d3 v4 tree diagram.
+commit 139a
+
+Fix bugs: 
+1. hide substeps causing error. The problem is caused by the remaining nodes, primarylinks, custlinks, and pseudolinks from the last tree. Add lines to delete the elements from the last run.(function 'NewTree' in components.js) 
+2. remove remmaining pseudolinks in makechangetree()
+
+
 commit 138a
 
 1. Export to word doc

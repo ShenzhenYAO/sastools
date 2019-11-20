@@ -140,8 +140,12 @@ $(document).ready(function(){
                 // console.log(treeData)
                 NewTree(treeData)
                 // treeData = null;
+                collapseAll(rootdatapoint_sortedrowscols)
+
             });
         } // end if
+
+        
 
         //empty the input elm. !!! must have. Otherwise cannot repeatedly load the same file 
         this.value = null
@@ -382,6 +386,10 @@ function MakeChangeTree(parentdatapoint) {
         'vcoords': vcoords,
         'nodeupdate': nodeUpdate
     }
+
+    //there might be additional pseudolinks that are not cleaned
+    d3.selectAll('path.pseudolinks').remove()
+
     return results;
 } // end of MakeChangeTree
 
@@ -549,7 +557,11 @@ function NewTree(thetreedata){
     // console.log(treeJSON)
 
     // delete all existing nodeGs
-    d3.select('g.nodeGs').remove()
+    d3.selectAll('g.nodeGs').remove()
+    d3.selectAll('path.custlinks').remove()
+    d3.selectAll('path.primarylinks').remove()
+    d3.selectAll('path.pseudolinks').remove()
+
 
 
     /**B. Add tree ************************************************/
@@ -1120,7 +1132,7 @@ function dragdrop() {
     })
     // add a pseudo crosslink
     var thepseudolink = thetreeG.append('path')
-        .attr('class', 'peudolinks')
+        .attr('class', 'pseudolinks')
         .attr('d', d=>{
             return diagonal(theSrcXY,theSrcXY);
         })
@@ -3475,6 +3487,8 @@ function ImportFromEGPAfterReloading(d){
 
                         //To this step, the treeJSON is ready, which is therootparent! Make a tree with therootparent
                         NewTree(therootparent)
+
+                        collapseAll(rootdatapoint_sortedrowscols)
 
                         // do not delete
                         // for (i=0; i < projectDoc.children().length;i++ ){ // .forEach does not work!

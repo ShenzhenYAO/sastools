@@ -38,9 +38,9 @@
 
 /**global vars */
 var 
-    gitcommitversion = '138a',
+    gitcommitversion = '139a',
 
-    treejsonURL = 'data/OpioidInHosp_20190916.json',// 'data/treedata.json', //'data/An apology for Raymond Sebond v1',     // the url of the external json file with tree data
+    treejsonURL = 'data/newnode.json',// 'data/treedata.json', //'data/An apology for Raymond Sebond v1',     // the url of the external json file with tree data
     treeData,   // to hold the tree data 
     treeJSON,   // to hold the tree JSON from treeData
     i = 0,  // no need
@@ -284,9 +284,8 @@ var nodemenu = [
             } else {
                 //console.log('Show subtree');
                 addSubSteps(d.data)
+            }           
 
-            }
-            
             // console.log('show subtree====')
             // console.log(treeJSON)
             // console.log(rootdatapoint_sortedrowscols.data)
