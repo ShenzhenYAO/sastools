@@ -1,4 +1,17 @@
 simple d3 v4 tree diagram.
+commit 140a
+
+Testing quill format app (in test5_quill.html, and testquill.js in tools/quill)
+https://quilljs.com/docs/download/
+
+
+To do:
+Log in to MySQL
+Send JSON to MySQL
+instant saving to MySQL
+Undo
+
+
 commit 139a
 
 Fix bugs: 

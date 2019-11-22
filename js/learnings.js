@@ -245,10 +245,163 @@ function notrun(){
 // }
 
 
+}
 
 
+//create selectors mannually for quill rich text format
+function CreateASelector_ItWorks(){
+
+/**Create a customized quill rich text format */
+//https://quilljs.com/playground/#class-vs-inline-style
+
+//1. create a toolbar container
+var qltoolbarbox = d3.select('body').append('div').attr('id', 'toolbar-container')
+
+//1.a add ql-fontsize selector
+var qlfontsizeselector=qltoolbarbox.append('span').attr('class', 'ql-formats')
+  .append('select').attr('class','ql-size')
+
+//1.b prepare a list of options (note: one of which is for default value 'selected', 'Default')
+var fontsizedata=[
+  {attr:'value', value:'10px', text:'s'},
+  {attr:'selected',value:'', text:'Default'},
+  {attr:'value',value:'18px', text:'L'},  
+  {attr:'value',value:'32px', text:'XL'}
+]
+
+//1.c add options into the selector in a batch, link options to the data elements in fontsizedata data
+var qlfontsizedata = qlfontsizeselector.selectAll('option')
+  .data(fontsizedata) // data must be specified before enter()
+  .enter()
+  .append('option')
+;
+
+//1.d set attr for each option
+qlfontsizedata
+  .text(function(d){ return d.text})
+  .attrs(function(d){
+    var result={}
+    var key=d.attr // this is the way to set parameter as key of an obj
+    result[key] = d.value
+    return result
+  });
+  //following is an alternative way to make attr like .attrs({value:'10px'}), or .attrs({selected:''})
+  // .attrs({function(d){
+  //   return d.attr + ':' + d.value
+  // }})
 
 }
 
+
+// create customized Quill rich text format app
+function createQuillAppUsingfunctions_itworks(){
+    // Part 1 create a simple quill rich text format app
+    //https://quilljs.com/docs/quickstart/
+    function aSimpleQuillApp(){
+      var theeditor = d3.select('body').append('div').attr('id', 'editor');
+      theeditor.append('p').text('Hello World!')
+      var p2= theeditor.append('p').html('Some initial <strong>bold</strong> text')
+      var quill = new Quill('#editor', {
+          theme: 'snow'
+        });
+    }
+    //***End of part 1********************************************************* */
+    // aSimpleQuillApp()
+
+    /**Part 2 Create a customized quill rich text format */
+    //https://quilljs.com/playground/#class-vs-inline-style
+    function anInteractiveQuillApp(){
+      
+        //1. create a toolbar container
+        var qltoolbarbox = d3.select('body').append('div').attr('id', 'toolbar-container')
+
+        //1.a make ql-fontsize selector, an static example can be found in learning.js
+        var selectorClassname = 'ql-size'
+        // prepare a list of options (note: one of which is for default value 'selected', 'Default')
+        var selectiondata=[
+          {attr:'value', value:'10px', text:'Small'},
+          {attr:'selected',value:'', text:'Normal'},
+          {attr:'value',value:'18px', text:'Large'},  
+          {attr:'value',value:'32px', text:'Huge'}
+        ]
+        makeqlSelector(qltoolbarbox,selectorClassname,selectiondata )
+
+
+        //1.b make ql-fontcolor selector
+        var selectorClassname = 'ql-color'
+        // prepare a list of options (note: one of which is for default value 'selected', 'Default')
+        var selectiondata=[
+          {attr:'selected', value:'', text:''},
+          {attr:'value',value:'blue', text:''},
+          {attr:'value',value:'yellow', text:''}
+        ]
+        makeqlSelector(qltoolbarbox,selectorClassname,selectiondata )
+
+        //1.c add ql-font background color
+        var selectorClassname = 'ql-background'
+        // prepare a list of options (note: one of which is for default value 'selected', 'Default')
+        var selectiondata=[
+          {attr:'selected', value:'', text:''},
+          {attr:'value',value:'red', text:''},
+          {attr:'value',value:'yellow', text:''},
+          {attr:'value',value:'blue', text:''}
+        ]
+        makeqlSelector(qltoolbarbox,selectorClassname,selectiondata )
+
+        //2. create an editor container
+        var qledictorbox = d3.select('body').append('div').attr('id', 'editor-container')
+
+        //3. registor and make the quill app
+        var BackgroundClass = Quill.import('attributors/class/background');
+        var ColorClass = Quill.import('attributors/class/color');
+        var SizeStyle = Quill.import('attributors/style/size');
+        Quill.register(BackgroundClass, true);
+        Quill.register(ColorClass, true);
+        Quill.register(SizeStyle, true);
+        var quill = new Quill('#editor-container', {
+            modules: {
+              toolbar: '#toolbar-container'
+            },
+            placeholder: 'Compose an epic...',
+            theme: 'snow'
+        });
+    }
+    /****part 2 an customized quill app*********************************************************************** */
+    // anInteractiveQuillApp()
+
+
+    //supporing functions
+
+    // make a selector (e.g., a font size dropdown selector, a font color selector, etc.)
+    // An static example can be found in learning.js (CreateASelector_ItWorks)
+    function makeqlSelector(theqltoolbox,selectorClassname,selectiondata ){
+
+      //1.a add ql selector
+      var theqlselector=theqltoolbox.append('span').attr('class', 'ql-formats')
+        .append('select').attr('class', selectorClassname)
+
+      //1.b add options into the selector in a batch, link options to the data elements in the selectiondata obj 
+      var theoptions = theqlselector.selectAll('option')
+        .data(selectiondata) // data must be specified before enter()
+        .enter()
+        .append('option')
+      ;
+      //1.c set attr for each option
+      theoptions
+        .text(function(d){ return d.text})
+        .attrs(function(d){
+          var result={}
+          var key=d.attr // this is the way to set parameter as key of an obj
+          result[key] = d.value
+          return result
+        });
+        //following is an alternative way to make attr like .attrs({value:'10px'}), or .attrs({selected:''})
+        // .attrs({function(d){
+        //   return d.attr + ':' + d.value
+        // }})
+
+    } //end of makeqlSelector
+
+}
 
 
