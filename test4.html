@@ -18,11 +18,17 @@
         elm1_inputdiv.append('p')
         elm1_inputdiv.append('p').text('below is the textarea (elm2.)')
         var elm2_inputextarea = elm1_inputdiv.append('textarea').attr('id', 'thetextarea').styles({'width':'300px','height':'60px'});
-        d3body.append('p').append('p').append('p').text('below is elm3, the div to parse text from elm1, i.e., the inputdiv');
+        d3body.append('p').append('p').append('p').text('below is elm3, the div to parse text from elm1, i.e., the inputdiv. The contents in the div elm1 is static, So in elm3, the dynamically changing text input cannot be captured');
         var elm3_div2receiveDIVhtml = d3body.append('div').styles({'width':'600px','height':'300px', 'border':'solid'});
-        d3body.append('p').append('p').append('p').text('belowelm4, the div to parse text from elm2, i.e., the textarea')
+        d3body.append('p').append('p').append('p').text('below is elm4, the div to parse text from elm2, i.e., the textarea. The contents in the textarea elm2 is dynamically chaning, so in elm4, the dynaimcally changning input can be captured')
         var elm4_div2receiveTextAreaText = d3body.append('div').styles({'width':'600px','height':'300px', 'border':'solid'});
-
+        
+        
+        d3body.append('p').append('p').append('p').text('below is elm5, the div to input text, instead to input text in an textarea')
+        var elm5_div2toinput = d3body.append('div').styles({'width':'600px','height':'300px', 'border':'solid'}).attrs({'contenteditable': 'true'});
+        d3body.append('p').append('p').append('p').text('below is elm6, the div to parse text from elm5, i.e., the editable div. ')
+        var elm6_div2receiveElm5Text = d3body.append('div').styles({'width':'600px','height':'300px', 'border':'solid'});
+                
         
         //test what could prevent change text in the textarea
         divToClick.on('mousedown', d =>{
@@ -59,6 +65,26 @@
             console.log(elm2_inputextarea.node().value)
             elm4_div2receiveTextAreaText.html(elm2_inputextarea.node().value)
         }
+
+        // listen to change in elm5
+        Elm5InputTextChangeListener()
+        function Elm5InputTextChangeListener(){
+
+            elm5_div2toinput.node().addEventListener("input", function(event) { //use input instead of keyup, as keyup does not detect font or hyperlink change that are not caued by key pressing
+                parseInputFrom_elm_5_to_elm_6()
+            })
+
+        }
+
+        function parseInputFrom_elm_5_to_elm_6(){
+
+            // parse input to elm 6
+            console.log(elm5_div2toinput.html())
+            elm6_div2receiveElm5Text.html(elm5_div2toinput.html())
+
+        }
+
+        
  
     </script>
 

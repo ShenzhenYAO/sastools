@@ -256,15 +256,15 @@ function anMoreCompleteInteractiveQuillApp(){
 
   // Quill.register(BackgroundClass, true); // when using default setting of background classes, do not register it
   // Quill.register(ColorClass, true); // when using default setting for font color, do not register it
-  var options={
-    modules: {
-      toolbar: '#toolbar-container'
-    },
-    placeholder: 'The is the default text...',
-    theme: 'snow'
-  } 
+  // var options={
+  //   modules: {
+  //     toolbar: '#toolbar-container'
+  //   },
+  //   placeholder: 'The is the default text...',
+  //   theme: 'snow'
+  // } 
 
-  var quill = new Quill('#editor-container', options);
+  // var quill = new Quill('#editor-container', options);
 
 } // End anMoreCompleteInteractiveQuillApp()
 /****part 3 a more complete customized quill app*********************************************************************** */

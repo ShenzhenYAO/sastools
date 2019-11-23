@@ -44,87 +44,47 @@
 		<script type="text/javascript" src="tools/jsunzipinflate/js-inflate.js"></script>
 		<!-- for quill-->
 		<script type="text/javascript" src="tools/quill/quill.min.js"></script>
-
-		<!-- <style>
-				The following is to set font for quill rich text. 
-					it is pretty dumb, as the css part are set mannually, instead of building into the quill app!*/
-				
-				/*I have changed this part by setting it in js*/
-
-				/* Set dropdown font-families */
-				/* #toolbar-container .ql-font span[data-label="Sans Serif"]::before {
-					font-family: "Sans Serif";
-				}
-
-				#toolbar-container .ql-font span[data-label="Source Sans Pro"]::before {
-					font-family: "Source Sans Pro";
-				}
-
-				#toolbar-container .ql-font span[data-label="Helvetica"]::before {
-					font-family: "Helvetica";
-				}
-				
-				#toolbar-container .ql-font span[data-label="Inconsolata"]::before {
-					font-family: "Inconsolata";
-				}
-				
-				#toolbar-container .ql-font span[data-label="Roboto"]::before {
-					font-family: "Roboto";
-				} */
-				
-				/* #toolbar-container .ql-font span[data-label="Mirza"]::before {
-					font-family: "Mirza";
-				}
-				
-				#toolbar-container .ql-font span[data-label="Arial"]::before {
-					font-family: "Arial";
-				} */
-
-				/* Set text content font-families
-				It is now set by js
-
-				.ql-font-appleultralight {
-					font-family: "Source Sans Pro";
-					font-weight: 200;
-				}
-
-				.ql-font-helvetica {
-					font-family: "Helvetica";
-				}
-
-				.ql-font-inconsolata {
-					font-family: "Inconsolata";
-				}
-				
-				.ql-font-roboto {
-					font-family: "Roboto";
-				}
-		
-				.ql-font-mirza {
-					font-family: "Mirza";
-				}
-				
-				.ql-font-arial {
-					font-family: "Arial";
-			
-		</style> -->
-
-	</head>
+ 	</head>
   	<body>
-		  <script src="tools/quill/test/testquill.js"></script>
-		  <script>
+		<p>This page is to test parsing inner html from quill format text</p>
+		<script src="tools/quill/test/testquill.js"></script>
+		
+		<script>
 
-				var options={
-					modules: {
-					toolbar: '#toolbar-container'
-					},
-					placeholder: 'The is the default text...',
-					theme: 'snow'
-				} 
-	
-				var quill = new Quill('#editor-container', options);
+			var options={
+				modules: {
+				toolbar: '#toolbar-container'
+				},
+				placeholder: 'The is the default text...',
+				theme: 'snow'
+			} 
+
+			var quill = new Quill('#editor-container', options);
+
+			var theReceiveBox = d3.select('body').append('div')
+
+
+			// https://quilljs.com/docs/api/#editor-change
+			// https://kenoleon.github.io/Front-End-Web-Dev-UI-UX/quilljs
+			// text-change is good enough to listen to any changes (type of text, change format)
+			// editor-change is more sensitive, even listening to events like mouse down, etc.
+			quill.on('text-change', function(delta, oldDelta, source) {
+				//console.log(quill.getText())
+				//console.log(quill.getContents()) // get a delta (a json like obj for the foramt jobs, only useful for quill)
+				//console.log(quill.root.innerHTML) //
+				theReceiveBox.html(quill.root.innerHTML)
+			});
+
+
+
+			//additional info output to docx
+			//https://github.com/quilljs/quill/issues/1996
+			//https://vbraun.github.io/QuillDesktop/quill.exporter.pdf.html
 			
+
+		
 		</script>
+
  	</body>
 </html>
 

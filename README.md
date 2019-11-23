@@ -1,4 +1,11 @@
 simple d3 v4 tree diagram.
+commit 141a
+
+1. Test getting text and html from quill (test6_parsehtmlquill.html)
+The test6 html (in the bottom of the body part also contains links on exporting to docx, or pdf)
+2. Replacing nicEdit with Quill in D3 tree
+
+
 commit 140a
 
 Testing quill format app (in test5_quill.html, and testquill.js in tools/quill)

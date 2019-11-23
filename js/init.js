@@ -38,7 +38,7 @@
 
 /**global vars */
 var 
-    gitcommitversion = '140a',
+    gitcommitversion = '141a',
 
     treejsonURL = 'data/newnode.json',// 'data/treedata.json', //'data/An apology for Raymond Sebond v1',     // the url of the external json file with tree data
     treeData,   // to hold the tree data 
@@ -135,6 +135,7 @@ var theSrcD3Obj, theTgtD3Obj;
 var theParentToAppendChild;
 var theNodeToRename,theNodetoRenameElm;
 var currentDataEle, theInputMainDiv, nicEditor, NicEditInputInstance;
+var quillcssloaded=0; //check whether the quill css script has been written into the index.html
 
 //for textview box
 var locknode = 0 ; // the node lock status (1 or 0). if locknode =1, when mouse is out of the selected text span, 
