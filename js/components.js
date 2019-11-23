@@ -92,6 +92,8 @@ function document_reload(){
 
 // if the 'new diagram' button is clicked
 function CreateNewGrandTree(){
+    //hide the textbox
+    hideSentences()
 	// console.log("refresh and run newGrandTree")
     //create a new treeJSon, assign idx
     treeData=[{idx:generateUUID(), name:"new"}]
@@ -118,6 +120,9 @@ $(document).ready(function(){
     //load existing file
     $('#file_input').on('change', function(){
 
+        //hide the textbox
+        hideSentences()
+
         //console.log(this.files) // 'this' refers the input DOM element, this.files are a list of files (e.g., multiple files are selected in the open file dialog box)
         var thefirstfileobj = this.files[0]; // the value of thefirstfile is a map with fields like 'name;, size, type, etc.
         // console.log('thefirstfileobj======')
@@ -126,7 +131,6 @@ $(document).ready(function(){
         //get the extension name
         var ext =thefirstfileobj.name.substring(thefirstfileobj.name.lastIndexOf('.')+1)
         // console.log(ext)
-
 
         if (ext.toLowerCase() === 'egp') { // if the extension is egp, run import from egp
             ImportFromEGPAfterReloading(this);
@@ -144,8 +148,6 @@ $(document).ready(function(){
 
             });
         } // end if
-
-        
 
         //empty the input elm. !!! must have. Otherwise cannot repeatedly load the same file 
         this.value = null
@@ -429,7 +431,8 @@ function showhidedescendants(d) {
     updateTree = MakeChangeTree(d);
     pan();
     custlink(rootdatapoint_sortedrowscols, updateTree.nodeupdate ); // add cross link, it should be separate from
-}	
+
+} 	
 
 //estimate tree size
 function estTreesize(therootdatapoint){
@@ -2289,6 +2292,7 @@ function showInputTextForm(){
 
     //get the first element with class name = modal-content
     var modalcontentbox = modal.getElementsByClassName('modal-content')[0];
+    var modalheader = modal.getElementsByClassName('modal-header')[0];
 
 	modalcontentbox.style.width="80%";
     modalcontentbox.style.height="80%";
@@ -2302,8 +2306,12 @@ function showInputTextForm(){
     //make a new instance of Quill
     var options={
         modules: {
+            //enable image resize
+            imageResize: {
+                displaySize: true
+                },
             toolbar: '#' + modalToolboxID
-        },
+        },        
         placeholder: 'The is the default text...',
         theme: 'snow'
     } 
@@ -2314,18 +2322,35 @@ function showInputTextForm(){
     if(currentDataEle.data.NodeDescription !== undefined ){
         thequillText = currentDataEle.data.NodeDescription;
         }else { 
-        thequillText = "///t\nt///";
+        thequillText = "///t<br/>t///";
     }
 
     //get the quill modal editor box
     var editorbox_modal = d3.select('#' + modalEditorboxID)
+    // console.log(modalcontentbox.getBoundingClientRect())
+    // console.log(modalheader.getBoundingClientRect())
+    // console.log(DescInputBodyDom.getBoundingClientRect())
+
+    //delete padding of the modal-body box
+    d3.select(DescInputBodyDom).styles({"padding": "0px"})
+    //get the toolbox
+    var themodaltoolbox=document.getElementById(modalToolboxID);
+    //Height of the modal body = Height of the diaglog box - height of the header 
+    height_modalbody = modalcontentbox.getBoundingClientRect().height 
+                        - modalheader.getBoundingClientRect().height
+                        - themodaltoolbox.getBoundingClientRect().height
+
+    
     editorbox_modal.styles({
-        'max-height':'450px',
-        'min-height':'300px',
+        'max-height':height_modalbody + 'px',
+        'min-height':'200px',
         "overflow":"auto",
         "font-size": "16px",
         "line-height": "16pt",
-        "color": "navy"
+        "color": "navy",
+        "margin": "0px",
+        "position": "relative" // relative works for image resize, but not for link, fx, and video url
+            // 'static' works for link/fx/video url, but not image resize
     })
     // .attrs({
     //     "contentEditable":"true"
@@ -2334,88 +2359,17 @@ function showInputTextForm(){
     // editorbox_modal.html(thequillText)
     // quill_inmodal.setText(thequillText);
     // document.getElementById(modalEditorboxID).innerHTML = thequillText // wrong! it will cause the quill editor stop working
-    quill_inmodal.clipboard.dangerouslyPasteHTML(5, thequillText);
+    quill_inmodal.clipboard.dangerouslyPasteHTML(0, thequillText); //use (0, ) not to use (5)
     
     quill_inmodal.on('text-change', function(delta, oldDelta, source) {
         // console.log('changed')
-        console.log(quill_inmodal.getText())
+        // console.log(quill_inmodal.getText())
         //console.log(quill_inmodal.getContents()) // get a delta (a json like obj for the foramt jobs, only useful for quill)
-        console.log(quill_inmodal.root.innerHTML) 
+        // console.log(quill_inmodal.root.innerHTML) 
         currentDataEle.data.NodeDescription = quill_inmodal.root.innerHTML
-        // theReceiveBox.html(quill_inmodal.root.innerHTML) 
     });
 
-function notrun(){
-
-// console.log(NicEditInputInstance)
-	//if NicEditInputInstance has not been created, create it
-	if (NicEditInputInstance === undefined) {
-
-        //create a textarea in the box "myInputBox"
-        //<textarea id="NicEdit" cols="180" rows="30">Some this Text</textarea>
-        var myInputBox=document.getElementById("myInputBox");
-        
-        d3.select("#myInputBox").append("textarea")
-            .attr("id", "NicEdit")
-            .attr("cols", "120")
-            .attr("rows", "36")
-            .on('click', function(){
-                console.log('textarea clicked')
-            })
-            .text(function(){
-                if(currentDataEle.data.NodeDescription !== undefined ){
-                    return currentDataEle.data.NodeDescription;
-                }else { return "";}
-            })
-        ;
-        
-        //	console.log("create for the first time")
-        NicEditInputInstance= new nicEditor().panelInstance('NicEdit');
-        //https://stackoverflow.com/questions/11704769/nicedit-in-hidden-div-is-resized-small
-        $('.nicEdit-panelContain').parent().width('100%');
-        $('.nicEdit-panelContain').parent().next().width('100%');
-			 
-	}
-
-
-
-		//load the existing contents. Has to load into 1) the main div box, and 2), the hidden textarea
-//console.log(currentDataEle.data.NodeDescription)
-    if (currentDataEle.data.NodeDescription !== undefined){
-        //console.log("before")			
-        //console.log(NicEditInputInstance)
-        //document.getElementById("NicEdit").style.display="block";
-        
-        //load the existing description into the main div
-        // console.log('theinputmaindiv outside if=======')
-        // console.log(theInputMainDiv)
-        if (theInputMainDiv!==undefined) {
-
-            // console.log('theinputmaindiv inside if=======')
-            // console.log(theInputMainDiv)
-
-            theInputMainDiv.value=currentDataEle.data.NodeDescription; //d3v4
-            theInputMainDiv.innerHTML=currentDataEle.data.NodeDescription;
-            // theInputMainDiv.css('overflow', 'auto')
-            theInputMainDiv.style.overflow = 'auto';
-        }
-        //load the existing description into the textarea;
-        // console.log(currentDataEle)
-        document.getElementById("NicEdit").value=currentDataEle.data.NodeDescription; //d3v4
-        document.getElementById("NicEdit").innerHTML=currentDataEle.data.NodeDescription; //d3v4
-        
-        //console.log(theInputMainDiv);
-        //console.log(document.getElementById("NicEdit").innerHTML);
-        //console.log(document.getElementById("NicEdit").value);
-        //console.log(currentDataEle.name + ", " + currentDataEle.data.NodeDescription);			
-        //console.log(document.getElementById("NicEdit").innerHTML);
-    }		
-
-	InputTextChangeListener();
-}   //notrun() 
-
-
-    //console.log(currentDataEle.data.NodeDescription);
+    // console.log(currentDataEle.data.NodeDescription);
     
     // When the user clicks on <span> (x), close the modal
     span.onclick = function() {
@@ -2484,27 +2438,18 @@ function notrun(){
                 }
             }
 
-        } // end if
-        
+        } // end if        
         
         modal.style.display = "none";
 
         //   //clean up the contents in both the main div, and the hidden textarea
-        // document.getElementById("NicEdit").value="";
-        // document.getElementById("NicEdit").innerHTML="";
         if(editorbox_modal !== undefined) {
             editorbox_modal.value="";
             editorbox_modal.innerHTML="";
         }
 
-        // NicEditInputInstance = undefined; // must have!!!! so that the textarea will be recreated...
-        $('#theModal').remove();// delete NicEditInputInstance;
-        
+        $('#theModal').remove();// delete theModal;
 
-        //v("at closing")
-        //console.log("thetextArea = " + document.getElementById("NicEdit").value)
-        //console.log("thetextArea = " + document.getElementById("NicEdit").innerHTML)
-        //console.log(currentDataEle.name + ", " + currentDataEle.data.NodeDescription)
     }
 
     // When the user clicks anywhere outside of the modal, close it // no, do nothing
@@ -2606,10 +2551,6 @@ function makemodal(id, title, label, action){
         //change the modal boxtitle by adding the title
         modalboxtitle.html(title + ": " + currentDataEle.data.name)
         modalbody.attrs({'id':'DescInputBody'}).styles({"overflow": "auto;"}) 
-
-        //starting from this version, Quill is used instead of nicEdit
-        //modalbody.append('script').attr('src', 'http://js.nicedit.com/nicEdit-latest.js') // problem! it does not work to change to https://js.nicedit.com/nicEdit-latest.js http: cannot be used on netlify
-        //modalbody.append('script').attr('src', 'tools/nicEdit/nicEdit.js') // the file was downloaded from http://nicedit.com/download.php
 
     } else { //make a type of modal for rename, del, new node, etc
 
@@ -2750,7 +2691,7 @@ function getNodeSentences(obj){
 	return result;
 }	
 
-//change the contents: replacing <div></div> by </br>
+//change the contents: replacing <div></div> by <br/>
 function replaceDIVbyBR(d){
                 
     // set the default result = ''
@@ -2759,6 +2700,19 @@ function replaceDIVbyBR(d){
     stripdiv=d.replace(/(<div>)/gmi, '') //g for global (change all matched not the first); m for multiple line; i for ignoring case (whether DIV or div)
     // replace </div> with a line breaker </br>
     result=stripdiv.replace(/<\/div>'/gmi, '<br/>')    
+
+    return result
+}
+
+//change the contents: replacing <p></p> by <br/>
+function replacePbyBR(d){
+                
+    // set the default result = ''
+    var result='' ;
+    // replace <div> with nothing
+    stripdiv=d.replace(/(<p>)/gmi, '') //g for global (change all matched not the first); m for multiple line; i for ignoring case (whether DIV or div)
+    // replace </div> with a line breaker </br>
+    result=stripdiv.replace(/<\/p>'/gmi, '<br/>')    
 
     return result
 }
@@ -2790,13 +2744,14 @@ function showSentences(){
 // console.log(theContents)
     theContents.forEach(function(d){
 // console.log(d)
-        /**The .content by nicEdit is in html format
+        /**The .content by nicEdit/Quill is in html format
          * Lines of contents are put in separate divs, except that if there is only one line
          *  (e.g., ///t <thecontents> t///). In case of just having one line, there is no div wrapping .thecontents. 
          */
-        // the problem is that <div> force the sentences to change line. The solution is to strip the div, and replace with </br>. 
+        // the problem is that <div> or <p> force the sentences to change line. The solution is to strip the div, and replace with </br>. 
         // That way, sentences without <div> will be put in one line by <span> (in node description's show text part, not indicated to change line), 
         cleanedContent=replaceDIVbyBR(d.content)
+        cleanedContent=replacePbyBR(d.content)
 // console.log(cleanedContent)
         var theSentenceHTML=
         "<span idx='" + d.idx + "' class='showtext'" + "onmouseover='onsentencehover(this)'"

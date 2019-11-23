@@ -533,7 +533,7 @@
   visibility: hidden;
 }
 .ql-snow .ql-tooltip {
-  position: absolute;
+  position: fixed; /*was absolute. I changed it so that 1) the resize tips stick with images, the other tooltips showing on the fixed position of the screen!*/
   transform: translateY(10px);
 }
 .ql-snow .ql-tooltip a {

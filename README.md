@@ -1,4 +1,22 @@
 simple d3 v4 tree diagram.
+commit 142a
+1. Fixed the bug: now sentences from the following node can stay in the same line with sentences of the previous node
+2. Hide the textview box on loading a new diagram or load a new json/egp file
+3. Image resizable (add link to image-resize.min.js) To make it work properly:
+    1) In showInputTextForm() (component.js), set editorbox_modal.styles({"position": "relative"})
+        This will cause other quill tool tips position improperly.
+    To make up:
+    2) In  toosl/quill/quill.snow.css, change from  
+        .ql-snow .ql-tooltip { position: absolute;} 
+        to 
+         .ql-snow .ql-tooltip { position: fixed;} 
+
+Links for export to docx:
+//additional info output to docx
+//https://github.com/quilljs/quill/issues/1996
+//https://vbraun.github.io/QuillDesktop/quill.exporter.pdf.html
+ 
+
 commit 141a
 
 1. Test getting text and html from quill (test6_parsehtmlquill.html)

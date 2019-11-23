@@ -74,8 +74,8 @@
 /* The Modal (background), to dim the background */
 .myModal {
 	font-family: Arial, Helvetica, sans-serif;
-	 display: none; /* Hidden by default */
-	position: fixed; /* Stay in place */
+	display: none; /* Hidden by default */
+	position: fixed; /*Stay in place*/
 	z-index: 1; /* Sit on top, i.e., bring it to front*/
 	left: 0;
 	top: 0;
@@ -94,8 +94,8 @@
   .modal-content {
 	margin: auto;
 	/*position: fixed; if not disabled, the margin:auto won't work, the div won't be put at the center*/
-	/*top: 150px;*/
-	 text-align: left;
+	/* position: static; default setting. the content goes with the page when scrolling */
+	text-align: left;
 	background-color: #fefefe;
 	width: 50%;
 	height: 50%;
@@ -139,7 +139,9 @@
 	background-color: #5cb85c;
 	color: white;
   }
+
   
+	
 
 /*following is the to define fontsize for the node description input modal
 font-size 16px = fontsize 3 in NicEit settings (12pt)*/
@@ -155,3 +157,4 @@ font-size 16px = fontsize 3 in NicEit settings (12pt)*/
 	outline: 5px solid #66ff66;
 }
 */
+
