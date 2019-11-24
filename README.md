@@ -1,4 +1,8 @@
 simple d3 v4 tree diagram.
+commit 143a
+
+1. Online parsing JSON to MySQL
+
 commit 142a
 1. Fixed the bug: now sentences from the following node can stay in the same line with sentences of the previous node
 2. Hide the textview box on loading a new diagram or load a new json/egp file
