@@ -4713,4 +4713,107 @@ function makeQuill(parentBodyDom,id_toolbarbox, id_editorbox ){
   // var quill = new Quill('#editor-container', options);
 
 } // End anMoreCompleteInteractiveQuillApp()
-  
+
+
+/**The following is for exchanging data between js php and mysql */
+
+// to check tree json data change periodically
+function checkJSONPeriodically(interval_sec){
+	let interval_ms = interval_sec * 1000;
+	let timerId = setTimeout(function tick() {
+            //must convert to text string, as the items stored in sessionStorage has to be strings.
+            var theCurrentTreeData=JSON.stringify(rootdatapoint_sortedrowscols.data)
+            var theLastTreeData=sessionStorage.getItem("thejsonstr")
+            // console.log(theLastTreeData)
+            if (theLastTreeData === theCurrentTreeData) {
+                //console.log ("tree unchanged")
+            }else{
+                //console.log ("tree changed");
+                //save the current grandroot into sessionStorage				
+                sessionStorage.setItem("thejsonstr", theCurrentTreeData);
+                // save the json to MySQL
+                jsonstr_js2php2mysql();
+            }
+            //repeat 
+            timerId = setTimeout(tick, interval_ms); 
+		}, interval_ms
+	);		
+}
+
+
+
+// send jsonstr from js to php then to mysql
+function jsonstr_js2php2mysql(){
+    //get the most recent json data
+    var jsonstr = JSON.stringify(rootdatapoint_sortedrowscols.data);
+    //prepare a json obj with keys including slqtable, josnstr, userid, and jsonstrname
+    //note: the stringified jsonstr is only 1 element of the json obj
+    var 
+        v0='d3treejson',
+        v1=sessionStorage.getItem('thejsonstr', jsonstr),
+        v2=sessionStorage.getItem('theuserid'), 
+        v3= sessionStorage.getItem('thejsonstrname');
+        jsontosend = {
+            sqltable:v0,
+            jsonstr:v1,
+            userid: v2,
+            jsonstrname:v3 
+        }
+
+    // Post the json data to a php file, and receive response text echoed on that php file
+    //https://api.jquery.com/jQuery.post/
+    // The jquery way is simply to specify: 1) the target php, 2) the name of the json data 3) the data type.
+
+    var jqxhr = $.post( 
+        "php/js2php2mysql.php", 
+        jsontosend, 
+        'json'
+        )
+        // the following is to return the contents printed on the target php, so that user can 
+        // moniter whether the target php runs normally or having errors.
+        .done(function(d) {
+            console.log( 'On php/js2php2mysql.php:\n' + d );
+    }) // end post
+} // end jsonstr_js2php2mysql()
+
+
+// get jsonstr from mysql to php then to js
+function jsonstr_mysql2php2js(){
+    //Note:!!!
+    //Need to create an upfront step to select a JSON name from the names stored in MySQL database...
+
+
+    //prepare a json obj with keys including slqtable, josnstr, userid, and jsonstrname
+    //note: the stringified jsonstr is only 1 element of the json obj
+    var 
+        v0='d3treejson',
+        v1=sessionStorage.getItem('theuserid'), 
+        v2= sessionStorage.getItem('thejsonstrname');
+        jsontosend = {
+            sqltable:v0,
+            userid: v1,
+            jsonstrname:v2 
+        }
+
+    // Post the json data to a php file, and receive response text echoed on that php file
+    //https://api.jquery.com/jQuery.post/
+    // The jquery way is simply to specify: 1) the target php, 2) the name of the json data 3) the data type.
+
+    var jqxhr = $.post( 
+        "php/mysql2php2js.php", 
+        jsontosend, 
+        'json'
+        )
+        // the following is to return the contents printed on the target php, so that user can 
+        // moniter whether the target php runs normally or having errors.
+        .done(function(d) {
+            // console.log( 'On php/mysql2php2js.php:\n' + d );
+            //get it back to json obj
+            treeData = JSON.parse(d)
+            // console.log(receivedJSON)
+            NewTree(treeData)
+    }) // end post
+} // end jsonstr_js2php2mysql()
+
+
+/**The following is for exchanging data between js php and mysql */

@@ -1,4 +1,10 @@
 simple d3 v4 tree diagram.
+commit 144a
+
+1. Using JQuery $.POST to send JSONstr from JS to PHP, then to MySQL (save JSONstr to MySQL databases)
+2. Automatically (every 60 secondes) save the current tree JSON data as string to MySQL databases
+3. Using JQuery $.POST to fetch JSONstr from JS to PHP, to MySQL, then return result to PHP, and to JS (load JSON from MYSQL database)
+
 commit 143a-c
 
 1. Periodically check whether the tree data has changed

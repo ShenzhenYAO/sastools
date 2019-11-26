@@ -405,3 +405,21 @@ function createQuillAppUsingfunctions_itworks(){
 }
 
 
+//following is a dumb function to read data from txt file
+
+function notrun(){
+
+
+  setTimeout(function(){
+      $.get('php/receivejson.txt', function(result){
+          //get it back to json obj
+          treeData = JSON.parse(result)
+          // console.log(receivedJSON)
+          NewTree(treeData)
+      }, 'text')
+      //delete the txt file ???
+
+  }, 10000)
+
+}
+
