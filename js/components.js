@@ -99,6 +99,8 @@ function CreateNewGrandTree(){
     treeData=[{idx:generateUUID(), name:"new"}]
     // make a new tree
     NewTree(treeData)
+    // remember the file name in session
+    sessionStorage.setItem('thejsonstrname', 'new_'+ generateUUID());
 }
 
 // randomly generate a non-repeating id
@@ -127,6 +129,9 @@ $(document).ready(function(){
         var thefirstfileobj = this.files[0]; // the value of thefirstfile is a map with fields like 'name;, size, type, etc.
         // console.log('thefirstfileobj======')
         // console.log(thefirstfileobj)
+
+        //save the input file name into the sessionStorage
+        sessionStorage.setItem('thejsonstrname', thefirstfileobj.name);
 
         //get the extension name
         var ext =thefirstfileobj.name.substring(thefirstfileobj.name.lastIndexOf('.')+1)
@@ -566,7 +571,6 @@ function NewTree(thetreedata){
     d3.selectAll('path.pseudolinks').remove()
 
 
-
     /**B. Add tree ************************************************/
 
     /*B.1. determine the proper size of svg to contain the tree map 
@@ -652,7 +656,7 @@ function NewTree(thetreedata){
         updateTree = MakeChangeTree(rootdatapoint_sortedrowscols);
         // console.log('updateTree ==================')
         // console.log(updateTree)
-        
+       
     }
         
     /**C. Enable panning (press and hold mouse to move the tree within the svg/treerect)  */
@@ -660,6 +664,11 @@ function NewTree(thetreedata){
 
     /**D. add customized links */
     custlink(rootdatapoint_sortedrowscols, updateTree.nodeupdate ); // add cross link, it should be separate from
+
+    //save the treeJson Root into session
+    var jsonstr = JSON.stringify(rootdatapoint_sortedrowscols.data);
+    sessionStorage.setItem('thejsonstr', jsonstr);    
+
 
 }// end function NewTree()
 
@@ -1893,7 +1902,7 @@ function getSortedRowsCols(thisDataArray){
 							https://developer.mozilla.org/en-US/docs/Web/API/Blob
 							make it a binary type (octet/strem)
 						*/
-						blob = new Blob([json], {type: "octet/stream"}),
+						blob = new Blob([json], {type: "octet/stream"}), 
 						/*Pop up a window, for saving the created blob object*/
 						url = window.URL.createObjectURL(blob);
 						

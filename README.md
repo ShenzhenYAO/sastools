@@ -1,7 +1,8 @@
 simple d3 v4 tree diagram.
-commit 143a
+commit 143a-c
 
-1. Online parsing JSON to MySQL
+1. Periodically check whether the tree data has changed
+2. Parsing JSON to PHP, then MySQL Table, and bring back
 
 commit 142a
 1. Fixed the bug: now sentences from the following node can stay in the same line with sentences of the previous node

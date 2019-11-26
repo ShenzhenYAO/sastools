@@ -37,10 +37,15 @@
  * /
 
 /**global vars */
-var 
-    gitcommitversion = '143a',
+var treejsonURL = 'data/savingpix';// 'data/treedata.json', //'data/An apology for Raymond Sebond v1',     // the url of the external json file with tree data
+sessionStorage.setItem('thejsonstrname', treejsonURL);
+    
+userid=2; // for the type being, let the user id =2.
+sessionStorage.setItem('theuserid', userid);
 
-    treejsonURL = 'data/savingpix',// 'data/treedata.json', //'data/An apology for Raymond Sebond v1',     // the url of the external json file with tree data
+var 
+    gitcommitversion = '143a-c',
+
     treeData,   // to hold the tree data 
     treeJSON,   // to hold the tree JSON from treeData
     i = 0,  // no need

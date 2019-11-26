@@ -17,6 +17,8 @@ buttonsdiv.append('button').attrs({'onclick': 'CreateNewGrandTree()'}).text('New
 buttonsdiv.append('input').attrs({'type': 'file', 'id':'file_input'})
 buttonsdiv.append('button').attrs({'onclick': 'exportData_local_d3v4()'}).text('ExportJSON').styles({'margin-right':'20px'})
 buttonsdiv.append('button').attrs({'onclick': 'exportTextBox2WordDoc()'}).text('Export Text to Word Doc').styles({'margin-left':'100px'})
+buttonsdiv.append('button').attrs({'onclick': 'sendjsontest()'}).text('to MySQL (test)').styles({'margin-left':'100px'})
+
 buttonsdiv.append('p')
 buttonsdiv.append('button').attrs({'onclick': 'showSentences()'}).text('showTextBox')
 buttonsdiv.append('button').attrs({'onclick': 'hideSentences()'}).text('hideTextBox')
