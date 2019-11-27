@@ -2313,19 +2313,49 @@ function showInputTextForm(){
     var modalToolboxID = 'modal-toolbox', modalEditorboxID = 'modal-editor';
     makeQuill(DescInputBodyDom, modalToolboxID, modalEditorboxID)
     
+    /**Since commit 147a
+     * blot formatter to resize image 
+     * Blot formatter can be found at https://www.npmjs.com/package/quill-blot-formatter
+     * Actually, only the quill-blot-formatter.min.js will be needed (as put in tools/quill/addon/quill-blot-formatter)
+     * However, the individual file is not available on line. Following is the way to get it
+     * 1) create a tmp folder in the local drive, e.g., f:try
+     * 2) open node.js command window, change dir to the tmp folder (e.g., f:try), install quill 1.3.6 by typing
+     *      'npm install quill@1.3.6'. 
+     *      (see instruction of the NPM part at https://quilljs.com/docs/download/)
+     *    quill has to be installed first, as when installing Blot formatter, it'll check whether a peer
+     *      Quill (1.3.4 and above) has been installed. Without quill installed, it might report error and stop copying files to the local drive
+     * 3) In the same tmp folder, type 'npm install --save quill-blot-formatter' to install the blot formatter files
+     * 4) The 'quill-blot-formatter.min.js' can be found, in the above case, at 'F:\try\node_modules\quill-blot-formatter\dist'
+     * 
+     * In my case, I copied 'quill-blot-formatter.min.js' into tools/quill/qddon/quill-blot-formatter/, and cite it in index.html.
+     * 
+     * Next, in node.js command window, go to/stay in the tmp folder like 'F:try', type 'npm uninstall quill-blot-formatter' to uninstall it
+     *  This will delete all files in F:\try\node_modules\quill-blot-formatter
+     * Then, if uninstall quill 1.3.6 if you want (in my case, I'd uninstall it as I am not using it in npm way)
+     * To uninsall it:
+     * 1) rename the file F:\try\package-lock.json to package.json. 
+     * 2) stay in F:try, type 'npm uninstall quill@1.3.6'
+     * 
+     * This will delete all files except the package.json, plus a newly created package-lock.json. 
+     * 
+     * Now it is fine to delete the tmp folder 'F:try' itself! close the node.js window. (Must! if it is open
+     *  and stays in F:\try, that folder cannot be deleted). Go to windows explorer, delete the folder F:try.
+     */
+
     //make a new instance of Quill
     var options={
         modules: {
             toolbar: '#' + modalToolboxID,
-            table:true // new in this version for table editing
+            table:true,
+            blotFormatter: {} // new since commit 147a for blot formatter 
         },        
         placeholder: 'The is the default text...',
         theme: 'snow'
     } 
     var quill_inmodal = new Quill('#' + modalEditorboxID, options);
-    const table = quill_inmodal.getModule('table'); // new in this version for table editing
+    const table = quill_inmodal.getModule('table'); // new since commit 146a for table editing
 
-    // new in this version
+    // new since commit 146a
     /**the following is inserted to enable table editing */    
     DescInputBodyDom.querySelector('#insert-table').addEventListener('click', function() {
         table.insertTable(2, 2);
@@ -2371,12 +2401,12 @@ function showInputTextForm(){
     //delete padding of the modal-body box
     d3.select(DescInputBodyDom).styles({"padding": "0px"})
     //get the toolbox
-    var themodaltabletoolbox=document.getElementById('thetabletoolbox'); // new in this version for table editing tools
+    var themodaltabletoolbox=document.getElementById('thetabletoolbox'); // new since commit 146a for table editing tools
     var themodaltoolbox=document.getElementById(modalToolboxID);
     //Height of the modal body = Height of the diaglog box - height of the header 
     height_modalbody = modalcontentbox.getBoundingClientRect().height 
                         - modalheader.getBoundingClientRect().height
-                        - themodaltabletoolbox.getBoundingClientRect().height // new in this version for table editing tools
+                        - themodaltabletoolbox.getBoundingClientRect().height // new since commit 146a for table editing tools
                         - themodaltoolbox.getBoundingClientRect().height
 
     
@@ -4426,8 +4456,8 @@ function makeqlSelector(theqltoolbox,selectorClassname,selectiondata ){
   } //end of makeqlSelector
   
   
-  // make a makeqlelms (e.g., for buttons like bold, italic, etc; for select tags like ql-color, ql-background)
-  function makeqlelms_bk(theqltoolbox, selectiondata, tagname){
+// make a makeqlelms (e.g., for buttons like bold, italic, etc; for select tags like ql-color, ql-background)
+function makeqlelms(theqltoolbox, selectiondata, tagname){
   
     //1.a add ql selector
     var theqlelmholder=theqltoolbox.append('span').attr('class', 'ql-formats')
@@ -4444,9 +4474,11 @@ function makeqlSelector(theqltoolbox,selectorClassname,selectiondata ){
         /**
          * d is like:
          * {attrs:[
-              {attr:'class', value:'ql-list'},
-              {attr:'value', value:'ordered'}
-            ]},
+         *          {attr:'class', value:'ql-list'},
+                    {attr:'value', value:'ordered'}
+                    ],
+            text:'text'
+            },
          * */
         var result={}
         /**the result should be like
@@ -4464,8 +4496,16 @@ function makeqlSelector(theqltoolbox,selectorClassname,selectiondata ){
         })
         return result
       });
-  
-  } //end of makeqlbuttons
+
+    //1.d set text for each option
+    theElms
+      .text(function(d){
+          if(d.text !== null && d.text !== undefined){
+            return d.text            
+          }
+      })
+
+  } //end of makeqlelms
 
 
 /**Create a more complete customized quill rich text format 
@@ -4475,7 +4515,42 @@ function makeqlSelector(theqltoolbox,selectorClassname,selectiondata ){
 //an example is given at : 
 //https://stackoverflow.com/questions/43728080/how-to-add-font-types-on-quill-js-with-toolbar-options
 
-function makeQuill_bk(parentBodyDom,id_toolbarbox, id_editorbox ){
+function makeQuill(parentBodyDom,id_toolbarbox, id_editorbox ){
+
+    /**the following part is for adding buttons for table editing. 
+     * It is enabled by Quill 2.0.0.dev.3. Right now, these functions are not built into the toolbox...
+    */
+    var thetabletoolbox = d3.select(parentBodyDom).append('div').attr('id', 'thetabletoolbox')
+    var tagname = 'button'
+    var tableoptionlist = [
+        {attrs:[
+            {attr:'id', value:'insert-table'},
+          ], text:'Insert Table'},
+        {attrs:[
+            {attr:'id', value:'insert-row-above'},
+          ], text:'Insert Row Above'},
+        {attrs:[
+            {attr:'id', value:'insert-row-below'},
+          ], text:'Insert Row Below'},
+        {attrs:[
+            {attr:'id', value:'insert-column-left'},
+          ], text:'Insert Column Left'},
+        {attrs:[
+            {attr:'id', value:'insert-column-right'},
+          ], text:'Insert Column Right'},
+        {attrs:[
+            {attr:'id', value:'delete-row'},
+          ], text:'Delete Row'},
+        {attrs:[
+            {attr:'id', value:'delete-column'},
+          ], text:'Delete Column'},
+        {attrs:[
+            {attr:'id', value:'delete-table'}
+          ], text:'Delete Table'}
+    ]
+    makeqlelms(thetabletoolbox,tableoptionlist,tagname)
+
+    /**End of table edition box */
 
     //0.1 dynamiclly write css style lines for font setting
     // more fonts can be found at https://fonts.google.com/ just cite the font in html!
@@ -4483,7 +4558,7 @@ function makeQuill_bk(parentBodyDom,id_toolbarbox, id_editorbox ){
       {attr:'selected', value:'', text:'Roboto'},
       {attr:'value', value:'timesnewroman', text:'Times New Roman'}, // I made it up. When the fontname is not knonw by js or quill app, it'll be displayed as times new roman!
       // {attr:'value', value:'helvetica', text:'Helvetica'},// this is very close to Roboto
-      {attr:'value',value:'inconsolata', text:'Inconsolata'},// this is close to times new roman
+      {attr:'value',value:'inconsolata', text:'Inconsolata'},
       {attr:'value',value:'indieflower', text:'Indie Flower'},
       {attr:'value', value:'appleultralight', text:'Source Sans Pro'},  
       // {attr:'value',value:'tinos', text:'Tinos'} // this is also close to Roboto
@@ -4742,7 +4817,12 @@ function makeQuill_bk(parentBodyDom,id_toolbarbox, id_editorbox ){
 
   // var quill = new Quill('#editor-container', options);
 
-} // End anMoreCompleteInteractiveQuillApp()
+  // new since commit 147a for blot formatter
+  // see example setting (As Module) at https://github.com/Fandom-OSS/quill-blot-formatter
+  Quill.register('modules/blotFormatter', QuillBlotFormatter.default);
+
+
+} // End makequill()
 
 
 /**The following is for exchanging data between js php and mysql */

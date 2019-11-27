@@ -1,4 +1,9 @@
 simple d3 v4 tree diagram.
+commit 147a
+
+Add quill blot formatter to resize images.
+Remove the folder  imageresize and its components. from tools/quill/addon
+
 commit 146a
 
 Enable table editing
