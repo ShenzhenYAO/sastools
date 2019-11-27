@@ -139,6 +139,8 @@ $(document).ready(function(){
 
         if (ext.toLowerCase() === 'egp') { // if the extension is egp, run import from egp
             ImportFromEGPAfterReloading(this);
+            // let the file name be like .egp.json
+            sessionStorage.setItem('thejsonstrname', thefirstfileobj.name+'.json');
         } else { // else run import from json
             // use the function readfile to read the first file, get the treeData, and use the treedata to make a new tree
             readlocalfile(thefirstfileobj, function(f) { // the 'funciton(f){...}' part is the call back function coresponding to the 'callback' in the function readfile()
@@ -150,7 +152,6 @@ $(document).ready(function(){
                 NewTree(treeData)
                 // treeData = null;
                 // collapseAll(rootdatapoint_sortedrowscols)
-
             });
         } // end if
 

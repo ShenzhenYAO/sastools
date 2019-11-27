@@ -1,4 +1,19 @@
 simple d3 v4 tree diagram.
+commit 145a
+1. Autosave the tree json to server's data/ folder
+
+The current Quilljs (1.3.6) does not support table.
+In the next commit (146a), a newer version will be used:
+    Quilljs using 2.0.0-dev.3 which is downloaded from: https://github.com/quilljs/cdn
+    this version allows inserting tables. A demo can be found at:
+    https://codepen.io/quill/pen/QxypzX
+    However, the quill-image-resize is outdated
+    The replacement would be:
+    https://github.com/Fandom-OSS/quill-blot-formatter
+    a demo of which can be found at:
+    https://codesandbox.io/s/4wnwllnnl9
+
+
 commit 144a
 
 1. Using JQuery $.POST to send JSONstr from JS to PHP, then to MySQL (save JSONstr to MySQL databases)

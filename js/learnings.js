@@ -326,7 +326,6 @@ function createQuillAppUsingfunctions_itworks(){
         ]
         makeqlSelector(qltoolbarbox,selectorClassname,selectiondata )
 
-
         //1.b make ql-fontcolor selector
         var selectorClassname = 'ql-color'
         // prepare a list of options (note: one of which is for default value 'selected', 'Default')
@@ -417,7 +416,6 @@ function notrun(){
           // console.log(receivedJSON)
           NewTree(treeData)
       }, 'text')
-      //delete the txt file ???
 
   }, 10000)
 
