@@ -1,4 +1,14 @@
 simple d3 v4 tree diagram.
+commit 146a
+
+Enable table editing
+Quilljs using 2.0.0-dev.3 which is downloaded from: https://github.com/quilljs/cdn
+    this version allows inserting tables. A demo can be found at:
+    https://codepen.io/quill/pen/QxypzX
+
+Quill-image-resize is outdated now, and is take out in this version. 
+
+
 commit 145a
 1. Autosave the tree json to server's data/ folder
 

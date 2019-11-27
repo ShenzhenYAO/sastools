@@ -2316,16 +2316,43 @@ function showInputTextForm(){
     //make a new instance of Quill
     var options={
         modules: {
-            //enable image resize
-            imageResize: {
-                displaySize: true
-                },
-            toolbar: '#' + modalToolboxID
+            toolbar: '#' + modalToolboxID,
+            table:true // new in this version for table editing
         },        
         placeholder: 'The is the default text...',
         theme: 'snow'
     } 
     var quill_inmodal = new Quill('#' + modalEditorboxID, options);
+    const table = quill_inmodal.getModule('table'); // new in this version for table editing
+
+    // new in this version
+    /**the following is inserted to enable table editing */    
+    DescInputBodyDom.querySelector('#insert-table').addEventListener('click', function() {
+        table.insertTable(2, 2);
+    });
+    DescInputBodyDom.querySelector('#insert-row-above').addEventListener('click', function() {
+        table.insertRowAbove();
+    });
+    DescInputBodyDom.querySelector('#insert-row-below').addEventListener('click', function() {
+        table.insertRowBelow();
+    });
+    DescInputBodyDom.querySelector('#insert-column-left').addEventListener('click', function() {
+        table.insertColumnLeft();
+    });
+    DescInputBodyDom.querySelector('#insert-column-right').addEventListener('click', function() {
+        table.insertColumnRight();
+    });
+    DescInputBodyDom.querySelector('#delete-row').addEventListener('click', function() {
+        table.deleteRow();
+    });
+    DescInputBodyDom.querySelector('#delete-column').addEventListener('click', function() {
+        table.deleteColumn();
+    });
+    DescInputBodyDom.querySelector('#delete-table').addEventListener('click', function() {
+        table.deleteTable();
+    });
+
+    /**the above is for table editing */
 
     // load existing NodeDescription, or enter a default text
     var thequillText;
@@ -2344,10 +2371,12 @@ function showInputTextForm(){
     //delete padding of the modal-body box
     d3.select(DescInputBodyDom).styles({"padding": "0px"})
     //get the toolbox
+    var themodaltabletoolbox=document.getElementById('thetabletoolbox'); // new in this version for table editing tools
     var themodaltoolbox=document.getElementById(modalToolboxID);
     //Height of the modal body = Height of the diaglog box - height of the header 
     height_modalbody = modalcontentbox.getBoundingClientRect().height 
                         - modalheader.getBoundingClientRect().height
+                        - themodaltabletoolbox.getBoundingClientRect().height // new in this version for table editing tools
                         - themodaltoolbox.getBoundingClientRect().height
 
     
@@ -4398,7 +4427,7 @@ function makeqlSelector(theqltoolbox,selectorClassname,selectiondata ){
   
   
   // make a makeqlelms (e.g., for buttons like bold, italic, etc; for select tags like ql-color, ql-background)
-  function makeqlelms(theqltoolbox, selectiondata, tagname){
+  function makeqlelms_bk(theqltoolbox, selectiondata, tagname){
   
     //1.a add ql selector
     var theqlelmholder=theqltoolbox.append('span').attr('class', 'ql-formats')
@@ -4439,14 +4468,14 @@ function makeqlSelector(theqltoolbox,selectorClassname,selectiondata ){
   } //end of makeqlbuttons
 
 
-  /**Create a more complete customized quill rich text format 
+/**Create a more complete customized quill rich text format 
  * a complete list of format tools can be found at:
  * https://quilljs.com/docs/formats/ 
 */
 //an example is given at : 
 //https://stackoverflow.com/questions/43728080/how-to-add-font-types-on-quill-js-with-toolbar-options
 
-function makeQuill(parentBodyDom,id_toolbarbox, id_editorbox ){
+function makeQuill_bk(parentBodyDom,id_toolbarbox, id_editorbox ){
 
     //0.1 dynamiclly write css style lines for font setting
     // more fonts can be found at https://fonts.google.com/ just cite the font in html!
