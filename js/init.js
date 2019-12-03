@@ -45,7 +45,7 @@ sessionStorage.setItem('theuserid', userid);
 
 
 var 
-    gitcommitversion = '149a',
+    gitcommitversion = '150a',
 
     treeData,   // to hold the tree data 
     treeJSON,   // to hold the tree JSON from treeData
@@ -335,6 +335,18 @@ var nodemenu = [
                 var copiedtreedata=JSON.parse(localStorage.getItem('copiedtreedatastr'))
                 PasteTreeData(d, copiedtreedata)
             }
+        }
+    },
+    {
+        title: 'ExportNodesAsJSON',
+        action: function(elm, d, i) {
+            // get the data
+            var thenodejson = d.data
+            //remove the custparents
+            // console.log(thenodejson)
+            var fileName = "myData";
+            //save it to local disk
+            saveData(thenodejson, fileName); 
         }
     }
 

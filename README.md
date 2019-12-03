@@ -1,4 +1,8 @@
 simple d3 v4 tree diagram.
+Commit 150a
+
+1. Add export node and descendants as a separate json
+
 Commit 149a
 1. Add a child from a local egp or json
 
