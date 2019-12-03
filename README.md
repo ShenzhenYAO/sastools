@@ -1,4 +1,7 @@
 simple d3 v4 tree diagram.
+Commit 149a
+1. Add a child from a local egp or json
+
 Commit 148a
 
 1. Copy and paste subdata as a child

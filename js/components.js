@@ -138,6 +138,7 @@ $(document).ready(function(){
         // console.log(ext)
 
         if (ext.toLowerCase() === 'egp') { // if the extension is egp, run import from egp
+            // console.log(this)
             ImportFromEGPAfterReloading(this);
             // let the file name be like .egp.json
             sessionStorage.setItem('thejsonstrname', thefirstfileobj.name+'.json');
@@ -159,6 +160,8 @@ $(document).ready(function(){
         this.value = null
 
     });//end load existing file
+
+
 
     // // load egp
     // $('#egp_input').on('change', function(){
@@ -3473,7 +3476,7 @@ function ImportFromEGPAfterReloading(d){
     // console.log(d)
     //https://stackoverflow.com/questions/32267930/get-name-of-files-of-zip-file-in-javascript
     var thezipfile =d.files[0];
-
+    // console.log(thezipfile)
     var reader = new FileReader();
     reader.readAsBinaryString(thezipfile);
 
@@ -3558,7 +3561,7 @@ function ImportFromEGPAfterReloading(d){
 
                         //3) for each task, determine .children .custparents
                         therootparent = getTaskChildrenCustparents(tasksarray,defaultlinksarray,custlinksarray,therootparent);
-                        // console.log(therootparent)
+                        console.log(therootparent)
 
                         //4) make substep nodes for each task node
                         //throotparent = addSubSteps(therootparent)// too many, the system will blowout!!!
@@ -3586,9 +3589,6 @@ function ImportFromEGPAfterReloading(d){
             } // end if (name === ...)
         } // end for myfiles loop
     } // end reader.onload =...
-
-    
-
 } // End ImportFromEGPAfterReloading
 
 // from all links, select those to and from a task
@@ -4916,14 +4916,15 @@ function jsonstr_mysql2php2js(){
             NewTree(treeData)
     }) // end post
 } // end jsonstr_js2php2mysql()
-
-
-/**The following is for exchanging data between js php and mysql */
+/**The above is for exchanging data between js php and mysql */
 
 
 /**the following is for copy paste a tree node and its descendants */
 // To paste or attache the tree data that has been saved by copy action
 function PasteTreeData(theParentTreeData, theTreeDataToPaste){
+
+    //hide the tree box
+    hideSentences()
 
     // these adding stuff is too complicated and prone to miss a thing or two
     //simply update the treedata, and remake the whole tree!
@@ -4967,3 +4968,161 @@ function PasteTreeData(theParentTreeData, theTreeDataToPaste){
     NewTree(rootdatapoint_sortedrowscols.data)
     
 } //end PasteTreeData
+
+
+// add tree nodes from an external file
+function addnodesfromfile(theParentTreeData) {
+    //delete existing tmpinput with a classname =file_input_appendnodes
+    d3.selectAll('input.file_input_appendnodes').remove()
+    // create an invisible input button
+    var tmpinput = buttonsdiv.append('input')
+                    .attrs({'type':'file', 'id': 'file_input_appendnodes', 'class':'file_input_appendnodes'})
+                    .styles({'display': 'none'})
+                    .node();
+    //click it
+    tmpinput.click()
+    // when a file is loaded
+    tmpinput.onchange = e => {
+
+        //hide the textbox
+        hideSentences()
+    
+        // get the file obj
+        var thefirstfileobj = e.target.files[0]; //e.target === this
+    
+        //get the extension name
+        var ext =thefirstfileobj.name.substring(thefirstfileobj.name.lastIndexOf('.')+1)
+    
+        if (ext.toLowerCase() === 'egp') { // if the extension is egp, run import from egp
+        
+            GetRootFromEGPAfterReloading(theParentTreeData, e.target);
+        
+        } else { // else run import from json
+            // use the function readfile to read the first file, get the treeData, and use the treedata to make a new tree
+            readlocalfile(thefirstfileobj, function(f) { // the 'funciton(f){...}' part is the call back function coresponding to the 'callback' in the function readfile()
+                // console.log(f.target.result)
+                var treenodesdata =JSON.parse(f.target.result)
+                // create the tree data
+                // console.log('treeData when file_input is ready ======')
+                // must have!!! external file without a name as .json will be loaded as an array
+                if (Array.isArray(treenodesdata)){
+                    treenodesdata=treenodesdata[0];
+                }
+                // console.log(treenodesdata) 
+                PasteTreeData(theParentTreeData, treenodesdata)
+                // treeData = null;
+                // collapseAll(rootdatapoint_sortedrowscols)
+            });
+        } // end if
+        //remove the tmpinput
+        tmpinput.remove()
+    } //end tmpinput.onchange
+} // end addnodesfromfile
+
+
+// from a local egp file (or any zip files)
+function GetRootFromEGPAfterReloading(theParentTreeData, d){
+
+    //initialize the root parent
+    var therootparent;
+
+    // console.log(d)
+    //https://stackoverflow.com/questions/32267930/get-name-of-files-of-zip-file-in-javascript
+    var thezipfile =d.files[0];
+
+    // console.log(thezipfile)
+
+    var reader = new FileReader();
+    reader.readAsBinaryString(thezipfile);
+
+    reader.onloadend = function(e){
+
+          var myZip = e.target.result;                 
+        var unzipper = new JSUnzip(myZip);
+
+        unzipper.readEntries();
+        
+        //myFiles, or the entries contains a flatterned list of files, in which
+            // the .fileName contains filePath and fileName in the
+        var myFiles = unzipper.entries;    
+
+        for(var i=0; i<myFiles.length; i++) {
+
+            var name = myFiles[i].fileName; // This is the file name
+            // console.log( myFiles[i].fileName)
+            
+            //find the file 'project.xml' and extract its content as html DOM
+            if (name === 'project.xml'){
+
+                var content = JSInflate.inflate(myFiles[i].data); // this is the content of the files within the zip file.
+                
+                //remove the non printable characters (indeed the non ascII chars)
+                var rcontent = content.replace(/[^\x20-\x7E]/g, ''); //!!!! must have, as the original content contains non-printable characters which cause error when transferrring to html DOM
+                //replace \ with \_. This is to prevent errors caused by backslash
+                rcontent = rcontent.replace(/\\/g, '\\_') ;
+
+                //The xml sucks, instead, import the rcontent str as HTMLDOM
+                var htmlDoc=$.parseHTML( rcontent )
+                // console.log($(htmlDoc)) // the node 'projectcollection' contains all relavant info
+
+                htmlDoc.forEach(elm=>{
+                    if ($(elm).is('Projectcollection')) {
+                        // console.log($(elm))
+                        // console.log($(elm).children())
+                        // var projectDoc=$(elm)
+                        // console.log(projectDoc.children().length)
+
+                        //0) determine the root parent, which is the ProjectCollection
+                        //idx
+                            var rootidx = elm.getElementsByTagName("ID")[0].innerHTML
+                        //name
+                            var rootname = elm.getElementsByTagName("Label")[0].innerHTML
+                        //type
+                            var roottype = elm.getElementsByTagName("Type")[0].innerHTML
+
+                        therootparent = {
+                            "idx": rootidx,
+                            "name": rootname,
+                            "type": roottype,
+                            "children": []
+                        }
+                        // console.log(therootparent)
+                        
+                        //1) push the task related items into an array, each item in the target array contains
+                        // idx (the unique id given by SAS egp), name (from <label>), and type (from <type>)
+                        var tasksarray_nocode = egpTasksToArray(elm) // the input is the DOM element, not the $(elm), ie., not the JQuerry object
+                        // console.log(tasksarray)
+                        
+                        //1a) for each task, get their contents from a file of the same id in the egp zip (a file in myFiles)
+                        var tasksarray = getTaskContents(tasksarray_nocode, myFiles)
+                        
+                        //2) get a collection of links
+                        var linksarray_all = egpLinksToArray(elm)
+                        // console.log ('all links including those not to interested tasks')
+                        // console.log(linksarray_all)
+                        /*2a) !!! must have
+                            hold on, some links, either the .to or .from are of an idx that cannot be found in tasksarray
+                            Probably, taskarray only contains the interested tasks (type = task, etc)
+                            There are other items that a link is from or to, but these items are not included in taskarray
+                            So within linksarray, we need to remove those not to/from a task in taskarray
+                        */
+                        var linksarray = getLinksToTasks(tasksarray, linksarray_all)
+                        // console.log(linksarray)
+                        //2b) determine the default links, and the customized links
+                        var splitArrays = getDefaultCustLinks(linksarray, tasksarray)
+                        var defaultlinksarray = splitArrays.defaultlinks;
+                        var custlinksarray =  splitArrays.custlinks;
+                        // console.log(defaultlinksarray)
+                        // console.log(custlinksarray)
+
+                        //3) for each task, determine .children .custparents
+                        therootparent = getTaskChildrenCustparents(tasksarray,defaultlinksarray,custlinksarray,therootparent);
+                        PasteTreeData(theParentTreeData, therootparent)
+                    }
+                })
+            } // end if (name === ...)
+        } // end for myfiles loop
+        
+    } // end reader.onload =...
+} // End ImportFromEGPAfterReloading
+/**the above is for copy paste a tree node and its descendants */
