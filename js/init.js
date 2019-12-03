@@ -43,8 +43,10 @@ sessionStorage.setItem('thejsonstrname', treejsonURL);
 userid=2; // for the type being, let the user id =2.
 sessionStorage.setItem('theuserid', userid);
 
+var copiedtreedata;
+
 var 
-    gitcommitversion = '147a',
+    gitcommitversion = '148a',
 
     treeData,   // to hold the tree data 
     treeJSON,   // to hold the tree JSON from treeData
@@ -308,6 +310,25 @@ var nodemenu = [
         //create_node_modal_active = true;
         //$('#CreateNodeModal').foundation('reveal', 'open');
         //$('#CreateNodeName').focus();
+        }
+    },
+    {
+        title: 'Copy',
+        action: function(elm, d, i) {
+            var copiedtreedatastr = JSON.stringify(d.data);
+            //remember the selected tree data
+            sessionStorage.setItem('copiedtreedatastr', copiedtreedatastr);
+            // console.log(sessionStorage.getItem('copiedtreedatastr'))
+        }
+    },
+    {
+        title: 'Paste',
+        action: function(elm, d, i) {
+            currentDataEle = d;
+            if (sessionStorage.getItem('copiedtreedatastr')){
+                copiedtreedata=JSON.parse(sessionStorage.getItem('copiedtreedatastr'))
+                PasteTreeData(d, copiedtreedata)
+            }
         }
     }
 

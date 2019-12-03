@@ -514,8 +514,6 @@ function collapseAll(source){
 }
 
 
-
-
 function expandAll(source){
 	var theurl ="http://epicanada.x10host.com/sound/clickbutoon2.mp3";
 	playclicksound(theurl);
@@ -547,11 +545,7 @@ function playclicksound(theURL){
     /*var theurl ="http://epicanada.x10host.com/sound/clickbutoon2.mp3"*/
     var theAudio = new Audio(theURL);	
     theAudio.play();
-}	
-
-    
-
-
+}
 
 // create a new tree, add pan and custlinks
 function NewTree(thetreedata){
@@ -1936,7 +1930,7 @@ function selectCopy(obj){
 			) {
 			ar2[i][prop] = obj[i][prop]; // copy properties from arObj to ar2
 			}
-			if (prop === "children" && obj[i][prop] !== null){
+			if (prop === "children" && obj[i][prop] !== null && obj[i][prop] !== false){
 				var theNewChildren=[];
 				var theChildren = obj[i][prop];
 				//console.log("theChildren")
@@ -3371,8 +3365,6 @@ function getHtmlAsTreeJSON(){
                 // console.log(thebook)
 
                 NewTree(thebook)
-
-
 
                 }, 3000
             );
@@ -4927,3 +4919,51 @@ function jsonstr_mysql2php2js(){
 
 
 /**The following is for exchanging data between js php and mysql */
+
+
+/**the following is for copy paste a tree node and its descendants */
+// To paste or attache the tree data that has been saved by copy action
+function PasteTreeData(theParentTreeData, theTreeDataToPaste){
+
+    // these adding stuff is too complicated and prone to miss a thing or two
+    //simply update the treedata, and remake the whole tree!
+
+    //1. create a thenewSubTreeJSON with the theTreeDataToPaste.data    
+    // console.log(theTreeDataToPaste)
+    // console.log(theParentTreeData.data.children)
+
+    //must have!!! the theTreeDataToPaste should be a new data json, not the nickname of the existing data json!
+    var thenewSubTreeJSON = selectCopy([theTreeDataToPaste])[0]
+    // console.log(thenewSubTreeJSON)
+
+    //must have!!! the idx must be updated...
+    function newidx(thetreeDataNode){
+        thetreeDataNode.idx=generateUUID()
+        if (thetreeDataNode.children ){
+            if ( thetreeDataNode.children.length >0){
+                thetreeDataNode.children.forEach(h=>{
+                    newidx(h)
+                })
+            }
+        }
+    }
+    newidx(thenewSubTreeJSON)
+    // console.log(thenewSubTreeJSON)
+
+    // add the theParentTreeData.data.idx (the new parent's idx) to thenewSubTreeJSON.custparents
+    if (thenewSubTreeJSON.custparents === undefined || thenewSubTreeJSON.custparents === null){
+        thenewSubTreeJSON.custparents=[];
+    }
+    thenewSubTreeJSON.custparents.push({idx: theParentTreeData.data.idx})
+
+    /** attach the newsubtreeJson to theParentTreeData.data.children */
+    if (theParentTreeData.data.children === undefined || theParentTreeData.data.children === null
+        || theParentTreeData.data.children === false) {
+        theParentTreeData.data.children = []; 
+    }
+    theParentTreeData.data.children.push(thenewSubTreeJSON)
+
+    // new tree!
+    NewTree(rootdatapoint_sortedrowscols.data)
+    
+} //end PasteTreeData

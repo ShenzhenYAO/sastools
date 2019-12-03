@@ -1,4 +1,10 @@
 simple d3 v4 tree diagram.
+Commit 148a
+
+1. Copy and paste subdata as a child
+
+Bug rename and mess up issues?
+
 commit 147a
 
 Add quill blot formatter to resize images.
