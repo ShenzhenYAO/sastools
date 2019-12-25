@@ -128,10 +128,12 @@ $(document).ready(function(){
         //console.log(this.files) // 'this' refers the input DOM element, this.files are a list of files (e.g., multiple files are selected in the open file dialog box)
         var thefirstfileobj = this.files[0]; // the value of thefirstfile is a map with fields like 'name;, size, type, etc.
         // console.log('thefirstfileobj======')
-        // console.log(thefirstfileobj)
+        console.log(thefirstfileobj)
 
         //save the input file name into the sessionStorage
         sessionStorage.setItem('thejsonstrname', thefirstfileobj.name);
+
+
 
         //get the extension name
         var ext =thefirstfileobj.name.substring(thefirstfileobj.name.lastIndexOf('.')+1)

@@ -227,9 +227,6 @@ function makeSvgRectGTree(){
     zoomoutBtnG.on('click', ZoomOutTree)
     /** add zoom in and out buttons in treeG ************************************/
 
-
-
-
     /**A. load tree Data as a json obj from an external json file 
      * Note: getJsonFromsessionStorage is results from a IFFE function getting results from sessionStorage items.
      * Such arrangement solves asynchronous issues (i.e., treeJSON does not waiting for d3.json(), and carries on with null). 
@@ -263,14 +260,18 @@ makeSvgRectGTree()
 // monitor the size changes
 observetreeviewboxsize()
 
+
 // when testing on local host, switch on autosave
 var currentURL = window.location.href
 if (currentURL.startsWith("http://localhost:")){
     //check json data change every 60 sec
     checkJSONPeriodically(60);
 } else {
-    collapseAll(rootdatapoint_sortedrowscols)
+    setTimeout(() => {
+        collapseAll(rootdatapoint_sortedrowscols)
+    }, 3000)
 }
+
 
 
 

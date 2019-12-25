@@ -38,7 +38,8 @@
 
 /**global vars */
 var treejsonURL = 'data/Phd Project1 20191221 egp.json';// 'data/treedata.json', //'data/An apology for Raymond Sebond v1',     // the url of the external json file with tree data
-sessionStorage.setItem('thejsonstrname', treejsonURL);
+var thejsonstrnameinjs =treejsonURL.substring(treejsonURL.lastIndexOf('/')+1)
+sessionStorage.setItem('thejsonstrname', thejsonstrnameinjs);
     
 userid=2; // for the type being, let the user id =2.
 sessionStorage.setItem('theuserid', userid);

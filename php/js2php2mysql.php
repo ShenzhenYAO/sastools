@@ -23,7 +23,7 @@
 
     //the parent folder of the current php file is like /d3egp2019/145a/
     $parentfolder = dirname(dirname($_SERVER['REQUEST_URI']));
-
+    // echo "parentfolder is ".$parentfolder;
     //the txt file need to be saved into F:/Personal/Virtual_Server/PHPWeb/d3egp2019/145a/data
     $targetfilefullpath = $_SERVER['DOCUMENT_ROOT'].$parentfolder."/data/".$jsonname;
 

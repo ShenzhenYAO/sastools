@@ -1,7 +1,8 @@
 simple d3 v4 tree diagram.
 Commit 153a
 
-add a button for collaspe all nodes
+1. add a button for collaspe all nodes
+2. fix the bug of wrong thejsonstrname by default 
 
 Commit 152a
 
