@@ -3,6 +3,7 @@ Commit 153a
 
 1. add a button for collaspe all nodes
 2. fix the bug of wrong thejsonstrname by default 
+3. Show different buttons and titles if it is on netlify (or other sites) 
 
 Commit 152a
 

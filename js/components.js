@@ -1,19 +1,23 @@
 // add title and descriptions
-function addtitledesc (){
+function addtitledesc (titletext, gitcommitver, githuburl){
     var titlediv=d3body.append('div').attr('class', 'titlediv')
 	// add the h2 title
 	titlediv
 	.append('p')
     .attr('class', 'pagehead')
     .styles({'font-size': '30px', 'font-weight': 'bold'})
-    .text('D3 try ' + window.location.href )
+    .text('D3 try ' + titletext )
     .append('span')
     .styles({'font-size': '12px', 'font-weight': 'normal'})
-    .text('------ commit ' + gitcommitversion + ': ')
-    .append('a')
-    .attrs({'href': 'https://github.com/junkthem/simple_d3tree_v3tov4.io', 'target':'_blank' })
-    .text('https://github.com/junkthem/simple_d3tree_v3tov4.io')
-	;
+    .text('------ commit ' + gitcommitver + ': ')
+    // if githuburl is not blank
+    // if (githuburl !== undefined && githuburl !==null && githuburl !==""){
+    // titlediv
+        .append('a')
+        .attrs({'href': githuburl, 'target':'_blank' })
+        .text(githuburl)
+        ;
+    // }
 }
 
 /* This part is to load json str and save to a sessionStorage item. That way to avoid the async issue

@@ -3,31 +3,42 @@
 //http://bl.ocks.org/d3noob/8375092
 
 var d3body=d3.select('body');
-
-// 0.1 Add title and description
-addtitledesc();
+var currentURL = window.location.href
+if (currentURL.startsWith("http://localhost:")){
+    var titletext=currentURL;
+    var gitcommitver = gitcommitversion;
+    var githuburl ="https://github.com/ShenzhenYAO/simple_d3tree_v3tov4.io";
+} else {
+    var titletext=thejsonstrnameinjs;
+    var gitcommitver = gitcommitversion;
+}
+addtitledesc (titletext, gitcommitver, githuburl)
+// .text('------ commit ' + gitcommitversion + ': ')
+// .text('D3 try ' + window.location.href )
 
 //event listeners and buttons, and slides, and other gadgets https://www.d3-graph-gallery.com/graph/interactivity_button.html
 // 0.2 add buttons
 // 0.2.1 new diagram (use jquery)
 var buttonsdiv = d3body.append('div').attrs({'class': 'buttonsdiv'})
-buttonsdiv.append('button').attrs({'onclick': 'CreateNewGrandTree()'}).text('New diagram')
-// buttonsdiv.append('button').attrs({'onclick': 'ImportFromEGPAfterReloading()'}).text('Import EGP')
-// buttonsdiv.append('input').attrs({'type': 'file', 'id':'egp_input'})
-buttonsdiv.append('input').attrs({'type': 'file', 'id':'file_input'})
-buttonsdiv.append('button').attrs({'onclick': 'exportData_local_d3v4()'}).text('ExportJSON').styles({'margin-right':'20px'})
-buttonsdiv.append('button').attrs({'onclick': 'exportTextBox2WordDoc()'}).text('Export Text to Word Doc').styles({'margin-left':'100px'})
-buttonsdiv.append('p')
-buttonsdiv.append('button').attrs({'onclick': 'jsonstr_js2php2mysql()'}).text('to MySQL').styles({'margin-left':'100px'}).styles({'margin-left':'0px'})
-buttonsdiv.append('button').attrs({'onclick': 'jsonstr_mysql2php2js()'}).text('from MySQL').styles({'margin-left':'100px'}).styles({'margin-left':'0px'})
-
+if (currentURL.startsWith("http://localhost:")){
+    buttonsdiv.append('button').attrs({'onclick': 'CreateNewGrandTree()'}).text('New diagram')
+    // buttonsdiv.append('button').attrs({'onclick': 'ImportFromEGPAfterReloading()'}).text('Import EGP')
+    // buttonsdiv.append('input').attrs({'type': 'file', 'id':'egp_input'})
+    buttonsdiv.append('input').attrs({'type': 'file', 'id':'file_input'})
+    buttonsdiv.append('button').attrs({'onclick': 'exportData_local_d3v4()'}).text('ExportJSON').styles({'margin-right':'20px'})
+    buttonsdiv.append('button').attrs({'onclick': 'exportTextBox2WordDoc()'}).text('Export Text to Word Doc').styles({'margin-left':'100px'})
+    buttonsdiv.append('p')
+    buttonsdiv.append('button').attrs({'onclick': 'jsonstr_js2php2mysql()'}).text('to MySQL').styles({'margin-left':'100px'}).styles({'margin-left':'0px'})
+    buttonsdiv.append('button').attrs({'onclick': 'jsonstr_mysql2php2js()'}).text('from MySQL').styles({'margin-left':'100px'}).styles({'margin-left':'0px'})
+}
 buttonsdiv.append('button').attrs({'onclick': 'collapseAll(rootdatapoint_sortedrowscols)'}).text('collapse all nodes').styles({'margin-left':'100px'}).styles({'margin-left':'0px'})
 
-buttonsdiv.append('p')
-buttonsdiv.append('button').attrs({'onclick': 'showSentences()'}).text('showTextBox')
-buttonsdiv.append('button').attrs({'onclick': 'hideSentences()'}).text('hideTextBox')
-buttonsdiv.append('button').attrs({'onclick': 'showSearch()', 'id':'showSearchBtn'}).text('Search')
-
+if (currentURL.startsWith("http://localhost:")){
+    buttonsdiv.append('p')
+    buttonsdiv.append('button').attrs({'onclick': 'showSentences()'}).text('showTextBox')
+    buttonsdiv.append('button').attrs({'onclick': 'hideSentences()'}).text('hideTextBox')
+    buttonsdiv.append('button').attrs({'onclick': 'showSearch()', 'id':'showSearchBtn'}).text('Search')
+}
 // 0.3 add modals
 //0.3.1 new node modal
 
@@ -262,7 +273,6 @@ observetreeviewboxsize()
 
 
 // when testing on local host, switch on autosave
-var currentURL = window.location.href
 if (currentURL.startsWith("http://localhost:")){
     //check json data change every 60 sec
     checkJSONPeriodically(60);
