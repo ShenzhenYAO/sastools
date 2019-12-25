@@ -260,8 +260,14 @@ makeSvgRectGTree()
 // monitor the size changes
 observetreeviewboxsize()
 
-//check json data change every 60 sec
-checkJSONPeriodically(60);
+// when testing on local host, switch on autosave
+var currentURL = window.location.href
+if (currentURL.startsWith("http://localhost:")){
+    //check json data change every 60 sec
+    checkJSONPeriodically(60);
+} else {
+    collapseAll(rootdatapoint_sortedrowscols)
+}
 
 
 

@@ -1,4 +1,16 @@
 simple d3 v4 tree diagram.
+Commit 151a
+
+1. When online, 1) autocollapse all nodes; 2) do not automatically save.
+
+
+To do:
+fix bugs:
+1. when rename/adding a new node, the name of the new node and other nodes are messed up
+2. when copy/paste subnodes, the custlinks are lost
+
+
+
 Commit 150a
 
 1. Add export node and descendants as a separate json
