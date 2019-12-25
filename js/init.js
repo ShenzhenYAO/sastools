@@ -37,15 +37,14 @@
  * /
 
 /**global vars */
-var treejsonURL = 'data/PhD Project2';// 'data/treedata.json', //'data/An apology for Raymond Sebond v1',     // the url of the external json file with tree data
+var treejsonURL = 'data/Phd Project1 20191221 egp.json';// 'data/treedata.json', //'data/An apology for Raymond Sebond v1',     // the url of the external json file with tree data
 sessionStorage.setItem('thejsonstrname', treejsonURL);
     
 userid=2; // for the type being, let the user id =2.
 sessionStorage.setItem('theuserid', userid);
 
-
 var 
-    gitcommitversion = '152a',
+    gitcommitversion = '153a',
 
     treeData,   // to hold the tree data 
     treeJSON,   // to hold the tree JSON from treeData

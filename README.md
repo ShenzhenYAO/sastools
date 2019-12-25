@@ -1,4 +1,8 @@
 simple d3 v4 tree diagram.
+Commit 153a
+
+add a button for collaspe all nodes
+
 Commit 152a
 
 Fixed the bug: when copy/paste subnodes, the custlinks are lost
