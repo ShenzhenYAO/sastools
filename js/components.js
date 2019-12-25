@@ -1853,9 +1853,9 @@ function getSortedRowsCols(thisDataArray){
         2) save the found index number into d.sortedrow
     */
     thisDataArray.forEach(function(d){
-    d.sortedrow = sortedRowOldindex.indexOf(d.row1);
-    d.sortedcol=sortedColOldindex.indexOf(d.col1);
-    delete d.row1;delete d.col1;
+        d.sortedrow = sortedRowOldindex.indexOf(d.row1);
+        d.sortedcol=sortedColOldindex.indexOf(d.col1);
+        delete d.row1;delete d.col1;
     });
 
     return thisDataArray;
@@ -4937,18 +4937,60 @@ function PasteTreeData(theParentTreeData, theTreeDataToPaste){
     var thenewSubTreeJSON = selectCopy([theTreeDataToPaste])[0]
     // console.log(thenewSubTreeJSON)
 
-    //must have!!! the idx must be updated...
-    function newidx(thetreeDataNode){
-        thetreeDataNode.idx=generateUUID()
+    //must have!!! make new idx for the replicants
+    var oldidxarray =[], newidxarray=[]
+    function addnewidx(thetreeDataNode){
+        //create two arrays to hold old and new idx
+        var oldidx, newidx;
+        //remember the old idx, push it into an array of old idx
+        oldidx = thetreeDataNode.idx;
+        // push the old idx into the oldidxarray if it is not in oldidxarray
+        if (! oldidxarray.includes(oldidx)){
+            oldidxarray.push(oldidx)
+            //create a new idx, and push it to the array of new idx
+            newidx = generateUUID()
+            newidxarray.push(newidx)
+        }
+        //recursively run for children nodes
         if (thetreeDataNode.children ){
             if ( thetreeDataNode.children.length >0){
                 thetreeDataNode.children.forEach(h=>{
-                    newidx(h)
+                    addnewidx(h)
                 })
             }
         }
     }
-    newidx(thenewSubTreeJSON)
+    addnewidx(thenewSubTreeJSON)
+    // console.log(oldidxarray)
+    // console.log(newidxarray)
+
+    //for the copied node and its descendants, replace the old idx with new ones, also replace the idx in the
+    // custpartents field
+    function updateidx(thetreeDataNode){
+        thetreeDataNode.idx=newidxarray[oldidxarray.indexOf(thetreeDataNode.idx)]
+        //rename the name of the pasted nodes by adding '_copy'
+        thetreeDataNode.name =thetreeDataNode.name + "_copy"
+        //update the idx of the custparents
+        if (thetreeDataNode.custparents !==null && thetreeDataNode.custparents !== undefined
+            && thetreeDataNode.custparents.length > 0 ){
+                thetreeDataNode.custparents.forEach (d=>{
+                    // Only update the idx if it appears in the oldidxarray
+                    // if the custparent is not within the copied node and its descendants, there is no need to update it
+                    if (oldidxarray.includes(d.idx)){
+                        d.idx = newidxarray[oldidxarray.indexOf(d.idx)]
+                    }                    
+                })
+        }
+        // recursive for descendants
+        if (thetreeDataNode.children ){
+            if ( thetreeDataNode.children.length >0){
+                thetreeDataNode.children.forEach(h=>{
+                    updateidx(h)
+                })
+            }
+        }
+    }
+    updateidx(thenewSubTreeJSON)
     // console.log(thenewSubTreeJSON)
 
     // add the theParentTreeData.data.idx (the new parent's idx) to thenewSubTreeJSON.custparents
@@ -4968,8 +5010,10 @@ function PasteTreeData(theParentTreeData, theTreeDataToPaste){
     NewTree(rootdatapoint_sortedrowscols.data)
     
 } //end PasteTreeData
+/**the above is for copy paste a tree node and its descendants */
 
 
+/**the following is for adding nodes from another json file */
 // add tree nodes from an external file
 function addnodesfromfile(theParentTreeData) {
     //delete existing tmpinput with a classname =file_input_appendnodes
@@ -5018,8 +5062,9 @@ function addnodesfromfile(theParentTreeData) {
         tmpinput.remove()
     } //end tmpinput.onchange
 } // end addnodesfromfile
+/**the above is for adding nodes from another json file */
 
-
+/**the following is for adding nodes from an egp file */
 // from a local egp file (or any zip files)
 function GetRootFromEGPAfterReloading(theParentTreeData, d){
 
@@ -5125,4 +5170,4 @@ function GetRootFromEGPAfterReloading(theParentTreeData, d){
         
     } // end reader.onload =...
 } // End ImportFromEGPAfterReloading
-/**the above is for copy paste a tree node and its descendants */
+/**the above is for adding nodes from an egp file */

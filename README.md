@@ -1,13 +1,22 @@
 simple d3 v4 tree diagram.
+Commit 152a
+
+Fixed the bug: when copy/paste subnodes, the custlinks are lost
+The function PasteTreeData() (in components.js) is updated
+
+Bug to fix:
+1. when rename/adding a new node, the name of the new node and other nodes are messed up
+
+
 Commit 151a
 
 1. When online, 1) autocollapse all nodes; 2) do not automatically save.
 
-
 To do:
 fix bugs:
-1. when rename/adding a new node, the name of the new node and other nodes are messed up
-2. when copy/paste subnodes, the custlinks are lost
+1. When copy/paste subnodes, the custlinks are lost
+2. when rename/adding a new node, the name of the new node and other nodes are messed up
+
 
 
 

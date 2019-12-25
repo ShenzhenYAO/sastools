@@ -45,7 +45,7 @@ sessionStorage.setItem('theuserid', userid);
 
 
 var 
-    gitcommitversion = '151a',
+    gitcommitversion = '152a',
 
     treeData,   // to hold the tree data 
     treeJSON,   // to hold the tree JSON from treeData
