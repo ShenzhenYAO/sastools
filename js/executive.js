@@ -17,6 +17,25 @@ if (currentURL.startsWith("http://localhost:")){
     titletext= titletext.replace('.json', '')
     var gitcommitver = gitcommitversion;
     addtitledesc (titletext, gitcommitver, githuburl)
+
+    // How to view the diagram? Watch it
+    d3body.append('p')
+        .styles({'font-size': '20px', 'font-weight': 'normal', 'font-family': "Anton"})
+        .text('How to view the diagram? Watch it.')
+
+    //Embedded youtube video 
+    // var videoURL='https://www.youtube.com/embed/rMzxW6R2Eno';
+    var videoURL= "https://www.youtube.com/embed/QB3LHbZYn8Y"; 
+    function embedvideohowtouse (videoURL){
+        var iframe = document.createElement('iframe');
+        iframe.frameBorder = "0"; 
+        iframe.allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture";
+        iframe.src = videoURL;
+        iframe.allowFullscreen = 'true';
+        document.body.appendChild(iframe);
+    }
+    embedvideohowtouse(videoURL)
+
     //Disclaim
     d3body.append('p')
         .append('b')
@@ -34,18 +53,6 @@ if (currentURL.startsWith("http://localhost:")){
         })
         .text('  information on this page is for the sole use of the intended recipient(s) with explicit consent from the author Shenzhen YAO. Any unauthorized review, use, disclosure, or distribution is strictly prohibited.');
 
-    //Embedded youtube video 
-    // var videoURL='https://www.youtube.com/embed/rMzxW6R2Eno';
-    var videoURL= "https://www.youtube.com/embed/QB3LHbZYn8Y"; 
-    function embedvideohowtouse (videoURL){
-        var iframe = document.createElement('iframe');
-        iframe.frameBorder = "0"; 
-        iframe.allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture";
-        iframe.src = videoURL;
-        iframe.allowFullscreen = 'true';
-        document.body.appendChild(iframe);
-    }
-    embedvideohowtouse(videoURL)
 
 }
 
