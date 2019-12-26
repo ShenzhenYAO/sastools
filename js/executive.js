@@ -14,32 +14,31 @@ if (currentURL.startsWith("http://localhost:")){
     //Disclaim
 
     //Embedded youtube video 
-    embedvideohowtouse()
-
+    // var videoURL='https://www.youtube.com/embed/rMzxW6R2Eno';
+    var videoURL= "https://www.youtube.com/embed/TqiPSrEBOSg"; 
+    function embedvideohowtouse (videoURL){
+        // d3.select('body').append('iframe')
+        //     .attrs({
+        //         'width':"560",
+        //         'height': "315",
+        //         'src': "https://www.youtube.com/embed/TqiPSrEBOSg",
+        //         'frameborder': "0",
+        //         'allow': "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture",
+        //         'allowfullscreen':''
+        //     })
+        var iframe = document.createElement('iframe');
+        iframe.frameBorder = "0"; 
+        iframe.allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture";
+        iframe.src = videoURL;
+        iframe.allowFullscreen = 'true';
+        document.body.appendChild(iframe);
+    }
+    embedvideohowtouse(videoURL)
 }
 addtitledesc (titletext, gitcommitver, githuburl)
 
 
-var videoURL='https://www.youtube.com/embed/rMzxW6R2Eno';
-// var videoURL= "https://www.youtube.com/embed/TqiPSrEBOSg"; 
-function embedvideohowtouse (videoURL){
-    // d3.select('body').append('iframe')
-    //     .attrs({
-    //         'width':"560",
-    //         'height': "315",
-    //         'src': "https://www.youtube.com/embed/TqiPSrEBOSg",
-    //         'frameborder': "0",
-    //         'allow': "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture",
-    //         'allowfullscreen':''
-    //     })
-    var iframe = document.createElement('iframe');
-    iframe.frameBorder = "0"; 
-    iframe.allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture";
-    iframe.src = videoURL;
-    iframe.allowFullscreen = 'true';
-    document.body.appendChild(iframe);
-}
-embedvideohowtouse(videoURL)
+
 
 
 
