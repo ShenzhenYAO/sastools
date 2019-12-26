@@ -38,7 +38,7 @@ if (currentURL.startsWith("http://localhost:")){
     embedvideohowtouse(videoURL)
 
     //Disclaim
-    d3body..append('br/')
+    d3body.append('br/')
         append('b')
         .styles({
             // 'font-family': "monospace",
