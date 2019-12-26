@@ -20,7 +20,7 @@ if (currentURL.startsWith("http://localhost:")){
 
     // How to view the diagram? Watch it
     d3body.append('p')
-        .styles({'font-size': '20px', 'font-weight': 'normal', 'font-family': "Anton"})
+        .styles({'font-size': '20px', 'font-weight': 'bold', 'font-family': "Anton"})
         .text('How to view the diagram? Watch it.')
 
     //Embedded youtube video 
