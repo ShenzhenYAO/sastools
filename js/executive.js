@@ -11,10 +11,37 @@ if (currentURL.startsWith("http://localhost:")){
 } else {
     var titletext=thejsonstrnameinjs;
     var gitcommitver = gitcommitversion;
+    //Disclaim
+
+    //Embedded youtube video 
+    embedvideohowtouse()
+
 }
 addtitledesc (titletext, gitcommitver, githuburl)
-// .text('------ commit ' + gitcommitversion + ': ')
-// .text('D3 try ' + window.location.href )
+
+
+var videoURL='https://www.youtube.com/embed/rMzxW6R2Eno';
+// var videoURL= "https://www.youtube.com/embed/TqiPSrEBOSg"; 
+function embedvideohowtouse (videoURL){
+    // d3.select('body').append('iframe')
+    //     .attrs({
+    //         'width':"560",
+    //         'height': "315",
+    //         'src': "https://www.youtube.com/embed/TqiPSrEBOSg",
+    //         'frameborder': "0",
+    //         'allow': "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture",
+    //         'allowfullscreen':''
+    //     })
+    var iframe = document.createElement('iframe');
+    iframe.frameBorder = "0"; 
+    iframe.allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture";
+    iframe.src = videoURL;
+    iframe.allowFullscreen = 'true';
+    document.body.appendChild(iframe);
+}
+embedvideohowtouse(videoURL)
+
+
 
 //event listeners and buttons, and slides, and other gadgets https://www.d3-graph-gallery.com/graph/interactivity_button.html
 // 0.2 add buttons
