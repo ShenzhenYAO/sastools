@@ -5,7 +5,7 @@
 var d3body=d3.select('body');
 var currentURL = window.location.href
 if (currentURL.startsWith("http://localhost:")){
-    var titletext=currentURL;
+    var titletext='D3 try ' + currentURL;
     var gitcommitver = gitcommitversion;
     var githuburl ="https://github.com/ShenzhenYAO/simple_d3tree_v3tov4.io";
     addtitledesc (titletext, gitcommitver, githuburl)
@@ -14,6 +14,22 @@ if (currentURL.startsWith("http://localhost:")){
     var titletext=thejsonstrnameinjs;
     var gitcommitver = gitcommitversion;
     addtitledesc (titletext, gitcommitver, githuburl)
+    //Disclaim
+    d3body.append('p')
+        .append('b')
+        .styles({
+            // 'font-family': "monospace",
+            'font-weight':"bold",
+            'font-size': "15px"
+        })
+        .text('Confidentiality Notice:')
+        .append('b')
+        .styles({
+            'font-family': "SFMono-Regliar,Consolas,Liberation Mono,Menlo,monospace",
+            'font-weight':"normal",
+            'font-size': "12px"
+        })
+        .text('  information on this page is for the sole use of the intended recipient(s) with explicit consent from the author Shenzhen YAO. Any unauthorized review, use, disclosure, or distribution is strictly prohibited.');
 
     //Embedded youtube video 
     // var videoURL='https://www.youtube.com/embed/rMzxW6R2Eno';
@@ -37,22 +53,6 @@ if (currentURL.startsWith("http://localhost:")){
     }
     embedvideohowtouse(videoURL)
 
-    //Disclaim
-    d3body.append('p')
-        .append('b')
-        .styles({
-            // 'font-family': "monospace",
-            'font-weight':"bold",
-            'font-size': "15px"
-        })
-        .text('Confidentiality Notice:')
-        .append('b')
-        .styles({
-            'font-family': "SFMono-Regliar,Consolas,Liberation Mono,Menlo,monospace",
-            'font-weight':"normal",
-            'font-size': "12px"
-        })
-        .text('  information on this page is for the sole use of the intended recipient(s) with explicit consent from the author Shenzhen YAO. Any unauthorized review, use, disclosure, or distribution is strictly prohibited.')
 }
 
 
@@ -323,7 +323,7 @@ if (currentURL.startsWith("http://localhost:")){
     }, 3000)
 
     //Disclaim
-    d3body.append('p')
+    d3.select('body').append('p')
         .append('b')
         .styles({
             // 'font-family': "monospace",

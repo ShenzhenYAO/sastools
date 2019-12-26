@@ -6,7 +6,7 @@ function addtitledesc (titletext, gitcommitver, githuburl){
 	.append('p')
     .attr('class', 'pagehead')
     .styles({'font-size': '30px', 'font-weight': 'bold'})
-    .text('D3 try ' + titletext )
+    .text(titletext )
     .append('span')
     .styles({'font-size': '12px', 'font-weight': 'normal'})
     .text('------ commit ' + gitcommitver + ': ')
