@@ -38,7 +38,7 @@ if (currentURL.startsWith("http://localhost:")){
     embedvideohowtouse(videoURL)
 
     //Disclaim
-    d3body.append('br/')
+    d3body.append('p')
         append('b')
         .styles({
             // 'font-family': "monospace",
@@ -53,8 +53,6 @@ if (currentURL.startsWith("http://localhost:")){
             'font-size': "12px"
         })
         .text('  information on this page is for the sole use of the intended recipient(s) with explicit consent from the author Shenzhen YAO. Any unauthorized review, use, disclosure, or distribution is strictly prohibited.')
-
-
 }
 
 
@@ -325,7 +323,7 @@ if (currentURL.startsWith("http://localhost:")){
     }, 3000)
 
     //Disclaim
-    d3body.append('br/')
+    d3body.append('p')
         .append('b')
         .styles({
             // 'font-family': "monospace",
