@@ -6,7 +6,7 @@ function addtitledesc (titletext, gitcommitver, githuburl){
 	.append('p')
     .attr('class', 'pagehead')
     .styles({'font-size': '72px', 'font-weight': '200', 'font-family': "'Source Sans Pro'"})
-    // .styles({'font-size': '48px', 'font-weight': 'normal', 'font-family': "Anton"})
+    // .styles({'font-size': '48px', 'font-weight': 'bold', 'font-family': "Anton"})
     .text(titletext )
     .append('span')
     .styles({'font-size': '12px', 'font-weight': 'normal'})
