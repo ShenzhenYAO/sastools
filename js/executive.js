@@ -12,6 +12,9 @@ if (currentURL.startsWith("http://localhost:")){
 
 } else {
     var titletext=thejsonstrnameinjs;
+    //remove epg.json
+    titletext= titletext.replace(' egp', '')
+    titletext= titletext.replace('.json', '')
     var gitcommitver = gitcommitversion;
     addtitledesc (titletext, gitcommitver, githuburl)
     //Disclaim
@@ -33,17 +36,8 @@ if (currentURL.startsWith("http://localhost:")){
 
     //Embedded youtube video 
     // var videoURL='https://www.youtube.com/embed/rMzxW6R2Eno';
-    var videoURL= "https://www.youtube.com/embed/TqiPSrEBOSg"; 
+    var videoURL= "https://www.youtube.com/embed/QB3LHbZYn8Y"; 
     function embedvideohowtouse (videoURL){
-        // d3.select('body').append('iframe')
-        //     .attrs({
-        //         'width':"560",
-        //         'height': "315",
-        //         'src': "https://www.youtube.com/embed/QB3LHbZYn8Y",
-        //         'frameborder': "0",
-        //         'allow': "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture",
-        //         'allowfullscreen':''
-        //     })
         var iframe = document.createElement('iframe');
         iframe.frameBorder = "0"; 
         iframe.allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture";
