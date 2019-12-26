@@ -38,7 +38,8 @@ if (currentURL.startsWith("http://localhost:")){
     embedvideohowtouse(videoURL)
 
     //Disclaim
-    d3body.append('b')
+    d3body..append('br/')
+        append('b')
         .styles({
             // 'font-family': "monospace",
             'font-weight':"bold",
@@ -324,7 +325,8 @@ if (currentURL.startsWith("http://localhost:")){
     }, 3000)
 
     //Disclaim
-    d3body.append('b')
+    d3body.append('br/')
+        .append('b')
         .styles({
             // 'font-family': "monospace",
             'font-weight':"bold",
