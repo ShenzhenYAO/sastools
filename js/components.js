@@ -10,7 +10,7 @@ function addtitledesc (titletext, gitcommitver, githuburl){
     .text(titletext )
     .append('span')
     .styles({'font-size': '12px', 'font-weight': 'normal'})
-    .text(' commit ' + gitcommitver + ': ')
+    .text(' [commit ' + gitcommitver + '] ')
     // if githuburl is not blank
     // if (githuburl !== undefined && githuburl !==null && githuburl !==""){
     // titlediv
