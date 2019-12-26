@@ -37,7 +37,7 @@
  * /
 
 /**global vars */
-var treejsonURL = 'data/Phd Project1 20191221 egp.json';// 'data/treedata.json', //'data/An apology for Raymond Sebond v1',     // the url of the external json file with tree data
+var treejsonURL = 'data/ULtraSound_20191221';// 'data/treedata.json', //'data/An apology for Raymond Sebond v1',     // the url of the external json file with tree data
 var thejsonstrnameinjs =treejsonURL.substring(treejsonURL.lastIndexOf('/')+1)
 sessionStorage.setItem('thejsonstrname', thejsonstrnameinjs);
     
