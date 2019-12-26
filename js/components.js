@@ -5,11 +5,11 @@ function addtitledesc (titletext, gitcommitver, githuburl){
 	titlediv
 	.append('p')
     .attr('class', 'pagehead')
-    .styles({'font-size': '30px', 'font-weight': 'bold'})
+    .styles({'font-size': '60px', 'font-weight': '200', 'font-family': "'Source Sans Pro'"})
     .text(titletext )
     .append('span')
     .styles({'font-size': '12px', 'font-weight': 'normal'})
-    .text('------ commit ' + gitcommitver + ': ')
+    .text(' commit ' + gitcommitver + ': ')
     // if githuburl is not blank
     // if (githuburl !== undefined && githuburl !==null && githuburl !==""){
     // titlediv

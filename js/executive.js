@@ -102,7 +102,7 @@ var textviewbox=bigdiv.append('div')
         'width':(0) + 'px', // by default, not showing the textview box
         'height':height_body + 'px',
         'float':'left',
-        'border-style':'solid',
+        // 'border-style':'solid',
         'border-width': borderweight_viewbox + 'px',
         // to make it resizable:
         'resize':'both',
@@ -321,25 +321,27 @@ if (currentURL.startsWith("http://localhost:")){
     setTimeout(() => {
         collapseAll(rootdatapoint_sortedrowscols)
     }, 3000)
-
-    //Disclaim
-    d3.select('body').append('p')
-        .append('b')
-        .styles({
-            // 'font-family': "monospace",
-            'font-weight':"bold",
-            'font-size': "15px"
-        })
-        .text('Confidentiality Notice:')
-        .append('b')
-        .styles({
-            'font-family': "SFMono-Regliar,Consolas,Liberation Mono,Menlo,monospace",
-            'font-weight':"normal",
-            'font-size': "12px"
-        })
-        .text('  information on this page is for the sole use of the intended recipient(s) with explicit consent from the author Shenzhen YAO. Any unauthorized review, use, disclosure, or distribution is strictly prohibited.')
-
 }
+
+//Disclaim
+d3.select('body')
+.append('div')
+.append('p')
+.styles({
+    // 'font-family': "monospace",
+    'font-weight':"bold",
+    'font-size': "15px"
+})
+.text('Confidentiality Notice:')
+.append('b')
+.styles({
+    'font-family': "SFMono-Regliar,Consolas,Liberation Mono,Menlo,monospace",
+    'font-weight':"normal",
+    'font-size': "12px"
+})
+.text('  information on this page is for the sole use of the intended recipient(s) with explicit consent from the author Shenzhen YAO. Any unauthorized review, use, disclosure, or distribution is strictly prohibited.');
+
+
 
 
 
