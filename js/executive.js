@@ -39,7 +39,7 @@ if (currentURL.startsWith("http://localhost:")){
 
     //Disclaim
     d3body.append('p')
-        append('b')
+        .append('b')
         .styles({
             // 'font-family': "monospace",
             'font-weight':"bold",
