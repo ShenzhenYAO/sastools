@@ -3421,7 +3421,7 @@ function getTextAsTreeJSON(){
                     })
                     // console.log(textArray)
 
-                    //finally, rep textArray will a parent node
+                    //finally, prepare a book array with idx, name, and the nodesarray 
                     var thebook=[{
                         'idx':generateUUID(), 
                         'name': 'chapter12',

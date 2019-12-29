@@ -1,5 +1,10 @@
 simple d3 v4 tree diagram.
-Commit 153a
+Commit 154a
+
+1. add a function to save the current tree json as a tmphexstr.txt [postbinstr2php()]
+
+
+Commit 153a-h
 
 1. add a button for collaspe all nodes
 2. fix the bug of wrong thejsonstrname by default 

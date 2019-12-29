@@ -1,5 +1,7 @@
 <?php
 
+// test: saving a string 'something' as 1.txt on the server
+
 $jsonname = "1.txt";
 
 //the txt file need to be saved into F:/Personal/Virtual_Server/PHPWeb/d3egp2019/145a/data
