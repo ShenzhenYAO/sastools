@@ -287,11 +287,24 @@ function makeSvgRectGTree(){
      * Note: getJsonFromsessionStorage is results from a IFFE function getting results from sessionStorage items.
      * Such arrangement solves asynchronous issues (i.e., treeJSON does not waiting for d3.json(), and carries on with null). 
     */
-    // the original method before this version are repalced with the following newTreebyJsonfromURL(). The new one does not require sessionStorge
+    // the original method before this version are repalced with the following newTreebyJsonfromURL(). 
+    // The new one does not require sessionStorge
     // treeData = getJsonFromsessionStorage;
     // NewTree (treeData)
+    
 
-    newTreebyJsonfromURL(treejsonURL)
+    //when running on local host:
+    if (currentURL.startsWith("http://localhost:")){
+
+        // load the default tree data stored in the data folder (which is set in init.js)
+        newTreebyJsonfromURL(treejsonURL)
+
+    } else {
+        //when running online, load the default json hidden in PHP
+        var loadedjsonstr = sessionStorage.getItem("thejsonstr");
+        treeData = JSON.parse(loadedjsonstr)
+        NewTree (treeData)
+    }
 
     // // the following illustrates the timing of loading json, making tree, and the value of treeData, and root data point 
     // // initially it cannot be seen because of the asynchoronous settings.
