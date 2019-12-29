@@ -22,13 +22,13 @@
 
                 //if the page is on netlify, do not use ajax post, as php is not suported
                 var currentURL = window.location.href;
-                console.log(currentURL)
+                // console.log(currentURL)
                 if (currentURL.endsWith("netlify.com/")){
                     console.log('hey, it is netlify!')
 
                     // load the conents in workaroundnetlify
                     var workaroundobj= workaroundnetlify();
-                    console.log(workaroundobj)
+                    // console.log(workaroundobj)
                     if (passcode ===workaroundobj.code ) {
                         // stringify the json
                         var workaroundjsonstr=JSON.stringify(workaroundobj.json)

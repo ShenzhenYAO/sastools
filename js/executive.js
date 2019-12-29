@@ -300,7 +300,7 @@ function makeSvgRectGTree(){
         newTreebyJsonfromURL(treejsonURL)
 
     } else {
-        //when running online, load the default json hidden in PHP
+        //when running online, load the default json either from workaround (on netlify) or from a json str hidden in PHP
         var loadedjsonstr = sessionStorage.getItem("thejsonstr");
         treeData = JSON.parse(loadedjsonstr)
         NewTree (treeData)
