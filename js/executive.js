@@ -74,11 +74,11 @@ if (currentURL.startsWith("http://localhost:")){
     buttonsdiv.append('button').attrs({'onclick': 'jsonstr_mysql2php2js()'}).text('from MySQL').styles({'margin-left':'100px'}).styles({'margin-left':'0px'})
 }
 buttonsdiv.append('button').attrs({'onclick': 'collapseAll(rootdatapoint_sortedrowscols)'}).text('collapse all nodes').styles({'margin-left':'100px'}).styles({'margin-left':'0px'})
-    buttonsdiv.append('button').attrs({'onclick': 'showSentences()'}).text('showTextBox')
-    buttonsdiv.append('button').attrs({'onclick': 'hideSentences()'}).text('hideTextBox')
+
 if (currentURL.startsWith("http://localhost:")){
     buttonsdiv.append('p')
-
+    buttonsdiv.append('button').attrs({'onclick': 'showSentences()'}).text('showTextBox')
+    buttonsdiv.append('button').attrs({'onclick': 'hideSentences()'}).text('hideTextBox')
     buttonsdiv.append('button').attrs({'onclick': 'showSearch()', 'id':'showSearchBtn'}).text('Search')
 }
 // 0.3 add modals
