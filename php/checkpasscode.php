@@ -1,7 +1,7 @@
 <?php
     //load the tools in phptoos.php
     //must have!!! as the function to connect to MySQL database is in that file
-    include ('phptools.php'); //include the phptools
+    // include ('phptools.php'); //include the phptools
 
     //The following is received from posted json by _POST 
     // the posted json is like {binstr: <the binary stringified json string>}
