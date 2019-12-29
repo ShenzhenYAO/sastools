@@ -11,7 +11,7 @@ if (currentURL.startsWith("http://localhost:")){
     addtitledesc (titletext, gitcommitver, githuburl)
 
 } else {
-    var titletext=thejsonstrnameinjssessionStorage.getItem('thejsonstrname');
+    var titletext=sessionStorage.getItem('thejsonstrname');
     //remove epg.json
     titletext= titletext.replace(' egp', '')
     titletext= titletext.replace('.json', '')
