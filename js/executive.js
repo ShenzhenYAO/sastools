@@ -25,7 +25,7 @@ if (currentURL.startsWith("http://localhost:")){
 
     //Embedded youtube video 
     // var videoURL='https://www.youtube.com/embed/rMzxW6R2Eno';
-    var videoURL= "https://www.youtube.com/embed/yIJM34-y_0U"; 
+    var videoURL= "https://www.youtube.com/embed/p5cOh6Q10w4"; 
     function embedvideohowtouse (videoURL){
         var iframe = document.createElement('iframe');
         iframe.frameBorder = "0"; 
