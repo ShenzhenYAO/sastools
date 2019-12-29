@@ -22,6 +22,7 @@
 
                 //if the page is on netlify, do not use ajax post, as php is not suported
                 var currentURL = window.location.href;
+                console.log(currentURL)
                 if (currentURL.endsWith("netlify.com")){
                     console.log('hey, it is netlify!')
 
@@ -78,7 +79,7 @@
   	<body onload="checklocationurl()">
         <h2>Input passcode:</h2>
         <input type="text" name="passcode" id="passcode">
-        <button onclick= "checkpasscode()">Ssubmit</button>
+        <button onclick= "checkpasscode()">Submit</button>
         <p id="prompt"></p>        
 	 </body>
 	 <footer>
