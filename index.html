@@ -2,6 +2,8 @@
 <html lang="en">
 	<head>
         <script src = 'tools/jquery/jquery.3.3.1.min.js'></script>
+        <script src = 'js/workaroundnetlify.js'></script>
+
         <script>
 
             function checklocationurl(){
@@ -17,35 +19,60 @@
                 var passcode = document.getElementById('passcode').value;
                 console.log(passcode)
 
-                var 
-                    jsontosend = {
-                        passcode:passcode
-                    }
 
-                //post the password to 'php/checkpasscode.php', and get returned contents
-                var jqxhr = $.post( 
-                    "php/checkpasscode.php", 
-                    jsontosend, 
-                    'json'
-                    )
-                    // the following is to return the contents printed on the target php, so that user can 
-                    // moniter whether the target php runs normally or having errors.
-                    .done(function(d) {
-                    console.log( 'On php/checkpasscode.php:\n' + d );
-                    if (d==="inCorRect") {
+                //if the page is on netlify, do not use ajax post, as php is not suported
+                var currentURL = window.location.href;
+                if (currentURL.endsWith("netlify.com")){
+                    console.log('hey, it is netlify!')
+
+                    // load the conents in workaroundnetlify
+                    var workaroundobj= workaroundnetlify();
+                    console.log(workaroundobj)
+                    if (passcode ===workaroundobj.code ) {
+                        // stringify the json
+                        var workaroundjsonstr=JSON.stringify(srcjson)
+                        //save the json str into a sessionStorage item
+                        sessionStorage.setItem('thejsonstr', workaroundjsonstr);
+                        sessionStorage.setItem('thejsonstrname', workaround.name);
+                        // goto index2.html
+                        window.location.href ='index2.html'                        
+                    } else {
                         console.log ("The passcode is incorrect. Please try again")
                         $("p#prompt").text("The passcode is incorrect. Please try again.");
-                    } else {
-                        // if the returned d is a json (passcode is correct)
-                        //save the json str into a sessionStorage item
-                        sessionStorage.setItem('thejsonstr', d);
-                        sessionStorage.setItem('thejsonstrname', 'ULtraSound_20191221');
-                
-                        // goto index2.html
-                        window.location.href ='index2.html'
                     }
-                }) // end post
-            }
+
+                } else {
+
+                    var 
+                        jsontosend = {
+                            passcode:passcode
+                        }
+
+                    //post the password to 'php/checkpasscode.php', and get returned contents
+                    var jqxhr = $.post( 
+                        "php/checkpasscode.php", 
+                        jsontosend, 
+                        'json'
+                        )
+                        // the following is to return the contents printed on the target php, so that user can 
+                        // moniter whether the target php runs normally or having errors.
+                        .done(function(d) {
+                        console.log( 'On php/checkpasscode.php:\n' + d );
+                        if (d==="inCorRect") {
+                            console.log ("The passcode is incorrect. Please try again")
+                            $("p#prompt").text("The passcode is incorrect. Please try again.");
+                        } else {
+                            // if the returned d is a json (passcode is correct)
+                            //save the json str into a sessionStorage item
+                            sessionStorage.setItem('thejsonstr', d);
+                            sessionStorage.setItem('thejsonstrname', 'ULtraSound_20191221');
+                    
+                            // goto index2.html
+                            window.location.href ='index2.html'
+                        }
+                    }) // end post
+                } // end if
+            } // end function checkpasscode()
         </script>
  	</head>
   	<body onload="checklocationurl()">

@@ -1,7 +1,12 @@
 simple d3 v4 tree diagram.
+Commit 155a
+1. work around as netlify does not support php. 
+
 Commit 154a
 
 1. add a function to save the current tree json as a tmphexstr.txt [postbinstr2php()]
+2. replace index. now for local host, directly load the json file specified in init.js; for online
+versions, load the Ultrasound project which is hidden in a php
 
 
 Commit 153a-h
