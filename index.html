@@ -31,7 +31,7 @@
                     console.log(workaroundobj)
                     if (passcode ===workaroundobj.code ) {
                         // stringify the json
-                        var workaroundjsonstr=JSON.stringify(srcjson)
+                        var workaroundjsonstr=JSON.stringify(workaroundobj.json)
                         //save the json str into a sessionStorage item
                         sessionStorage.setItem('thejsonstr', workaroundjsonstr);
                         sessionStorage.setItem('thejsonstrname', workaround.name);
