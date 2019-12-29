@@ -24,7 +24,7 @@
 
                 //post the password to 'php/checkpasscode.php', and get returned contents
                 var jqxhr = $.post( 
-                    "php/checkpasscode.php", 
+                    "/php/checkpasscode.php", 
                     jsontosend, 
                     'json'
                     )
@@ -51,7 +51,7 @@
   	<body onload="checklocationurl()">
         <h2>Input passcode:</h2>
         <input type="text" name="passcode" id="passcode">
-        <button onclick= "checkpasscode()">Submit</button>
+        <button onclick= "checkpasscode()">Ssubmit</button>
         <p id="prompt"></p>        
 	 </body>
 	 <footer>
