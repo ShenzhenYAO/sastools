@@ -37,9 +37,12 @@
  * /
 
 /**global vars */
-var treejsonURL = 'data/PhD Project1 20191221 egp.json';//'data/ULtraSound_20191221';// 'data/treedata.json', //'data/An apology for Raymond Sebond v1',     // the url of the external json file with tree data
-var thejsonstrnameinjs =treejsonURL.substring(treejsonURL.lastIndexOf('/')+1)
-sessionStorage.setItem('thejsonstrname', thejsonstrnameinjs);
+var currentURL =  window.location.href
+if (currentURL.startsWith("http://localhost:")){
+    var treejsonURL = 'data/PhD Project1 20191221 egp.json';//'data/ULtraSound_20191221';// 'data/treedata.json', //'data/An apology for Raymond Sebond v1',     // the url of the external json file with tree data
+    var thejsonstrnameinjs =treejsonURL.substring(treejsonURL.lastIndexOf('/')+1)
+    sessionStorage.setItem('thejsonstrname', thejsonstrnameinjs);
+ };
     
 userid=2; // for the type being, let the user id =2.
 sessionStorage.setItem('theuserid', userid);
