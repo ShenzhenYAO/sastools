@@ -2642,9 +2642,21 @@ function makemodal(id, title, label, action){
                 var modalbodyrowcontentslabelinput = modalbodyrowcontentslabel.append('input')
                     .attrs({'type':'text','class':'inputName', 'id':'ModalInput'}) //CreateNodeName
                     .styles({'placehoder':'node name', 'width':'80%'})
+
+                // add a listener, when the enter key is pressed and is keyup, click the ok button
+                modalbodyrowcontentslabelinput.node().addEventListener("keyup", function(event) {
+                    // Number 13 is the "Enter" key on the keyboard
+                    if (event.keyCode === 13) {
+                      // Cancel the default action, if needed
+                      event.preventDefault();
+                      // Trigger the button element with a click
+                      document.getElementById("modalokbutoon").click();
+                    }
+                  });
+                  
                 /**3b2a1b. within the body row contents label, create a button to submit input */
                 var modalbodyrowcontentslabelbutton = modalbodyrowcontentslabel.append('button')
-                    .attrs({'onclick':action}) // e.g.,'createNode()' 
+                    .attrs({'onclick':action, 'id':'modalokbutoon'}) // e.g.,'createNode()' 
                     .text('OK')
     }
 }

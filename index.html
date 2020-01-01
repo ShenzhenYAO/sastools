@@ -5,8 +5,23 @@
         <script src = 'js/workaroundnetlify.js'></script>
 
         <script>
-
             function checklocationurl(){
+
+                //https://www.w3schools.com/howto/howto_js_trigger_button_enter.asp
+                var input = document.getElementById("passcode");
+
+                // Execute a function when the user releases a key on the keyboard
+                input.addEventListener("keyup", function(event) {
+                    // Number 13 is the "Enter" key on the keyboard
+                    if (event.keyCode === 13) {
+                        // Cancel the default action, if needed
+                        event.preventDefault();
+                        // Trigger the button element with a click
+                        document.getElementById("submit").click();
+                    }
+                });
+
+
                 // console.log('load checklocationurl')
                 var currentURL = window.location.href;
                 // if the page is on local host, go to index2.html directly
@@ -79,7 +94,7 @@
   	<body onload="checklocationurl()">
         <h2>Please input passcode:</h2>
         <input type="text" name="passcode" id="passcode">
-        <button onclick= "checkpasscode()">Submit</button>
+        <button onclick= "checkpasscode()" id="submit">Submit</button>
         <p id="prompt"></p>
         <p style="font-weight:bold;size:15">Confidentiality Notice</p>
         <p>information on this page is for the sole use of the intended recipient(s) with explicit consent from the author Shenzhen YAO. Any unauthorized review, use, disclosure, or distribution is strictly prohibited.</p>        
