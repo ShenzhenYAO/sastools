@@ -4,6 +4,11 @@ Commit 155a
 2. Add a new function to rename node data names, removing the sufix _copy (function removeit())
 3. Change the description text font to time new roman, black, fontize 25 ( In function 'showInputTextForm(), part: editorbox_modal.styles))
 
+to do:
+1. add a function for enter as click ok. see
+https://www.w3schools.com/howto/howto_js_trigger_button_enter.asp
+2. add a function in right click menu to display node info (the node, data, binded elements, etc) in the console.log
+
 Commit 154a
 
 1. add a function to save the current tree json as a tmphexstr.txt [postbinstr2php()]
