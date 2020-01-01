@@ -1,4 +1,4 @@
-// add title and descriptions
+// add title and descriptions .
 function addtitledesc (titletext, gitcommitver, githuburl){
     var titlediv=d3body.append('div').attr('class', 'titlediv')
 	// add the h2 title

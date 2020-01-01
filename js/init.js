@@ -351,6 +351,14 @@ var nodemenu = [
             //save it to local disk
             saveData(thenodejson, fileName); 
         }
+    },
+    {   // show data and element information of the selected note in console.log
+        title: 'Show node info in console.log',
+        action: function(elm, d, i) {
+            // get the data
+            console.log(d)
+            console.log(elm)
+        }
     }
 
 ] // end nodemenu
