@@ -1,6 +1,8 @@
 simple d3 v4 tree diagram.
 Commit 155a
 1. work around as netlify does not support php. 
+2. Add a new function to rename node data names, removing the sufix _copy (function removeit())
+3. Change the description text font to time new roman, black, fontize 25 ( In function 'showInputTextForm(), part: editorbox_modal.styles))
 
 Commit 154a
 

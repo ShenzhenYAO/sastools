@@ -2418,9 +2418,9 @@ function showInputTextForm(){
         'max-height':height_modalbody + 'px',
         'min-height':'200px',
         "overflow":"auto",
-        "font-size": "16px",
+        "font-size": "25px",
         "line-height": "16pt",
-        "color": "navy",
+        "color": "black",
         "margin": "0px",
         "position": "relative" // relative works for image resize, but not for link, fx, and video url
             // 'static' works for link/fx/video url, but not image resize
@@ -5208,3 +5208,33 @@ function postbinstr2php(){
             console.log( 'On php/hexstr2txt.php:\n' + d );
     }) // end post
 } // end postbinstr2php()
+
+//remove all surfix of '_copy' from data node names
+function removeit(){
+    //recursively change node names, removing the surfix '_copy'
+    function removesurfix(startdatapoint, surfixstr){
+        // check if the name of the current datapoint end with the surfixstr
+        if (startdatapoint.name.endsWith(surfixstr)){
+            //remove the surfixstr
+            // get the last index of the surfix str 
+            var n=startdatapoint.name.lastIndexOf(surfixstr);
+            startdatapoint.name = startdatapoint.name.substring(0, n)
+            console.log(startdatapoint.name)
+        }
+        // recursively do the same for children nodes of the startdatapoint
+        if (startdatapoint.children !== undefined
+            &&
+            startdatapoint.children !== null
+            &&
+            startdatapoint.children.length !== 0
+            ) {
+            
+                startdatapoint.children.forEach(d=>{
+                   removesurfix(d, surfixstr)
+                })
+        }
+    }
+    removesurfix(rootdatapoint_sortedrowscols.data, '_copy')
+    // new tree!
+    NewTree(rootdatapoint_sortedrowscols.data)
+}

@@ -73,10 +73,11 @@ if (currentURL.startsWith("http://localhost:")){
     buttonsdiv.append('button').attrs({'onclick': 'jsonstr_js2php2mysql()'}).text('to MySQL').styles({'margin-left':'100px'}).styles({'margin-left':'0px'})
     buttonsdiv.append('button').attrs({'onclick': 'jsonstr_mysql2php2js()'}).text('from MySQL').styles({'margin-left':'100px'}).styles({'margin-left':'0px'})
     buttonsdiv.append('button').attrs({'onclick': 'postbinstr2php()'}).text('save JSON as hex tmphexstr.txt').styles({'margin-left':'100px'}).styles({'margin-left':'0px'})
+    buttonsdiv.append('button').attrs({'onclick': 'removeit()'}).text('remove surfix').styles({'margin-left':'100px'}).styles({'margin-left':'20px'})
 
     //postbinstr2php()
 }
-buttonsdiv.append('button').attrs({'onclick': 'collapseAll(rootdatapoint_sortedrowscols)'}).text('collapse all nodes').styles({'margin-left':'100px'}).styles({'margin-left':'0px'})
+buttonsdiv.append('button').attrs({'onclick': 'collapseAll(rootdatapoint_sortedrowscols)'}).text('collapse all nodes').styles({'margin-left':'100px'}).styles({'margin-left':'20px'})
 
 if (currentURL.startsWith("http://localhost:")){
     buttonsdiv.append('p')

@@ -146,9 +146,9 @@
 /*following is the to define fontsize for the node description input modal
 font-size 16px = fontsize 3 in NicEit settings (12pt)*/
 #myInputBox{
-	font-size: 16px;
+	font-size: 20px;
 	line-height: 16pt;
-	color: navy;
+	color: black;
 }
 /*
 .sentence:hover{
