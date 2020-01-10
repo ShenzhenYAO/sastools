@@ -279,7 +279,18 @@ function MakeChangeTree(parentdatapoint) {
         .attr("stroke-width", nodecircle_border_width)
         .attr('stroke', nodecircle_border_color)
 		.style("fill", function(d) {
-			return d._children ? nodecircle_fill_hidedescendants_color : nodecircle_fill_showdescendants_color; });
+            return d._children ? nodecircle_fill_hidedescendants_color : nodecircle_fill_showdescendants_color; });
+            
+    // add symbols into g.nodeGs (e.g., a rectale to indicate substeps, etc)
+    nodeEnter.append('g') // add a group element to hold the substeps symbol
+        .attrs({'class': 'nodesymbolGs_substeps'})
+        .attr('transform', 'translate (12, -10)') // move to 2 o'clock of the circle
+        .append('foreignObject').attr('width', '6').attr('height', '6')        
+        .append('xhtml:div')
+        .attrs({'class': 'nodesymbol_substeps'})
+        .style("border-style", 'none')
+        .style("border-width", '0px 0px')
+
 	
 	// add text into g.nodeGs> instead of <text>, use foreignObject, and div which is more flexible for multiple lines and text formating
     nodeEnter.append('g') // has to wrap the div inside a g element so as to transform (adjust the text label's position relative to the node)
@@ -317,6 +328,19 @@ function MakeChangeTree(parentdatapoint) {
         })
         .style("stroke", function(d){return (d.data.NodeDescription?"blue":nodecircle_border_color)}) //d3v4 show different color on whether or not having description
         ;
+
+    // update whether or not to show the symbol for substeps
+    nodeUpdate.select("div.nodesymbol_substeps")
+        .style("background", d => {
+            return d.data._substeps ? 'blue' : 'none';
+        })
+        .style("height", d => {
+            return d.data._substeps ? '5px' : '0px';
+        })
+        .style("width", d => {
+            return d.data._substeps ? '5px' : '0px';
+        })
+
 	
 	//update (change properties of the text elements, including x/y coordinate, size, color, etc)
 	nodeUpdate.select("div.nodetext")
@@ -2210,7 +2234,7 @@ function createNode() {
     $('#theModal').remove(); //modified from try89
 
 
-    //do the make chagnge tree, and also do the custline updateTree(theParentToAppendChild.tree_obj.dataroot)
+    //do the make change tree macro, and also do the custline updateTree(theParentToAppendChild.tree_obj.dataroot)
     var proposedTreesize=estTreesize(rootdatapoint_sortedrowscols)
     //   console.log(proposedTreesize.width, proposedTreesize.height)
     rootdatapoint_sortedrowscols.x0 = proposedTreesize.height /2; // redefine the vertical middle point for position the root node

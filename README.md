@@ -1,4 +1,7 @@
 simple d3 v4 tree diagram.
+Commit 156a
+1. add a mark to indicate whether there is a hidden substep
+
 Commit 155a
 1. work around as netlify does not support php. 
 2. Add a new function to rename node data names, removing the sufix _copy (function removeit())
