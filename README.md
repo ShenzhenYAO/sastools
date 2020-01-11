@@ -1,4 +1,8 @@
 simple d3 v4 tree diagram.
+Commit 157a
+1. change the substeps symbol to a circle
+
+
 Commit 156a
 1. add a mark to indicate whether there is a hidden substep
 
