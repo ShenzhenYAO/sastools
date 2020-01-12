@@ -284,19 +284,61 @@ function MakeChangeTree(parentdatapoint) {
     // add symbols into g.nodeGs (e.g., a rectale to indicate substeps, etc)
     nodeEnter.append('g') // add a group element to hold the substeps symbol
         .attrs({'class': 'nodesymbolGs_substeps'})
-        .attr('transform', 'translate (18, -12)') // move to 2 o'clock of the node circle
-        // .append('foreignObject').attr('width', '6').attr('height', '6')        
-        // .append('xhtml:div')
-        // .attrs({'class': 'nodesymbol_substeps'})
-        // .style("border-style", 'none')
-        // .style("border-width", '0px 0px')
-        .append('circle')
-        .attr('class', 'nodesymbol_substeps')
-        .attr("r", 1e-6) // initial size is nearly 0
-        .attr("stroke-width", 1)
-        .attr('stroke', nodecircle_border_color)
+        .attr('transform', 'translate (20, -8)') // move to 2 o'clock of the node circle
+        .append("svg:image")
+        .attr('class','nodesymbol_substeps')
+        .attr('width', 6)
+        .attr('height',0)
+    // nodeEnter.append('g') // add a group element to hold the substeps symbol
+    //     .attrs({'class': 'nodesymbolGs_video'})
+    //     .attr('transform', 'translate (-24, -8)') // move to 2 o'clock of the node circle
+    //     .append("svg:image")
+    //     .attr('class','nodesymbol_video')
+    //     .attr('width', 6)
+    //     .attr('height',6)
+    //     .attr("xlink:href", "pix/video.png")
+    // nodeEnter.append('g') // add a group element to hold the substeps symbol
+    //     .attrs({'class': 'nodesymbolGs_warning'})
+    //     .attr('transform', 'translate (-22, -16)') // move to 2 o'clock of the node circle
+    //     .append("svg:image")
+    //     .attr('class','nodesymbol_warning')
+    //     .attr('width', 12)
+    //     .attr('height',12)
+    //     .attr("xlink:href", "pix/warning.png")
+    // nodeEnter.append('g') // add a group element to hold the substeps symbol
+    //     .attrs({'class': 'nodesymbolGs_question'})
+    //     .attr('transform', 'translate (-14, -19)') // move to 2 o'clock of the node circle
+    //     .append("svg:image")
+    //     .attr('class','nodesymbol_question')
+    //     .attr('width', 10)
+    //     .attr('height',10)
+    //     .attr("xlink:href", "pix/question.png")
+    // nodeEnter.append('g') // add a group element to hold the substeps symbol
+    //     .attrs({'class': 'nodesymbolGs_learning'})
+    //     .attr('transform', 'translate (-4, -22)') // move to 2 o'clock of the node circle
+    //     .append("svg:image")
+    //     .attr('class','nodesymbol_learning')
+    //     .attr('width', 8)
+    //     .attr('height',8)
+    //     .attr("xlink:href", "pix/learning.png")
+    // nodeEnter.append('g') // add a group element to hold the substeps symbol
+    //     .attrs({'class': 'nodesymbolGs_code'})
+    //     .attr('transform', 'translate (4, -20)') // move to 2 o'clock of the node circle
+    //     .append("svg:image")
+    //     .attr('class','nodesymbol_code')
+    //     .attr('width', 12)
+    //     .attr('height',12)
+    //     .attr("xlink:href", "pix/code.png")
+	// nodeEnter.append('g') // add a group element to hold the substeps symbol
+    //     .attrs({'class': 'nodesymbolGs_info'})
+    //     .attr('transform', 'translate (12, -16)') // move to 2 o'clock of the node circle
+    //     .append("svg:image")
+    //     .attr('class','nodesymbol_info')
+    //     .attr('width', 12)
+    //     .attr('height',12)
+    //     .attr("xlink:href", "pix/info.png")
 
-	
+    
 	// add text into g.nodeGs> instead of <text>, use foreignObject, and div which is more flexible for multiple lines and text formating
     nodeEnter.append('g') // has to wrap the div inside a g element so as to transform (adjust the text label's position relative to the node)
         // .transition().duration(2)
@@ -335,21 +377,13 @@ function MakeChangeTree(parentdatapoint) {
         ;
 
     // update whether or not to show the symbol for substeps
-    nodeUpdate.select("circle.nodesymbol_substeps")
-        // .style("background", d => {
-        //     return d.data._substeps ? 'blue' : 'none';
-        // })
-        // .style("height", d => {
-        //     return d.data._substeps ? '5px' : '0px';
-        // })
-        // .style("width", d => {
-        //     return d.data._substeps ? '5px' : '0px';
-        // })
-        .attr("r", d=>{
-            return d.data._substeps ? 3 : 1e-6;
+    nodeUpdate.select("image.nodesymbol_substeps")
+         .attr('height',d=>{
+                return d.data._substeps ? 6 : 1e-6;
         })
-        .style("fill", 'none')
-
+        .attr("xlink:href", d=>{
+            return d.data._substeps ? "pix/subdiagram.png" : null;
+        })
 
 	
 	//update (change properties of the text elements, including x/y coordinate, size, color, etc)
