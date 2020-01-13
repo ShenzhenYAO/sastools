@@ -229,7 +229,7 @@ function addnewEle (width, height, id, clss, theparent, parentEleType, EleType, 
 }
 
 /*make and update tree */
-function MakeChangeTree_bk(parentdatapoint) {
+function MakeChangeTree(parentdatapoint) {
 
 	//instanciate a treeinstance by flatterneddatapoints_sortedrowscols.
     // console.log(rootdatapoint)
@@ -289,11 +289,11 @@ function MakeChangeTree_bk(parentdatapoint) {
         .attr('class','nodesymbol_substeps')
         .attr('width', 6)
         .attr('height',0)
-    // nodeEnter.append('g') // add a group element to hold the substeps symbol
-    //     .attrs({'class': 'nodesymbolGs_video'})
-    //     .attr('transform', 'translate (-24, -8)') // move to 2 o'clock of the node circle
-    //     .append("svg:image")
-    //     .attr('class','nodesymbol_video')
+    nodeEnter.append('g') // add a group element to hold the substeps symbol
+        .attrs({'class': 'nodesymbolGs_video'})
+        .attr('transform', 'translate (-24, -8)') // move to 2 o'clock of the node circle
+        .append("svg:image")
+        .attr('class','nodesymbol_video')
     //     .attr('width', 6)
     //     .attr('height',6)
     //     .attr("xlink:href", "pix/video.png")
@@ -321,11 +321,11 @@ function MakeChangeTree_bk(parentdatapoint) {
     //     .attr('width', 8)
     //     .attr('height',8)
     //     .attr("xlink:href", "pix/learning.png")
-    // nodeEnter.append('g') // add a group element to hold the substeps symbol
-    //     .attrs({'class': 'nodesymbolGs_code'})
-    //     .attr('transform', 'translate (4, -20)') // move to 2 o'clock of the node circle
-    //     .append("svg:image")
-    //     .attr('class','nodesymbol_code')
+    nodeEnter.append('g') // add a group element to hold the substeps symbol
+        .attrs({'class': 'nodesymbolGs_code'})
+        .attr('transform', 'translate (4, -20)') // move to 2 o'clock of the node circle
+        .append("svg:image")
+        .attr('class','nodesymbol_code')
     //     .attr('width', 12)
     //     .attr('height',12)
     //     .attr("xlink:href", "pix/code.png")
@@ -385,7 +385,61 @@ function MakeChangeTree_bk(parentdatapoint) {
             return d.data._substeps ? "pix/subdiagram.png" : null;
         })
 
-	
+    // update whether or not to show the symbol for video
+    nodeUpdate.select("image.nodesymbol_video")
+        // depends on whether d.data.NdeDescription contains the text '<iframe class="ql-video"' which is 
+            // a characteristic that the descriton contains a video iframe
+        .attr('width', d=>{
+            if (d.data.NodeDescription && d.data.NodeDescription.includes('<iframe class="ql-video"')){
+                return 6
+            } else {
+                return 1e-6
+            }
+        })
+        .attr('height', d=>{
+            if (d.data.NodeDescription && d.data.NodeDescription.includes('<iframe class="ql-video"')){
+                return 6
+            } else {
+                return 1e-6
+            }
+        })
+        .attr('xlink:href', d=>{
+            if (d.data.NodeDescription && d.data.NodeDescription.includes('<iframe class="ql-video"')){
+                return "pix/video.png"
+            } else {
+                return null
+            }
+        })
+        // depends on whether d.data.NdeDescription contains the text '<div class="ql-code-block-container"' which is 
+            // a characteristic that the descriton contains code (text in code format)
+        nodeUpdate.select("image.nodesymbol_code")
+        // depends on whether d.data.NdeDescription contains the text '<div class="ql-code-block-container"' which is 
+            // a characteristic that the descriton contains code (text in code format)
+        .attr('width', d=>{
+            if (d.data.NodeDescription && d.data.NodeDescription.includes('<div class="ql-code-block-container"')){
+                return 12
+            } else {
+                return 1e-6
+            }
+        })
+        .attr('height', d=>{
+            if (d.data.NodeDescription && d.data.NodeDescription.includes('<div class="ql-code-block-container"')){
+                return 12
+            } else {
+                return 1e-6
+            }
+        })
+        .attr('xlink:href', d=>{
+            if (d.data.NodeDescription && d.data.NodeDescription.includes('<div class="ql-code-block-container"')){
+                return "pix/code.png"
+            } else {
+                return null
+            }
+        })
+    //     .attr('width', 12)
+    //     .attr('height',12)
+    //     .attr("xlink:href", "pix/code.png")
+
 	//update (change properties of the text elements, including x/y coordinate, size, color, etc)
 	nodeUpdate.select("div.nodetext")
 		.transition().duration(showhidedescendants_duration)
