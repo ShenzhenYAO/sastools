@@ -1,6 +1,8 @@
 simple d3 v4 tree diagram.
 Commit 158a
 
+1. Add a folder pix (icons, e.g., video, info, code, etc.)
+2. Add icons around the circle node to indicate whether there are video, code, etc in the description
 
 
 Commit 157a

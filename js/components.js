@@ -229,7 +229,7 @@ function addnewEle (width, height, id, clss, theparent, parentEleType, EleType, 
 }
 
 /*make and update tree */
-function MakeChangeTree(parentdatapoint) {
+function MakeChangeTree_bk(parentdatapoint) {
 
 	//instanciate a treeinstance by flatterneddatapoints_sortedrowscols.
     // console.log(rootdatapoint)
