@@ -297,19 +297,19 @@ function MakeChangeTree(parentdatapoint) {
     //     .attr('width', 6)
     //     .attr('height',6)
     //     .attr("xlink:href", "pix/video.png")
-    // nodeEnter.append('g') // add a group element to hold the substeps symbol
-    //     .attrs({'class': 'nodesymbolGs_warning'})
-    //     .attr('transform', 'translate (-22, -16)') // move to 2 o'clock of the node circle
-    //     .append("svg:image")
-    //     .attr('class','nodesymbol_warning')
+    nodeEnter.append('g') // add a group element to hold the substeps symbol
+        .attrs({'class': 'nodesymbolGs_warning'})
+        .attr('transform', 'translate (-22, -16)') // move to 2 o'clock of the node circle
+        .append("svg:image")
+        .attr('class','nodesymbol_warning')
     //     .attr('width', 12)
     //     .attr('height',12)
     //     .attr("xlink:href", "pix/warning.png")
-    // nodeEnter.append('g') // add a group element to hold the substeps symbol
-    //     .attrs({'class': 'nodesymbolGs_question'})
-    //     .attr('transform', 'translate (-14, -19)') // move to 2 o'clock of the node circle
-    //     .append("svg:image")
-    //     .attr('class','nodesymbol_question')
+    nodeEnter.append('g') // add a group element to hold the substeps symbol
+        .attrs({'class': 'nodesymbolGs_question'})
+        .attr('transform', 'translate (-14, -19)') // move to 2 o'clock of the node circle
+        .append("svg:image")
+        .attr('class','nodesymbol_question')
     //     .attr('width', 10)
     //     .attr('height',10)
     //     .attr("xlink:href", "pix/question.png")
@@ -388,7 +388,7 @@ function MakeChangeTree(parentdatapoint) {
     // update whether or not to show the symbol for video
     nodeUpdate.select("image.nodesymbol_video")
         // depends on whether d.data.NdeDescription contains the text '<iframe class="ql-video"' which is 
-            // a characteristic that the descriton contains a video iframe
+            // a characteristic that the description contains a video iframe
         .attr('width', d=>{
             if (d.data.NodeDescription && d.data.NodeDescription.includes('<iframe class="ql-video"')){
                 return 6
@@ -411,10 +411,10 @@ function MakeChangeTree(parentdatapoint) {
             }
         })
         // depends on whether d.data.NdeDescription contains the text '<div class="ql-code-block-container"' which is 
-            // a characteristic that the descriton contains code (text in code format)
+            // a characteristic that the description contains code (text in code format)
         nodeUpdate.select("image.nodesymbol_code")
         // depends on whether d.data.NdeDescription contains the text '<div class="ql-code-block-container"' which is 
-            // a characteristic that the descriton contains code (text in code format)
+            // a characteristic that the description contains code (text in code format)
         .attr('width', d=>{
             if (d.data.NodeDescription && d.data.NodeDescription.includes('<div class="ql-code-block-container"')){
                 return 12
@@ -436,9 +436,56 @@ function MakeChangeTree(parentdatapoint) {
                 return null
             }
         })
-    //     .attr('width', 12)
-    //     .attr('height',12)
-    //     .attr("xlink:href", "pix/code.png")
+        // depends on whether d.data.NdeDescription contains the text '[_Q]' which indicates 
+        //  the descripton contains questions
+        nodeUpdate.select("image.nodesymbol_question")
+            // depends on whether d.data.NdeDescription contains the text '[_Q]' which indicates 
+            //  the descripton contains questions
+            .attr('width', d=>{
+                if (d.data.NodeDescription && d.data.NodeDescription.includes('[_Q]')){
+                    return 12
+                } else {
+                    return 1e-6
+                }
+            })
+            .attr('height', d=>{
+                if (d.data.NodeDescription && d.data.NodeDescription.includes('[_Q]')){
+                    return 12
+                } else {
+                    return 1e-6
+                }
+            })
+            .attr('xlink:href', d=>{
+                if (d.data.NodeDescription && d.data.NodeDescription.includes('[_Q]')){
+                    return "pix/question.png"
+                } else {
+                    return null
+                }
+            })
+        // depends on whether d.data.NdeDescription contains the text '[_W]' which indicates 
+        //  the descripton contains warnining/notice message
+        nodeUpdate.select("image.nodesymbol_question")
+            .attr('width', d=>{
+                if (d.data.NodeDescription && d.data.NodeDescription.includes('[_W]')){
+                    return 12
+                } else {
+                    return 1e-6
+                }
+            })
+            .attr('height', d=>{
+                if (d.data.NodeDescription && d.data.NodeDescription.includes('[_W]')){
+                    return 12
+                } else {
+                    return 1e-6
+                }
+            })
+            .attr('xlink:href', d=>{
+                if (d.data.NodeDescription && d.data.NodeDescription.includes('[_W]')){
+                    return "pix/warning.png"
+                } else {
+                    return null
+                }
+            })
 
 	//update (change properties of the text elements, including x/y coordinate, size, color, etc)
 	nodeUpdate.select("div.nodetext")
