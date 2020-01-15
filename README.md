@@ -4,6 +4,9 @@ Commit 158a
 1. Add a folder pix (icons, e.g., video, info, code, etc.)
 2. Add icons around the circle node to indicate whether there are video, code, etc in the description
 
+Question:
+would it help to update the current node positions? (check the current position of the element, 
+    and save it into the x y of the node)
 
 Commit 157a
 1. change the substeps symbol to a circle

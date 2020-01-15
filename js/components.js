@@ -384,6 +384,7 @@ function MakeChangeTree(parentdatapoint) {
         .attr("xlink:href", d=>{
             return d.data._substeps ? "pix/subdiagram.png" : null;
         })
+        ;
 
     // update whether or not to show the symbol for video
     nodeUpdate.select("image.nodesymbol_video")
@@ -410,6 +411,7 @@ function MakeChangeTree(parentdatapoint) {
                 return null
             }
         })
+        ;
         // depends on whether d.data.NdeDescription contains the text '<div class="ql-code-block-container"' which is 
             // a characteristic that the description contains code (text in code format)
         nodeUpdate.select("image.nodesymbol_code")
@@ -436,6 +438,7 @@ function MakeChangeTree(parentdatapoint) {
                 return null
             }
         })
+        ;
         // depends on whether d.data.NdeDescription contains the text '[_Q]' which indicates 
         //  the descripton contains questions
         nodeUpdate.select("image.nodesymbol_question")
@@ -462,9 +465,10 @@ function MakeChangeTree(parentdatapoint) {
                     return null
                 }
             })
+            ;
         // depends on whether d.data.NdeDescription contains the text '[_W]' which indicates 
         //  the descripton contains warnining/notice message
-        nodeUpdate.select("image.nodesymbol_question")
+        nodeUpdate.select("image.nodesymbol_warning")
             .attr('width', d=>{
                 if (d.data.NodeDescription && d.data.NodeDescription.includes('[_W]')){
                     return 12
@@ -486,7 +490,7 @@ function MakeChangeTree(parentdatapoint) {
                     return null
                 }
             })
-
+            ;
 	//update (change properties of the text elements, including x/y coordinate, size, color, etc)
 	nodeUpdate.select("div.nodetext")
 		.transition().duration(showhidedescendants_duration)
@@ -848,7 +852,6 @@ function NewTree(thetreedata){
 
 
 
-
 /****make custlinks *********************** */
 function custlink(parentdatapoint, shownnodes){
 
@@ -989,6 +992,7 @@ function custlink(parentdatapoint, shownnodes){
         .remove();
     
 } // end custlink()
+
 
 
 function deletecustlink (thecustlinkElm){
