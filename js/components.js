@@ -264,7 +264,14 @@ function MakeChangeTree(parentdatapoint) {
 	var nodeEnter = node.enter().append("g")
         .attr("class", "nodeGs")
 		.attr("transform", function(d) {
-			return "translate(" + parentdatapoint.y0 + "," + parentdatapoint.x0 + ")"; }) //each g are added at the position x0,y0 of the source data
+            // the following is to adjust the starting position when the hidden nodes are about to be shown, and
+               // the parent of the hidden nodes is the root
+               // under such circumstances, it seems that there is bug that the starting vertical position was wrong
+               // and need to be offset by moving the y0 up for the distance of the value in 'between_nodes_vertical'                
+
+               return "translate(" + parentdatapoint.y0 + "," + parentdatapoint.x0 + ")"; 
+
+        }) //each g are added at the position x0,y0 of the source data
 		.on("click", showhidedescendants)
         .on('contextmenu', d3.contextMenu(nodemenu))//ZoomInOutSelectedNode) // right click to zoom in/out
         .on("mousedown", dragdrop)  //check the newest version of dragdrop in components.js
@@ -313,11 +320,11 @@ function MakeChangeTree(parentdatapoint) {
     //     .attr('width', 10)
     //     .attr('height',10)
     //     .attr("xlink:href", "pix/question.png")
-    // nodeEnter.append('g') // add a group element to hold the substeps symbol
-    //     .attrs({'class': 'nodesymbolGs_learning'})
-    //     .attr('transform', 'translate (-4, -22)') // move to 2 o'clock of the node circle
-    //     .append("svg:image")
-    //     .attr('class','nodesymbol_learning')
+    nodeEnter.append('g') // add a group element to hold the substeps symbol
+        .attrs({'class': 'nodesymbolGs_learning'})
+        .attr('transform', 'translate (-4, -22)') // move to 2 o'clock of the node circle
+        .append("svg:image")
+        .attr('class','nodesymbol_learning')
     //     .attr('width', 8)
     //     .attr('height',8)
     //     .attr("xlink:href", "pix/learning.png")
@@ -514,6 +521,29 @@ function MakeChangeTree(parentdatapoint) {
                 }
             })
             ;
+        nodeUpdate.select("image.nodesymbol_learning")
+            .attr('width', d=>{
+                if (d.data.NodeDescription && d.data.NodeDescription.includes('[_L]')){
+                    return 8
+                } else {
+                    return 1e-6
+                }
+            })
+            .attr('height', d=>{
+                if (d.data.NodeDescription && d.data.NodeDescription.includes('[_L]')){
+                    return 8
+                } else {
+                    return 1e-6
+                }
+            })
+            .attr('xlink:href', d=>{
+                if (d.data.NodeDescription && d.data.NodeDescription.includes('[_L]')){
+                    return "pix/learning.png"
+                } else {
+                    return null
+                }
+            })
+            ;
 	//update (change properties of the text elements, including x/y coordinate, size, color, etc)
 	nodeUpdate.select("div.nodetext")
 		.transition().duration(showhidedescendants_duration)
@@ -591,7 +621,7 @@ function MakeChangeTree(parentdatapoint) {
 		d.x0 = d.x;
 		d.y0 = d.y;
     });
-    
+   
     //save all d.x, to be used for adjust horizontal shift error caused by tree().nodeSize() method
     var vcoords=[];
     nodes.forEach(d=>{vcoords.push(d.x)});

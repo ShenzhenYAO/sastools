@@ -1,4 +1,7 @@
 simple d3 v4 tree diagram.
+Commit 159a
+1. Update the x0 y0 position of the _children nodes?
+
 Commit 158a
 
 1. Add a folder pix (icons, e.g., video, info, code, etc.)
