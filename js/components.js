@@ -329,11 +329,11 @@ function MakeChangeTree(parentdatapoint) {
     //     .attr('width', 12)
     //     .attr('height',12)
     //     .attr("xlink:href", "pix/code.png")
-	// nodeEnter.append('g') // add a group element to hold the substeps symbol
-    //     .attrs({'class': 'nodesymbolGs_info'})
-    //     .attr('transform', 'translate (12, -16)') // move to 2 o'clock of the node circle
-    //     .append("svg:image")
-    //     .attr('class','nodesymbol_info')
+	nodeEnter.append('g') // add a group element to hold the substeps symbol
+        .attrs({'class': 'nodesymbolGs_info'})
+        .attr('transform', 'translate (12, -16)') // move to 2 o'clock of the node circle
+        .append("svg:image")
+        .attr('class','nodesymbol_info')
     //     .attr('width', 12)
     //     .attr('height',12)
     //     .attr("xlink:href", "pix/info.png")
@@ -486,6 +486,29 @@ function MakeChangeTree(parentdatapoint) {
             .attr('xlink:href', d=>{
                 if (d.data.NodeDescription && d.data.NodeDescription.includes('[_W]')){
                     return "pix/warning.png"
+                } else {
+                    return null
+                }
+            })
+            ;
+        nodeUpdate.select("image.nodesymbol_info")
+            .attr('width', d=>{
+                if (d.data.NodeDescription && d.data.NodeDescription.includes('[_I]')){
+                    return 12
+                } else {
+                    return 1e-6
+                }
+            })
+            .attr('height', d=>{
+                if (d.data.NodeDescription && d.data.NodeDescription.includes('[_I]')){
+                    return 12
+                } else {
+                    return 1e-6
+                }
+            })
+            .attr('xlink:href', d=>{
+                if (d.data.NodeDescription && d.data.NodeDescription.includes('[_I]')){
+                    return "pix/info.png"
                 } else {
                     return null
                 }
