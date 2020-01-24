@@ -674,10 +674,13 @@ function showhidedescendants(d) {
     pan();
     custlink(rootdatapoint_sortedrowscols, updateTree.nodeupdate ); // add cross link, it should be separate from
 
-} 	
+} 	// end showhidedescendants
 
 //estimate tree size
 function estTreesize(therootdatapoint){
+    // console.log('the root data point =======')
+    // console.log(therootdatapoint)
+
     /*B.1.2.0, have a tree instance with default size setting */
     var tmptreeinstance=d3.tree();    
     /*B.1.2.1, flatten the data points, putting them in an array */
@@ -767,14 +770,14 @@ function expand(d){
     var children = (d.children)?d.children:d._children;
     if (d._children) {        
         d.children = d._children;
-        d._children = null;       
+        d._children = null;
     }
     if(d.children){ // recursively expand d.children
         d.children.forEach(c=>{
             expand(c)
         })
     }
-}
+} // end function expand
 
 
 function playclicksound(theURL){	
@@ -793,6 +796,7 @@ function NewTree(thetreedata){
     } else {
         treeJSON = thetreedata;
     }
+    // console.log('treeJSON is ===========================')
     // console.log(treeJSON)
 
     // delete all existing nodeGs
@@ -2162,7 +2166,8 @@ function selectCopy(obj){
 			prop === "name" ||
 			prop === "NodeDescription"||
             prop === "custparents" ||
-            prop === "_substeps"
+            prop === "_substeps" ||
+            prop === "hidechildren" // new since 159a
 			) {
 			ar2[i][prop] = obj[i][prop]; // copy properties from arObj to ar2
 			}
