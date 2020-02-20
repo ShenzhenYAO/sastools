@@ -3,6 +3,7 @@ Commit 159a
 1. Remember the current setting for hide/show children nodes??
 
 To do: Update the x0 y0 position of the _children nodes?
+check the d3mapleaflet instance, might help to bring forward the custlinks
 
 git remote set-url origin https://github.com/ShenzhenYAO/simple_d3tree_v3tov4.io.git
 
