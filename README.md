@@ -1,11 +1,28 @@
 simple d3 v4 tree diagram.
-Commit 159a
-1. Remember the current setting for hide/show children nodes??
+Commit 160a
 
-To do: Update the x0 y0 position of the _children nodes?
+To do: 
+- Remember the current setting for hide/show children nodes??
+
+- Update the x0 y0 position of the _children nodes?
 check the d3mapleaflet instance, might help to bring forward the custlinks
 
+Commit 159a
+
+1. when mouse is over the custlinks, the cursor will be changed to a pointer. That way to indicate that the custlink
+    is ready to be selected (for delete)
+    The change is made in component.js (in function custlink())
+
+change origin 
 git remote set-url origin https://github.com/ShenzhenYAO/simple_d3tree_v3tov4.io.git
+
+To do: 
+- Remember the current setting for hide/show children nodes??
+
+- Update the x0 y0 position of the _children nodes?
+check the d3mapleaflet instance, might help to bring forward the custlinks
+
+
 
 Commit 158a
 

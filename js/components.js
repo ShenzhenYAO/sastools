@@ -138,8 +138,6 @@ $(document).ready(function(){
         //save the input file name into the sessionStorage
         sessionStorage.setItem('thejsonstrname', thefirstfileobj.name);
 
-
-
         //get the extension name
         var ext =thefirstfileobj.name.substring(thefirstfileobj.name.lastIndexOf('.')+1)
         // console.log(ext)
@@ -1034,6 +1032,7 @@ function custlink(parentdatapoint, shownnodes){
     custlinkUpdate.transition()
         .duration(showhidedescendants_duration)
         .attr("stroke-opacity", 1)
+        .style("cursor", "pointer") 
         .attr('d', function(d){ return diagonal(d.parent, d)}); 
         // attr('d', ..) is the final path after transition, it is from x,y coordinate of the parentnode to x,y of the current node
 
