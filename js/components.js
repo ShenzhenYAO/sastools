@@ -5479,4 +5479,22 @@ function removeit(){
     removesurfix(rootdatapoint_sortedrowscols.data, '_copy')
     // new tree!
     NewTree(rootdatapoint_sortedrowscols.data)
+    
+} // function removeit()
+
+
+
+// toggle show/hide the search box
+function showSearch(){	
+	//display the input box
+	if($("#searchBox").css('display')==="none"){
+		$("#searchBox").css('display', "block");
+		$("#searchBox").css('height', "auto");
+//console.log($("#showSearchBtn").text())
+		$("#showSearchBtn").text("hideSearch")//prop("value", "hideSearch");
+	}else{
+		$("#searchBox").css('display', "none");
+		$("#searchBox").css('height', "0");	
+		$("#showSearchBtn").text("showSearch");	
+	}	
 }
