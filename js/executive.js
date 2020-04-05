@@ -177,6 +177,48 @@ thehintbox=textviewbox.append('div')
     })
 ;
 
+//this part is added since version 161a. It is to make the search related DOMs
+var theSearchBox=d3body.append('div')
+    .attrs({
+        "id": "searchBox"
+        })
+    .styles({
+        "width":"100%", 
+        "height":"0px", 
+        "max-height":"300px", 
+        "float":"left", 
+        "font-size":"20px", 
+        "padding":"5px", 
+        "margin":"2px",
+        "display":"none"
+    })
+theSearchBox.append("input")
+    .attrs({
+        "type":"text",
+        "id":"searchinput",
+        "class":"searchinput"
+    })
+theSearchBox.append("button")
+    .attrs({
+        "id":"searchEnterBtn",
+        "onclick":"searchCluesbyKey()"
+    })
+    .text("OK")
+theSearchBox.append("div")
+    .attrs({
+        "id":"searchResult"
+    })
+    .styles({
+        "width":"100%", 
+        "height":"0px", 
+        "max-height":"300px", 
+        "float":"left", 
+        "font-size":"20px", 
+        "padding":"5px", 
+        "margin":"2px",
+        "display":"none"
+    })
+
 //the following steps are wrapped into one function, in case the whole process need to be repeated.
 function makeSvgRectGTree(){
 

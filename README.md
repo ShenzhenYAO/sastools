@@ -1,11 +1,20 @@
 simple d3 v4 tree diagram.
+
 Commit 161a
+
+Add back the search functions
 
 To do: 
 - Remember the current setting for hide/show children nodes??
 
 - Update the x0 y0 position of the _children nodes?
 check the d3mapleaflet instance, might help to bring forward the custlinks
+
+
+
+Commit 160a
+
+
 
 Commit 159a
 
