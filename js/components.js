@@ -5485,6 +5485,7 @@ function removeit(){
 } // function removeit()
 
 
+/*the following part was added since 161a for search contents */
 
 // toggle show/hide the search box
 function showSearch(){	
@@ -5506,8 +5507,6 @@ function showSearch(){
             searchOKBtnObj.node().click();
             }
         });
-
-
 	}else{
 		$("#searchBox").css('display', "none");
 		$("#searchBox").css('height', "0");	
@@ -5615,31 +5614,4 @@ function extractContent(s, space) {
     return [span.textContent || span.innerText].toString().replace(/ +/g, ' ');
 };
 
-//search for each element in the nodeclues, make an array of the clues matching the search results
-function searchInClues_bk(theJSON, thekeyword) {
-    var searchResult = [];
-    var theClues = getNodeClues(theJSON);
-    //console.log(theClues)
-    theClues.forEach(function (d) {
-        //split sentences by "., or ?"
-        var theSegments = d.clue.split(/[.!?]+/);
-        //console.log(theSegments);
-        theSegments.forEach(function (e) {
-            //define the regex of key word  (all incidences, ignore case)
-            var theRegKeyWord = new RegExp(thekeyword, 'ig');
-            if (theRegKeyWord.test(e)) {
-                //replace the searched word with bold html
-                e = e.replace(theRegKeyWord, function (str) {
-                    return "<span style='font-weight:bold;font-style:italic;font-size:20px'>" + str + "</span>"
-                })
-                //remove the asterisks (like *************)
-                e = e.replace(/\*/g, "");
-                //push the matched sentences into the result array
-                searchResult.push({ idx: d.idx, name: d.name, sentence: e })
-            }
-        })
-    });
-    //console.log(searchResult)
-    return searchResult;
-} // searchInClues
 
