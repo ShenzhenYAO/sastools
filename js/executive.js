@@ -147,7 +147,8 @@ var searchOKBtnObj=theSearchBox.append("button")
     .text("OK")
 theSearchBox.append("div")
     .attrs({
-        "id":"searchResult"
+        "id":"searchResult",
+        "class":"searchResult"
     })
     .styles({
         "height":"auto", 

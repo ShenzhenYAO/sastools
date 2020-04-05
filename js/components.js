@@ -6,7 +6,7 @@ function addtitledesc (titletext, gitcommitver, githuburl){
 	.append('p')
     .attr('class', 'pagehead')
     // .styles({'font-size': '72px', 'font-weight': '200', 'font-family': "'Source Sans Pro'"})
-    .styles({'font-size': '48px', 'font-weight': 'normal', 'font-family': "Alfa Slab One"})
+    .styles({'font-size': '24px', 'font-weight': 'normal', 'font-family': "Alfa Slab One"})
     .text(titletext )
     .append('span')
     .styles({'font-size': '12px', 'font-weight': 'normal'})
@@ -5512,7 +5512,10 @@ function showSearch(){
 		$("#searchBox").css('display', "none");
 		$("#searchBox").css('height', "0");	
         $("#showSearchBtn").text("showSearch");
-        $("#searchBox").css("background","none");		
+        $("#searchBox").css("background","none");
+        $("#searchResult").css("background","none");
+        $("#searchResult").text("");
+        $("#searchinput").val("");
 	}	
 }
 
