@@ -3077,7 +3077,7 @@ function showSentences(){
         $("#textBox").append(theSentenceHTML)
     });
 
-    //right click to lock
+    //ctrl left click to lock
     CtrlClickToLock();
 
     // listen to changes in the text box
@@ -3088,7 +3088,9 @@ function showSentences(){
 /** the following are related to lock of nodes when a span jof show text is selected by ctrl-click */
 // when the show text is clicked, run showtextonclick
 function CtrlClickToLock(){
-    thetextbox.selectAll('span.showtext')
+    // thetextbox.selectAll('span.showtext')
+    //changed, so it can lock text for both in thetextbox or in the search box
+    d3.selectAll('span.showtext')
         .on('click', showtextonclick)
 }
 //check the mouse key, if it is ctrl-unknown (a ctrl-click, toggle the locknode status)
@@ -3105,7 +3107,7 @@ function showtextonclick(){
         // console.log('the node lock status = ' + locknode)
     } 
 }
-/**the above are related to lock of nodes when a span jof show text is selected by ctrl-click */
+/**the above are related to lock of nodes when a span of show text is selected by ctrl-click */
 
 
 
@@ -5489,12 +5491,13 @@ function showSearch(){
 	//display the input box
 	if($("#searchBox").css('display')==="none"){
 		$("#searchBox").css('display', "block");
-		$("#searchBox").css('height', "auto");
+        $("#searchBox").css('height', "auto");
 //console.log($("#showSearchBtn").text())
 		$("#showSearchBtn").text("hideSearch")//prop("value", "hideSearch");
 	}else{
 		$("#searchBox").css('display', "none");
 		$("#searchBox").css('height', "0");	
-		$("#showSearchBtn").text("showSearch");	
+        $("#showSearchBtn").text("showSearch");
+        $("#searchBox").css("background","none");		
 	}	
 }
