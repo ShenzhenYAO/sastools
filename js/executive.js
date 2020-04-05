@@ -114,15 +114,16 @@ var textviewbox=bigdiv.append('div')
         'overflow': 'auto'
     })
 
+
 //this part is added since version 161a. It is to make the search related DOMs
 var theSearchBox=bigdiv.append('div')
     .attrs({
         "id": "searchBox"
         })
     .styles({
-        "width":"100%", 
+        "width":"0px", 
         "height":"0px", 
-        "max-height":"300px", 
+        "max-height":(height_body) +"px", 
         "float":"left", 
         "font-size":"20px", 
         "padding":"5px", 
@@ -134,6 +135,9 @@ var theSearchInputBoxObj=theSearchBox.append("input")
         "type":"text",
         "id":"searchinput",
         "class":"searchinput"
+    })
+    .styles({
+        "width":"80%"
     })
 var searchOKBtnObj=theSearchBox.append("button")
     .attrs({
@@ -147,7 +151,7 @@ theSearchBox.append("div")
     })
     .styles({
         "height":"auto", 
-        "max-height":"200px",
+        "max-height":(height_body*.9) +"px",
         "overflow":"auto",
         "font-size":"20px", 
         "padding":"2px", 
@@ -155,7 +159,6 @@ theSearchBox.append("div")
     })
 //************************************************************ */
 
- 
 // the box to hold the tree diagram
 var treeviewbox = bigdiv.append('div')
     .attr('class', 'treeviewbox')
@@ -170,6 +173,12 @@ var treeviewbox = bigdiv.append('div')
         'resize':'both',
         'overflow': 'auto'
     })
+
+
+
+
+ 
+
 
     
 /**The following is to show textbox and link text to treenode *************************** */

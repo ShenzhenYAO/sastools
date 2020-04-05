@@ -5490,10 +5490,24 @@ function removeit(){
 function showSearch(){	
 	//display the input box
 	if($("#searchBox").css('display')==="none"){
+        $("#searchBox").css('width', "300px");
 		$("#searchBox").css('display', "block");
         $("#searchBox").css('height', "auto");
 //console.log($("#showSearchBtn").text())
-		$("#showSearchBtn").text("hideSearch")//prop("value", "hideSearch");
+        $("#showSearchBtn").text("hideSearch")//prop("value", "hideSearch");
+
+        // add a listener, when the enter key is pressed and is keyup, click the ok button
+        theSearchInputBoxObj.node().addEventListener("keyup", function(event) {
+            // Number 13 is the "Enter" key on the keyboard
+            if (event.keyCode === 13) {
+            // Cancel the default action, if needed
+            event.preventDefault();
+            // Trigger the button element with a click
+            searchOKBtnObj.node().click();
+            }
+        });
+
+
 	}else{
 		$("#searchBox").css('display', "none");
 		$("#searchBox").css('height', "0");	
@@ -5626,13 +5640,3 @@ function searchInClues_bk(theJSON, thekeyword) {
     return searchResult;
 } // searchInClues
 
-// add a listener, when the enter key is pressed and is keyup, click the ok button
-theSearchInputBoxObj.node().addEventListener("keyup", function(event) {
-    // Number 13 is the "Enter" key on the keyboard
-    if (event.keyCode === 13) {
-      // Cancel the default action, if needed
-      event.preventDefault();
-      // Trigger the button element with a click
-      searchOKBtnObj.node().click();
-    }
-});
