@@ -1,5 +1,5 @@
 simple d3 v4 tree diagram.
-Commit 160a
+Commit 161a
 
 To do: 
 - Remember the current setting for hide/show children nodes??
