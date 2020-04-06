@@ -5,9 +5,9 @@
 var d3body=d3.select('body');
 var currentURL = window.location.href
 // if (currentURL.startsWith("http://localhost:")){
-    var titletext='D3 try ' + currentURL;
-    var gitcommitver = gitcommitversion;
-    var githuburl ="https://github.com/ShenzhenYAO/simple_d3tree_v3tov4.io";
+    var titletext='SAS Clinical Programmer Tutorial';
+    var gitcommitver = "";
+    var githuburl ="";
     addtitledesc (titletext, gitcommitver, githuburl)
 
 // } else {
