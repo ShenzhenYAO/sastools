@@ -11,3 +11,10 @@ git remote rm origin
 
 to set a new git repository link:
 git remote add origin https://github.com/ShenzhenYAO/phdproject3.git
+
+
+to add commit for the first time
+git add .
+git commit -m "m1"
+git push origin master
+
