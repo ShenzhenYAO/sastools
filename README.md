@@ -10,7 +10,7 @@ git remote rm origin
 
 
 to set a new git repository link:
-git remote add origin https://github.com/ShenzhenYAO/phdproject3.git
+git remote add origin https://github.com/ShenzhenYAO/ferguson_greatdegeneration.git
 
 
 to add commit for the first time
