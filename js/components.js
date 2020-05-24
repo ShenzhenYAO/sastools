@@ -2542,7 +2542,7 @@ function showInputTextForm(){
     modalcontentbox.style.height="80%";
 
     // bring the quill toolbox and editor box into the modal's body part (div #DescInputBody)
-    var DescInputBodyDom=document.getElementById("DescInputBody");
+    var DescInputBodyDom=document.getElementById("DescInputBody")   ;
     // run makeQuill() to bring up the quill tool box and the editor box
     var modalToolboxID = 'modal-toolbox', modalEditorboxID = 'modal-editor';
     makeQuill(DescInputBodyDom, modalToolboxID, modalEditorboxID)
@@ -2645,6 +2645,7 @@ function showInputTextForm(){
 
     
     editorbox_modal.styles({
+        // 'background-color':'black',
         'max-height':height_modalbody + 'px',
         'min-height':'200px',
         "overflow":"auto",
