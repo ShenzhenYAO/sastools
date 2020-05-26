@@ -103,8 +103,8 @@ var
     // height_tree = height_body - TreeMarginToSvg.top - TreeMarginToSvg.bottom,
     width_tree,
     height_tree,
-    between_nodes_horizontal = 180,
-    between_nodes_vertical = 65,
+    between_nodes_horizontal = 250,
+    between_nodes_vertical = 80,
     center_tree, //it is never used
     focus=center_tree //never used
     // center_tree = [width_tree / 2, height_tree /2] //for zooming from F:\Personal\Virtual_Server\PHPWeb\D3 Pan drop drag\DeniseMauldin Box

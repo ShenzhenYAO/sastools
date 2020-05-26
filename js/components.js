@@ -348,8 +348,8 @@ function MakeChangeTree(parentdatapoint) {
     nodeEnter.append('g') // has to wrap the div inside a g element so as to transform (adjust the text label's position relative to the node)
         // .transition().duration(2)
         .attr('class', 'nodetextGs')
-        .attr('transform', 'translate (-80, 10)') // to move the text g box back (under nodes and centered)
-        .append('foreignObject').attr('width', 160).attr('height', '50')
+        .attr('transform', 'translate (-110, 10)') // to move the text g box back (under nodes and centered)
+        .append('foreignObject').attr('width', 220).attr('height', '50')
         .append('xhtml:div')
         .attr('class', 'nodetext')
         .text(function(d) { return d.data.name; }) //v4
