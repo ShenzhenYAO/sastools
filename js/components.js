@@ -2546,6 +2546,7 @@ function showInputTextForm(){
     // run makeQuill() to bring up the quill tool box and the editor box
     var modalToolboxID = 'modal-toolbox', modalEditorboxID = 'modal-editor';
     makeQuill(DescInputBodyDom, modalToolboxID, modalEditorboxID)
+
     
     /**Since commit 147a
      * blot formatter to resize image 
@@ -2637,6 +2638,7 @@ function showInputTextForm(){
     //get the toolbox
     var themodaltabletoolbox=document.getElementById('thetabletoolbox'); // new since commit 146a for table editing tools
     var themodaltoolbox=document.getElementById(modalToolboxID);
+    d3.select(themodaltoolbox).style("background-color", "lightgrey")
     //Height of the modal body = Height of the diaglog box - height of the header 
     height_modalbody = modalcontentbox.getBoundingClientRect().height 
                         - modalheader.getBoundingClientRect().height
@@ -2649,9 +2651,10 @@ function showInputTextForm(){
         'max-height':height_modalbody + 'px',
         'min-height':'200px',
         "overflow":"auto",
-        "font-size": "25px",
+        "font-family": "times new roman",//"Noto Serif",
+        "font-size": "36px",
         "line-height": "16pt",
-        "color": "black",
+        "color": "lightgrey",
         "margin": "0px",
         "position": "relative" // relative works for image resize, but not for link, fx, and video url
             // 'static' works for link/fx/video url, but not image resize
@@ -2837,6 +2840,9 @@ function makemodal(id, title, label, action){
     var modaldialogbox = modalbackground.append('div').attrs({'class': 'modal-content'}) // this is a box of the whole dialog area
         .on('mousedown', d=>{ // the following is to prevent thetreeG moving when the mouse is down and moving within the modal area 
             event.stopPropagation();
+        })
+        .styles({
+            "background-color":"black"
         }) 
 
     /**3a. within the dialog box, create a header div */
