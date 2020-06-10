@@ -39,7 +39,7 @@
 /**global vars */
 var currentURL =  window.location.href
 // if (currentURL.startsWith("http://localhost:")){
-    var treejsonURL = 'data/apology';// 'data/treedata.json', //'data/An apology for Raymond Sebond v1',     // the url of the external json file with tree data
+    var treejsonURL = 'data/politicaldecay';// 'data/apology', //'data/An apology for Raymond Sebond v1',     // the url of the external json file with tree data
     var thejsonstrnameinjs =treejsonURL.substring(treejsonURL.lastIndexOf('/')+1)
     sessionStorage.setItem('thejsonstrname', thejsonstrnameinjs);
 //  };
@@ -83,7 +83,7 @@ var zoomSettings = {
 var zoomLevel=1; // the level of zoomming (scale, i.e., the times to enlarge/shrink), by default=1; 
 
 /** viewbox width (two boxes side by side, left for text, right for diagram) */
-var width_textviewbox = width_body *.9,
+var width_textviewbox = width_body *.8,
     height_textviewbox = height_body,
     width_treeviewbox = width_textviewbox * .9//width_body, // leave 5% for padding
     height_treeviewbox = height_body,

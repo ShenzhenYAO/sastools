@@ -191,10 +191,10 @@ thetextbox=textviewbox.append('div')
     .styles({
         "width":'98%', 
         'height':'80%',
-        'font-family': "Consolas", //Helvetica, sans-serif
+        'font-family': "times new roman", //"Consolas", //Helvetica, sans-serif
         // 'max-height':height_textviewbox + 'px',
         'max-height':'80%',
-        'font-size':'25px',
+        'font-size':'48px',
         // 'float':'left',
         'overflow': 'auto',
         'background-color': 'lightgrey',
@@ -388,6 +388,9 @@ observetreeviewboxsize()
 if (currentURL.startsWith("http://localhost:")){
     //check json data change every 60 sec
     checkJSONPeriodically(60);
+    setTimeout(() => {
+        collapseAll(rootdatapoint_sortedrowscols)
+    }, 3000)
 } else {
     setTimeout(() => {
         collapseAll(rootdatapoint_sortedrowscols)
