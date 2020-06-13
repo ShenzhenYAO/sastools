@@ -2654,7 +2654,7 @@ function showInputTextForm(){
         "font-family": "times new roman",//"Noto Serif",
         "font-size": "36px",
         "line-height": "16pt",
-        "color": "lightgrey",
+        "color": "black", // this is the place to change font color of the description box
         "margin": "0px",
         "position": "relative" // relative works for image resize, but not for link, fx, and video url
             // 'static' works for link/fx/video url, but not image resize
@@ -2842,7 +2842,7 @@ function makemodal(id, title, label, action){
             event.stopPropagation();
         })
         .styles({
-            "background-color":"black"
+            "background-color":"lightgrey" // this is the place to change background color of the descritpion box 
         }) 
 
     /**3a. within the dialog box, create a header div */
