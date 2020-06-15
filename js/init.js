@@ -120,6 +120,9 @@ var updateTree;
 
 var svg, thetreeG, thetreerect;
 
+var quota = 3000000; // the max (in MB) size allowed for sessionStorage of a browser (Chrome, Firefox, IE). 
+// Usually it is fixed at 5MB (cannot change),but in some cases I found that even a json between 2 to 3 MB in size would exceed the quota.
+
 
 /**about tree elements*/
 var 

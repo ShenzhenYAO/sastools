@@ -902,12 +902,12 @@ function NewTree(thetreedata) {
     //save the treeJson Root into session
     var jsonstr = JSON.stringify(rootdatapoint_sortedrowscols.data);
 
-    /**sessionStorage is limited by the max of 2MB, if the jsonstr, it cannot be put into the sessionStorage
+    /**sessionStorage is limited by the max quota, if the jsonstr, it cannot be put into the sessionStorage
      * The following is to split it into multiple parts
      * */
-    var quota = 2000000
+    // var quota = 3000000 defined in init.js
     if (jsonstr.length > quota) {
-        console.log('the json file is too large (> 2MB), cannot be saved in sessionStorage')
+        console.log('the json file is too large (> quota), cannot be saved in sessionStorage')
     } else {
         sessionStorage.setItem('thejsonstr', jsonstr);
     }
@@ -2695,9 +2695,9 @@ function showInputTextForm() {
         var thecurrentnodecontents = currentDataEle.data.NodeDescription
         // check if the textviewbox is open
         var width_textviewbox = textviewbox.style('width')
-        // console.log('width_textviewbox: ' +  width_textviewbox)
+        console.log('width_textviewbox: ' +  width_textviewbox)
         if (width_textviewbox !== '0px') {
-
+            
             //part 1: reload the textbox (that way, the new text spans are made)
             showSentences()
 
@@ -3051,11 +3051,19 @@ function replacePbyBR(d) {
 
 function showSentences() {
 
+    // console.log($('.textviewbox').width())
+
     //check the width of the textviewbox, if it is not 0, stay with the current width
     if ($('.textviewbox').width() !== 0) {
-        width_textviewbox = $('.textviewbox').width
+        // console.log('width is not zero')
+        // console.log($('.textviewbox').width())
+        width_textviewbox = $('.textviewbox').width() // it was a bug here not adding .width(), causing the showtextbox not open
     } else {
-        $('.textviewbox').width(width_textviewbox);
+        // console.log($('.textviewbox').width())
+        // console.log('width_textviewbox is : ====')
+        // console.log(width_textviewbox)
+        $('.textviewbox').width(width_textviewbox);//width_body *.8
+        // $('.textviewbox').width(width_body *.8);//width_body *.8
     }
 
 
@@ -5159,10 +5167,10 @@ function checkJSONPeriodically(interval_sec) {
         //must convert to text string, as the items stored in sessionStorage has to be strings.
         var theCurrentTreeData = JSON.stringify(rootdatapoint_sortedrowscols.data)
 
-        // need to deal with the max quota of 2MB for session/local storage issue
-        var quota = 2000000
+        // need to deal with the max quota for session/local storage issue
+        // var quota = 3000000 // defined in init.js
         if (theCurrentTreeData.length > quota) {
-            console.log('the json file is too large (> 2MB), cannot be saved in sessionStorage. Save it to local disk directly in every five minutes. The file is not sent to mysql.')
+            console.log('the json file is too large (> quota), cannot be saved in sessionStorage. Save it to local disk directly in every five minutes. The file is not sent to mysql.')
             jsonstr_js2php2mysql_nosessionStorage()
             // make the checking interval longer
             interval_ms = 60 * 5000; // make it every 5 minutes
