@@ -900,9 +900,16 @@ function NewTree(thetreedata){
 
     //save the treeJson Root into session
     var jsonstr = JSON.stringify(rootdatapoint_sortedrowscols.data);
-    sessionStorage.setItem('thejsonstr', jsonstr);    
 
-
+    /**sessionStorage is limited by the max of 2MB, if the jsonstr, it cannot be put into the sessionStorage
+     * The following is to split it into multiple parts
+     * */
+    var quota=2000000
+    if (jsonstr.length > quota ){
+        console.log('the json file is too large (> 2MB), cannot be saved in sessionStorage')
+    } else {
+        sessionStorage.setItem('thejsonstr', jsonstr);
+    }
 }// end function NewTree()
 
 
@@ -3255,7 +3262,7 @@ function CentralNode_selectedText(d){
     //unlike click and zoom in zoom out, this time, put the selected node 60px to the left, not at the horizontal center
     //var translate_mapUpperLeft='translate (' + width_treeviewbox/2 + ',' + height_treeviewbox/2 + ')'
     // by the way, the width_treeviwbox/2 height_treeviewbox/2 is not right. should be half of the current svg width and height
-    var translate_mapUpperLeft='translate (' + 300 + ',' + currentsvgh/2 + ')'
+    var translate_mapUpperLeft='translate (' + 400 + ',' + currentsvgh/2 + ')'
 
 
     //5.1.4 determine the string for enlarge/shrink (scale)
@@ -5083,26 +5090,77 @@ function checkJSONPeriodically(interval_sec){
 	let timerId = setTimeout(function tick() {
             //must convert to text string, as the items stored in sessionStorage has to be strings.
             var theCurrentTreeData=JSON.stringify(rootdatapoint_sortedrowscols.data)
-            var theLastTreeData=sessionStorage.getItem("thejsonstr")
-            // console.log(theLastTreeData)
-            if (theLastTreeData === theCurrentTreeData) {
-                //console.log ("tree unchanged")
-            }else{
-                //console.log ("tree changed");
-                //save the current grandroot into sessionStorage				
-                sessionStorage.setItem("thejsonstr", theCurrentTreeData);
-                // save the json to MySQL
-                jsonstr_js2php2mysql();
-            }
+
+            // need to deal with the max quota of 2MB for session/local storage issue
+            var quota=2000000
+            if (theCurrentTreeData.length > quota ){
+                console.log('the json file is too large (> 2MB), cannot be saved in sessionStorage. Save it to local disk directly in every five minutes. The file is not sent to mysql.' )
+                jsonstr_js2php2mysql_nosessionStorage()
+                // make the checking interval longer
+                interval_ms = 60*5000; // make it every 5 minutes
+            } else {
+                var theLastTreeData=sessionStorage.getItem("thejsonstr")
+                // console.log(theLastTreeData)
+                if (theLastTreeData === theCurrentTreeData) {
+                    console.log ("tree unchanged")
+                }else{
+                    console.log ("tree changed");
+                    console.log('length of the current tree', theCurrentTreeData.length)
+    
+                    //save the current grandroot into sessionStorage				
+                    sessionStorage.setItem("thejsonstr", theCurrentTreeData);
+                    // save the json to MySQL
+                    jsonstr_js2php2mysql();
+                } // if changed
+            } // if exceed quota
+
+
             //repeat 
             timerId = setTimeout(tick, interval_ms); 
 		}, interval_ms
 	);		
 }
 
+// The same function as jsonstr_js2php2mysql, just do not use the sessionstorage
+function jsonstr_js2php2mysql_nosessionStorage(){
+    //get the most recent json data
+    var jsonstr = JSON.stringify(rootdatapoint_sortedrowscols.data);
+    //prepare a json obj with keys including slqtable, josnstr, userid, and jsonstrname
+    //note: the stringified jsonstr is only 1 element of the json obj
+    var 
+        v0='d3treejson',
+        v1=jsonstr,
+        v2=sessionStorage.getItem('theuserid'), 
+        v3= sessionStorage.getItem('thejsonstrname');
+        jsontosend = {
+            sqltable:v0,
+            jsonstr:v1,
+            userid: v2,
+            jsonstrname:v3,
+            sendtomysql:'n' // not to send the data to mysql (too large) 
+        }
+
+    // Post the json data to a php file, and receive response text echoed on that php file
+    //https://api.jquery.com/jQuery.post/
+    // The jquery way is simply to specify: 1) the target php, 2) the name of the json data 3) the data type.
+
+    var jqxhr = $.post( 
+        "php/js2php2mysql.php", 
+        jsontosend, 
+        'json'
+        )
+        // the following is to return the contents printed on the target php, so that user can 
+        // moniter whether the target php runs normally or having errors.
+        .done(function(d) {
+            console.log( 'On php/js2php2mysql.php:\n' + d );
+    }) // end post
+} // end jsonstr_js2php2mysql()
 
 
-// send jsonstr from js to php then to mysql
+
+
+// send jsonstr from js to php then to mysql, note, it is the same method to save the json as a local file
+// saving a local file is done by php/js2php2mysql.php
 function jsonstr_js2php2mysql(){
     //get the most recent json data
     var jsonstr = JSON.stringify(rootdatapoint_sortedrowscols.data);
@@ -5117,7 +5175,8 @@ function jsonstr_js2php2mysql(){
             sqltable:v0,
             jsonstr:v1,
             userid: v2,
-            jsonstrname:v3 
+            jsonstrname:v3,
+            sendtomysql:'y whatever' 
         }
 
     // Post the json data to a php file, and receive response text echoed on that php file

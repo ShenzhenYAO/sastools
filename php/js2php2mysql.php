@@ -17,6 +17,8 @@
     $hexjsonstr=bin2hex($_POST['jsonstr']);
     //echo $hexjsonstr;
 
+    $sendtomysql=$_POST['sendtomysql'];
+
     //save the jsonstr as a text file in the server folder
     //the txt file need to be saved into F:/Personal/Virtual_Server/PHPWeb/d3egp2019/145a/data
     //$_SERVER['DOCUMENT_ROOT'] returns 'F:/Personal/Virtual_Server/PHPWeb/'
@@ -45,6 +47,9 @@
         //always close the connection;
         $dbc -> close();
     }
-    phptomysql($sqltable, $userid, $jsonname, $hexjsonstr);
+    if ($sendtomysql !== 'n') {
+        phptomysql($sqltable, $userid, $jsonname, $hexjsonstr);
+    }
+    
 
 ?>

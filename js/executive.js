@@ -5,7 +5,7 @@
 var d3body=d3.select('body');
 var currentURL = window.location.href
 // if (currentURL.startsWith("http://localhost:")){
-    var titletext='SAS Clinical Programmer Tutorial';
+    var titletext='treejsonURL';//'SAS Clinical Programmer Tutorial';
     var gitcommitver = "";
     var githuburl ="";
     addtitledesc (titletext, gitcommitver, githuburl)
