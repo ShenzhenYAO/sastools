@@ -3066,7 +3066,6 @@ function showSentences() {
         // $('.textviewbox').width(width_body *.8);//width_body *.8
     }
 
-
     //display the textBox and the hintBox
     $("#textBox").css('display', "block");
     $("#textBox").css('height', "auto");
