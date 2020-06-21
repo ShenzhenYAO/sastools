@@ -2499,17 +2499,21 @@ function showRenameForm() {
     }
 }
 
+// the text can be selected, but not editable, use select() instead
 // https://stackoverflow.com/questions/1173194/select-all-div-text-with-single-mouse-click
 function selectText(containerid) {
     if (document.selection) { // IE
         var range = document.body.createTextRange();
         range.moveToElementText(document.getElementById(containerid));
         range.select();
+        console.log('here')
     } else if (window.getSelection) {
+        console.log('there1')
         var range = document.createRange();
         range.selectNode(document.getElementById(containerid));
         window.getSelection().removeAllRanges();
         window.getSelection().addRange(range);
+        // range.select();        
     }
 }
 
