@@ -166,8 +166,11 @@ var nodemenu = [
             showRenameForm(); //showRenameForm();
             //show the current node name
             $('#ModalInput').val(d.data.name); //d3v4
-            $('#ModalInput').focus();
-
+            // not focus but select all
+            // $('#ModalInput').focus();
+            // https://stackoverflow.com/questions/1173194/select-all-div-text-with-single-mouse-click
+            selectText('ModalInput')
+            
             //$('#theModal').remove(); //!!! cannot put it here, as the modal will open and close, nothing can be seen on the screen
         }
     },
