@@ -216,7 +216,8 @@ var nodemenu = [
             //create_node_modal_active = true;
             //$('#CreateNodeModal').foundation('reveal', 'open');
             $('#ModalInput').val("New"); //by default, the name of the new node is 'New'
-            $('#ModalInput').focus(); 
+            // $('#ModalInput').focus(); 
+            $('#ModalInput').select();
         
         }
     },
