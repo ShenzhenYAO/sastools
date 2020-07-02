@@ -1,0 +1,50 @@
+
+        // .on("mouseover", d => {
+        //     console.log(d)
+        //     if (d.data.NodeDescription) {
+        //         var desctxt = d.data.NodeDescription
+        //         desctxt = desctxt.replace('///t', '')
+        //         desctxt = desctxt.replace('t///', '')
+        //         desctxt = desctxt.replace('///h', '')
+        //         desctxt = desctxt.replace('h///', '')
+        //         if (desctxt.length > desctxt.substr(0, 600).length) {
+        //             desctxt = desctxt.substr(0, 600) + '... '
+        //         }
+        //         desctxt = desctxt.trim()
+        //         // if (desctxt) {
+        //             // Define the tipbox for the tooltip
+        //             tipbox.transition()
+        //                 .duration(200)
+        //                 .style("opacity", 1);
+        //             tipbox.html(`
+        //             <p style="font-weight:normal;font:12px Georgia;text-align:left;">
+        //                 ${desctxt}
+        //             </p>
+        //         `)
+        //                 .style("left", (d3.event.pageX) + "px")
+        //                 .style("top", (d3.event.pageY - 28) + "px");
+        //         // }
+        //     }
+        // })
+
+
+// make a tipbox. On mouseover of the node, show the description
+// make a div for the tooltip
+// var tipbox = d3.select("body").append("div")
+//     .attr("class", "tooltip")
+//     .style("opacity", 0) 
+//     .styles({
+//         "position": "absolute",			
+//         "text-align":"center",			
+//         "width": "512px",					
+//         "min-height": "270px",					
+//         "padding": "5px",				
+//         "font": "20px sans-serif",
+//         "font-weight":"bold",
+//         // https://www.rapidtables.com/web/color/RGB_Color.html
+//         "background": "rgba(250,255,255, 0.9)", //"#F5F3FA", //F5E9CF //"rgba(155,174,228, 0.9)",	
+//         "border": "1px solid black",		
+//         "border-radius": "8px",			
+//         // "pointer-events": "none",
+//         "box-shadow": "0 0 30px #333"
+//     }) 

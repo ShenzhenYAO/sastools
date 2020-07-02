@@ -39,7 +39,7 @@
 /**global vars */
 var currentURL =  window.location.href
 // if (currentURL.startsWith("http://localhost:")){
-    var treejsonURL = 'data/politicaldecay';// 'data/apology', //'data/An apology for Raymond Sebond v1',     // the url of the external json file with tree data
+    var treejsonURL = 'data/politicaldecay'//'data/compare_phd1_dossa' //data/politicaldecay';// 'data/apology', //'data/An apology for Raymond Sebond v1',     // the url of the external json file with tree data
     var thejsonstrnameinjs =treejsonURL.substring(treejsonURL.lastIndexOf('/')+1)
     sessionStorage.setItem('thejsonstrname', thejsonstrnameinjs);
 //  };
@@ -48,7 +48,7 @@ userid=2; // for the type being, let the user id =2.
 sessionStorage.setItem('theuserid', userid);
 
 var 
-    gitcommitversion = '162a',
+    gitcommitversion = '163a',
 
     treeData,   // to hold the tree data 
     treeJSON,   // to hold the tree JSON from treeData

@@ -285,7 +285,62 @@ function MakeChangeTree(parentdatapoint) {
         .attr('stroke', nodecircle_border_color)
         .style("fill", function (d) {
             return d._children ? nodecircle_fill_hidedescendants_color : nodecircle_fill_showdescendants_color;
-        });
+        })
+        .on("mouseover", d => {
+            console.log(d)
+            if (d.data.NodeDescription) {
+                var desctxt = d.data.NodeDescription
+                desctxt = desctxt.replace('///t', '')
+                desctxt = desctxt.replace('t///', '')
+                desctxt = desctxt.replace('///h', '')
+                desctxt = desctxt.replace('h///', '')
+                var desctxt2 = $('<div>' + desctxt + '<div>' ).text()
+                desctxt2 =desctxt2.trim()
+                if (desctxt2.length > desctxt2.substr(0, 600).length) {
+                    desctxt2 = desctxt2.substr(0, 600) + '... '
+                } 
+                // desctxt = desctxt.replace(/<p><\/p>/g, '')               
+                // desctxt = desctxt.trim()
+                console.log(desctxt2.length, desctxt2)
+                if (desctxt2.length>0) {
+                    // Define the tipbox for the tooltip
+                    tipbox.transition()
+                        .duration(200)
+                        .style("opacity", 1)
+                        .styles({
+                            "width": "512px",					
+                            "height": "auto",
+                            "min-height": "270px"
+                        })
+                        ;
+                    
+                    tipbox
+                        .html(desctxt2)
+                        // .html(`
+                //     <p style="font-weight:normal;font:20px Georgia;text-align:left;>
+                //         ${desctxt}
+                //     </p>
+                // `)
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY - 28) + "px");
+                }// if desctxt 
+            }
+        })
+        .on("mouseout", d=>{
+            console.log('mouseout')
+            //  setTimeout(d=>{
+                tipbox.transition()
+                    .duration(200)
+                    .style("opacity", 0)
+                    .styles({
+                        "width": "0.1px",
+                        "height":'0.1px',					
+                        "min-height": "0.1px"
+                    })
+                    ;
+                // }, 3000)
+        })
+        ;
 
     // add symbols into g.nodeGs (e.g., a rectale to indicate substeps, etc)
     nodeEnter.append('g') // add a group element to hold the substeps symbol

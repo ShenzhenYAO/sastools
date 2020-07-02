@@ -10,6 +10,29 @@ var gitcommitver = "";
 var githuburl = "";
 addtitledesc(titletext, gitcommitver, githuburl)
 
+// make a tipbox. On mouseover of the node, show the description
+// make a div for the tooltip
+var tipbox = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0) 
+    .styles({
+        "position": "absolute",			
+        "text-align":"left",			
+        "width": "0.1px",					
+        "min-height": "0.1px",
+        "padding": "5px",				
+        "font": "20px Georgia",
+        "font-weight":"normal",
+        "text-indent":"50px",
+        "line-height": "150%", 
+        // https://www.rapidtables.com/web/color/RGB_Color.html
+        "background": "rgba(250,255,255, 0.9)", //"#F5F3FA", //F5E9CF //"rgba(155,174,228, 0.9)",	
+        "border": "1px solid black",		
+        "border-radius": "8px",			
+        // "pointer-events": "none",
+        "box-shadow": "0 0 30px #333"
+    }) 
+
 // } else {
 
 function notrun() {
