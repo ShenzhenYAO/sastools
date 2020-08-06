@@ -1,3 +1,10 @@
-php/phptools.php
-data/htmlbooks/
-data/backup/
+php/
+js/
+css/
+pix/
+tmp/
+tools/
+.gitignore
+gitcommit.cmd
+index.html
+index2.html
